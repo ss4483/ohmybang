@@ -1,3 +1,10 @@
+Your bundle is locked to mimemagic (0.3.3), but that version could not be found in any of the sources listed in your Gemfile. If you haven't changed sources, that means the author of mimemagic (0.3.3) has
+removed it. You'll need to update your bundle to a version other than mimemagic (0.3.3) that hasn't been removed in order to install.
+
+- readme 정리
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 change_column :users, :login, :string, :limit => 55
 
 
