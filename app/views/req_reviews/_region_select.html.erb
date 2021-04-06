@@ -1,0 +1,86 @@
+<select id="si_nm" name="si_nm" required>
+  <option value="">:: 시/도 ::</option>
+  <option <%# "11"%> value="서울특별시">서울특별시</option>
+  <option <%# "26"%> value="부산광역시">부산광역시</option>
+  <option <%# "27"%> value="대구광역시">대구광역시</option>
+  <option <%# "28"%> value="인천광역시">인천광역시</option>
+  <option <%# "29"%> value="광주광역시">광주광역시</option>
+  <option <%# "30"%> value="대전광역시">대전광역시</option>
+  <option <%# "31"%> value="울산광역시">울산광역시</option>
+  <option <%# "36"%> value="세종특별자치시">세종특별자치시</option>
+  <option <%# "41"%> value="경기도">경기도</option>
+  <option <%# "42"%> value="강원도">강원도</option>
+  <option <%# "43"%> value="충청북도">충청북도</option>
+  <option <%# "44"%> value="충청남도">충청남도</option>
+  <option <%# "45"%> value="전라북도">전라북도</option>
+  <option <%# "46"%> value="전라남도">전라남도</option>
+  <option <%# "47"%> value="경상북도">경상북도</option>
+  <option <%# "48"%> value="경상남도">경상남도</option>
+  <option <%# "50"%> value="제주특별자치도">제주특별자치도</option>
+</select><!--
+--><select id="sgg_nm" name="sgg_nm" required disabled>
+  <option value="">:: 시/군/구 ::</option>
+</select><!--
+--><select id="emd_nm" name="emd_nm" required disabled>
+  <option value="">:: 읍/면/동 ::</option>
+</select>
+
+
+<script>    
+
+  $("#si_nm").change(function() {
+    if ($(this).val() == "") {
+      $("#emd_nm").attr("disabled", true);
+      $("#emd_nm").empty();
+      $("#emd_nm").append('<option value="">:: 읍/면/동 ::</option>');
+      $("#sgg_nm").attr("disabled", true);
+      $("#sgg_nm").empty();
+      $("#sgg_nm").append('<option value="">:: 시/군/구 ::</option>');
+    } else {
+      $("#emd_nm").attr("disabled", true);
+      $("#emd_nm").empty();
+      $("#emd_nm").append('<option value="">:: 읍/면/동 ::</option>');
+      $("#sgg_nm").attr("disabled", false);
+      $.ajax({
+        url:  "/search_sgg",    
+        dataType: "json",    
+        data: {
+          si: $(this).val()
+        },
+        success: function(data) { 
+          $("#sgg_nm").empty();
+          $("#sgg_nm").append('<option value="">:: 시/군/구 ::</option>');
+          $.each(data, function(index, value) {
+            $("#sgg_nm").append('<option value="' + value.properties.sig_kor_nm +'">' + value.properties.sig_kor_nm + '</option>');
+          });
+        }
+      });
+    }
+  });
+
+
+  $("#sgg_nm").change(function() {
+    if ($(this).val() == "") {
+      $("#emd_nm").attr("disabled", true);
+      $("#emd_nm").empty();
+      $("#emd_nm").append('<option value="">:: 읍/면/동 ::</option>');
+    } else {
+      $("#emd_nm").attr("disabled", false);
+      $.ajax({
+        url:  "/search_emd",    
+        dataType: "json",    
+        data: {
+          si: $("#si_nm").val(),
+          sgg: $(this).val()
+        },
+        success: function(data) { 
+          $("#emd_nm").empty();
+          $("#emd_nm").append('<option value="">:: 읍/면/동 ::</option>');
+          $.each(data, function(index, value) {
+            $("#emd_nm").append('<option value="' + value.properties.emd_kor_nm +'">' + value.properties.emd_kor_nm + '</option>');
+          });
+        }
+      });
+    }
+  });
+</script>

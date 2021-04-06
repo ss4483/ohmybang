@@ -1,0 +1,8 @@
+$('#content').append(`<%= render partial: "review_lists/review", collection: @reviews, format: 'html' %>`);
+
+<% if @reviews.current_page == @reviews.total_pages %>
+  $('#view-more a').attr('href', '#');
+  $('#view-more-box').remove();
+<% else %>
+  $('#view-more a').attr('href', '<%= url_for(get_params().merge({page: @reviews.current_page + 1})) %>');
+<% end %>

@@ -1,0 +1,297 @@
+<style>
+
+/** index_2 **/
+.index_2-main_01 {
+  background-size: cover;
+  position: relative;
+  background-color: #42817A;
+  height: 550px;
+  width: 100%;
+  bottom: 0px;
+  .empty{
+    padding-top: 120px;
+    background-color: white;
+  }
+  .center_box {
+    position: absolute; top: 45%;transform: translate(0%, -50%);width: 100%;
+    .btn{
+      font-size:17px;
+    }
+  }
+  .text_img {
+    width:160px; 
+    display:block; 
+    margin-left:auto
+  }
+  .phone_img {
+    width: 125px;
+    margin-top: -65px;
+  }
+}
+.index_2-main_02 { 
+  position: relative;
+  width: 100%;
+  height: 550px;
+  bottom: 0px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: #FFFCED;
+}
+.index_2-main_03 { 
+  position: relative;
+  width: 100%;
+  height: 550px;
+  bottom: 0px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: #F4F4F4;
+}
+.index_2-main_04 { 
+  position: relative;
+  width: 100%;
+  height: 550px;
+  bottom: 0px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-color: white;
+}
+.manual_title {
+  font-size: 30px; font-weight: 900;color:#42817A;margin-bottom: 40px; border-bottom: solid 1px; padding-bottom: 10px;
+}
+// sm - Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) { 
+  .manual_title {
+    font-size: 30px;
+  }
+  .index_2-main_01 {
+    min-height: 700px;
+    height: 100vh;
+    .center_box {
+      top: 50%;
+      .btn{
+        font-size:25px;
+      }
+    }
+    .text_img {
+      width:265px; 
+      display:block; 
+      margin-left:auto
+    }
+    .phone_img {
+      width: 180px;
+      margin-top: -55px;
+      margin-left: 5px;
+    }
+  }
+  .index_2-main_02 { 
+    height: calc(100vh - 102px);
+    min-height: 800px;
+  }
+  .index_2-main_03 { 
+    height: calc(100vh - 102px);
+    min-height: 800px;
+  }
+  .index_2-main_04 { 
+    height: calc(100vh - 102px);
+    min-height: 800px;
+  }
+}
+// md - Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+  .manual_title {
+    font-size: 40px;
+  }
+  .index_2-main_01 {
+    .text_img {
+      width:310px; 
+      display:block; 
+      margin-left:auto
+    }
+    .phone_img {
+      width: 200px;
+      margin-top: -73px;
+      margin-left: 5px;
+    }
+  }
+}
+// lg - Large devices (desktops, 992px and up)
+@media (min-width: 992px) { 
+  .index_2-main_01 {
+    .empty{
+      padding-top: 146px;
+    }
+    .text_img {
+      width:380px; 
+      display:block; 
+      margin-left:auto
+    }
+    .phone_img {
+      width: 230px;
+      margin-top: -96px;
+      margin-left: 14px;
+    }
+   
+  }
+  .index_2-main_02 { 
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 102px);
+    min-height: 800px;
+    bottom: 0px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: #FFFCED;
+  }
+  .index_2-main_03 { 
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 102px);
+    min-height: 800px;
+    bottom: 0px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: #F4F4F4;
+  }
+  .index_2-main_04 { 
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 102px);
+    min-height: 800px;
+    bottom: 0px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: white;
+  }
+}
+
+@-webkit-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+    -webkit-transform: translateY(0);
+    transform: translateX(0);
+  }
+    40% {
+    -webkit-transform: translateY(-5px);
+    transform: translateY(-5px);
+  }
+    60% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+  }
+}
+
+@-moz-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+    40% {
+    transform: translateY(-5px);
+  }
+    60% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+  }
+    40% {
+    -ms-transform: translateY(-5px);
+    transform: translateY(-5px);
+  }
+    60% {
+    -ms-transform: translateY(-4px);
+    transform: translateY(-4px);
+  }
+}
+
+.arrow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left:-7px;
+  width: 14px;
+  height: 14px;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yOTMuNzUxLDQ1NS44NjhjLTIwLjE4MSwyMC4xNzktNTMuMTY1LDE5LjkxMy03My42NzMtMC41OTVsMCwwYy0yMC41MDgtMjAuNTA4LTIwLjc3My01My40OTMtMC41OTQtNzMuNjcyICBsMTg5Ljk5OS0xOTBjMjAuMTc4LTIwLjE3OCw1My4xNjQtMTkuOTEzLDczLjY3MiwwLjU5NWwwLDBjMjAuNTA4LDIwLjUwOSwyMC43NzIsNTMuNDkyLDAuNTk1LDczLjY3MUwyOTMuNzUxLDQ1NS44Njh6Ii8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjIwLjI0OSw0NTUuODY4YzIwLjE4LDIwLjE3OSw1My4xNjQsMTkuOTEzLDczLjY3Mi0wLjU5NWwwLDBjMjAuNTA5LTIwLjUwOCwyMC43NzQtNTMuNDkzLDAuNTk2LTczLjY3MiAgbC0xOTAtMTkwYy0yMC4xNzgtMjAuMTc4LTUzLjE2NC0xOS45MTMtNzMuNjcxLDAuNTk1bDAsMGMtMjAuNTA4LDIwLjUwOS0yMC43NzIsNTMuNDkyLTAuNTk1LDczLjY3MUwyMjAuMjQ5LDQ1NS44Njh6Ii8+DQo8L3N2Zz4=);
+  background-size: contain;
+}
+
+.bounce {
+  -webkit-animation: bounce 2s infinite;
+  animation: bounce 2s infinite;
+}
+
+</style>
+<div class="index_2-main_01">
+  <div class="empty">
+  </div>
+  <div class="container h-100" style="position: relative;">
+    <div class="center_box row d-flex justify-content-center" style="">
+      <div class="col-6 col-md-6 col-lg-6">
+        <img class="text_img" src="<%= image_url("index_2/main_01_text.png")%>"/>
+        <div class="text-right p-sm-3 mt-3 pt-3 m-sm-3 p-md-5 m-md-4">
+          <a href="<%= write_reviews %>" class="btn btn-outline-green btn-lg" style="padding: 7px 25px !important; font-weight: 500;">리뷰쓰기</a>
+          <div class="w-100"></div>
+        </div>
+          
+      </div>
+      <div class="col-5 col-md-5 col-lg-5">
+        <img class="phone_img" src="<%= image_url("index_2/main_02_phone.png")%>"/>
+        <a href="/sample" class="sample_btn"></a>
+        <a href="/sample" class="sample_btn_mobile"></a>
+      </div>
+    </div>
+  </div>
+  <a href="#main_02" class="bounce text-center" style="position:absolute; bottom:10px; width:100%; color:white;">
+    <p style="margin-bottom:10px">리뷰 더 알아보기</p>
+    <div class="arrow bounce"></div>
+  </a>
+</div>
+
+<div id="main_02" class="index_2-main_02">
+  <div class="container h-100" style="position: relative;">
+    <div class="row d-flex justify-content-center" style="position: absolute; top: 50%;transform: translate(0%, -50%);width: 100%;">
+      <div class="col-10 col-md-8 col-lg-6 text-center">
+        <img class=""src="<%= image_url("index_2/main_02.png")%>" style="width: 100%; margin-left: 10px;"/>
+      </div>
+    </div>
+
+  </div>  
+</div>
+<div class="index_2-main_03">
+  <div class="container  h-100" style="position: relative;">
+
+    <div class="row d-flex justify-content-center" style="position: absolute; top: 50%;transform: translate(0%, -50%);width: 100%;">
+      <div class="col-10 col-md-8 col-lg-6 text-center">
+        <img class=""src="<%= image_url("index_2/main_03.png")%>" style="width: 100%"/>
+      </div>
+    </div>
+
+  </div>  
+</div>
+
+
+<div class="index_2-main_04">
+  <div class="container  h-100" style="position: relative;">
+
+    <div class="row d-flex justify-content-center" style="position: absolute; top: 50%;transform: translate(0%, -50%);width: 100%;">
+      <div class="col-10 col-md-8 col-lg-5 text-center">
+        <img class=""src="<%= image_url("index_2/main_04_img.png")%>" style="width: 100%"/>
+        <img class=""src="<%= image_url("index_2/main_04_text.png")%>" style="width: 100%; margin-top: 40px;"/>
+      </div>
+    </div>
+
+  </div>  
+</div>
+
+<div>
+  <a href="<%= write_reviews %>" class="btn btn-green btn-lg btn-block">리뷰 쓰기</a>
+</div>
+
+<script>
+  $('a[href=\\#main_02]').on('click', function(event){     
+    event.preventDefault();
+    $('html,body').animate({scrollTop:$('#main_02').offset().top - 102}, 300);
+  });
+</script>

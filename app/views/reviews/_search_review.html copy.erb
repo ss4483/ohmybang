@@ -1,0 +1,71 @@
+<div class="offset-lg-2 col-lg-8 offset-md-1 col-md-10 col-12">
+  <a id="review_<%=r.id%>" href="/reviews/<%=r.id%>" class="review_search_item flex-wrap d-flex justify-content-start" 
+    style="<%= "background-color: #fbdedea6;" if @viewer_histories.include?(r.id.to_i) %>" >
+    
+    <div style="position: absolute; top:0; left:0; width:10px; background-color:<%= color %>; height: 100%;"></div>
+    
+    <div class=" d-flex justify-content-start" style="position: relative;width: 100%;">
+      <div class="img_box">
+        <% if r.main_img.blank? %>
+          <img class="room_img" src="<%= image_url(room_img(r.room))%>"  style="background-color:<%= color %>;"/>
+        <% else %>
+          <img class="room_img" src="/images/reviews/<%=r.main_img_name%>"/>
+        <% end %>
+      </div>
+
+      <div class="d-flex align-items-center search_box">
+        <div class="search_txt_box">
+          <p> 
+            <% if r.bd_nm.blank? %>
+              <span class="bd_nm" style="font-weight:400;">
+                <%= r.address %> <%=r.extra_address%> <%= r.detail_address%></span>
+              </span>
+            <% else %>
+              <span class="bd_nm" style="font-weight:600;">
+                <%= r.bd_nm %> <span style="font-size:12px;">(<%=r.detail_address%>)</span>
+              </span>
+              <br class="d-block d-sm-none">
+              <span class="mx-0 mx-sm-1 d-sm-inline-block d-none">|</span>
+              <span class="address"><%= r.address %> <%=r.extra_address%> <%= r.detail_address%></span>
+            <% end %>
+          </p>
+          <p class="text-sm-right" style=" font-size: 12px; margin-top: 5px;">
+            <% if !OwnerComment.where(status: "등록완료", address: r.address, detail_address: r.detail_address).blank? %>
+              <span style="color:#bbbbbb; padding-right:5px;">집주인 코멘트</span>
+            <% end %>
+            <% if r.status == @status[4] %>
+              <img style="height: 15px;" src="<%= image_url(is_recommend_img(r.is_recommend))%>" style="vertical-align: middle;" />
+              <% if r.is_recommend == "t"%>
+                <span style="color: #18716b">추천</span>  
+              <% else %>
+                <span style="color: #fa4c47">비추천</span>
+              <% end %>
+            <% end %>
+          </p>
+          <% if r.status == @status[4] %>
+            <hr class="d-none d-sm-block" style="margin: 10px 0px 15px;">
+            <p class="review_short_comment d-none d-sm-block <%= "blur" if !@viewer_histories.include?(r.id.to_i) %>" style="">“<%= (@viewer_histories.include?(r.id.to_i))? r.short_comment : r.short_comment.gsub(/[^\s+]/, "?") %>”</p>
+            <p class="d-none d-sm-block text-right" style="font-size: 12px; color: #bbbbbb; margin-top: 5px;">
+              <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px;" src="<%= image_url("ic/message.png")%>" /> <span style="padding-right: 5px;"><%= ReviewItem.where(review_id: r.id).select(:comment).map(&:comment).compact.join.length + r.long_comment.to_s.length %>자 <%#= ReviewItem.where(review_id: r.id).select(:comment).map(&:comment).compact.count%> </span>
+              <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px;" src="<%= image_url("ic/camera.png")%>" /> <%= ReviewImg.where(review_id: r.id).count %>개
+              <% if ReviewVideo.where(review_id: r.id).count != 0 %>
+                <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px; padding-left: 5px;" src="<%= image_url("ic/video.png")%>" /> <%= ReviewVideo.where(review_id: r.id).count %>개
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <% if r.status == @status[4] %>
+      <hr class="d-sm-none" style="width:100%; margin:10px 20px;">
+      <p class="d-block d-sm-none text-left <%= "blur" if !@viewer_histories.include?(r.id.to_i) %>" style="font-size: 12px;text-align:center; padding-left: 30px;padding-right: 30px;">“<%= (@viewer_histories.include?(r.id.to_i))? r.short_comment : r.short_comment.gsub(/[^\s+]/, "?") %>”</p>
+      <p class="d-block d-sm-none text-right" style="width:100%; padding-left: 30px; padding-right: 30px;font-size: 12px; color: #bbbbbb; margin-bottom: 5px;margin-bottom:24px; ">
+        <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px;" src="<%= image_url("ic/message.png")%>" /> <span style="padding-right: 5px;"><%= ReviewItem.where(review_id: r.id).select(:comment).map(&:comment).compact.join.length%>자 </span>
+        <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px;" src="<%= image_url("ic/camera.png")%>" /> <%= ReviewImg.where(review_id: r.id).count %>개
+        <% if ReviewVideo.where(review_id: r.id).count != 0 %>
+          <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px padding-left: 5px;;" src="<%= image_url("ic/video.png")%>" /> <%= ReviewVideo.where(review_id: r.id).count %>개
+        <% end %>
+      </p>
+    <% end %>
+  </a>
+</div>

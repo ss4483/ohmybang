@@ -1,0 +1,11 @@
+<% provide :title, "마이페이지/임대인코멘트" %>
+<div class="main_container">
+  <div class="container">
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>임대인 코멘트 내역</p>
+      </div>
+    </div>
+    <%= render partial: "mypage/review_table", locals: { reviews: @comments } %>
+  </div>
+</div>

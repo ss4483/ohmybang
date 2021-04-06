@@ -1,0 +1,8 @@
+$('#content').append(`<%= render partial: "notices/notice", collection: @notices, format: 'html' %>`);
+
+<% if @notices.current_page == @notices.total_pages %>
+  $('#view-more a').attr('href', '#');
+  $('#view-more-box').remove();
+<% else %>
+  $('#view-more a').attr('href', '<%= url_for({page: @notices.current_page + 1, type: params[:type]}) %>');
+<% end %>

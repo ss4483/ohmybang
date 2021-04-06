@@ -1,0 +1,258 @@
+<div class="main_container">
+  <div class="container" style="font-size:12px; padding-bottom: 100px;">
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-10" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>리뷰 승인</p>
+      </div>
+    </div>
+
+    <div class="row justify-content-center" style="text-align: center; margin-bottom:20px; margin-top: 30px;">    
+      <div class="col-12 col-sm-10 col-lg-10">
+        <div class="row">
+          <div class="col-12 text-right mb-4">
+           
+            <a href="/managers/reviews" class="btn <%= (!params[:type].present?)? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px; margin-bottom: 5px;">미증빙(<%=@review_imp_0%>)</a>
+            <a href="/managers/reviews?type=등록신청" class="btn <%= (params[:type] == "등록신청")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;margin-bottom: 5px;">등록신청(<%=@review_1%>)</a>
+            <a href="/managers/reviews?type=수정신청" class="btn <%= (params[:type] == "수정신청")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;margin-bottom: 5px;">수정신청(<%=@review_2%>)</a>
+            <br>
+            <a href="/managers/reviews?type=all" class="btn <%= (params[:type] == "all")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">모두보기(<%=@review_0%>)</a>
+            <a href="/managers/reviews?type=수정반려" class="btn <%= (params[:type] == "수정반려")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">수정반려(<%=@review_3%>)</a>
+            <a href="/managers/reviews?type=등록반려" class="btn <%= (params[:type] == "등록반려")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">등록반려(<%=@review_4%>)</a>
+            <a href="/managers/reviews?type=임시저장" class="btn <%= (params[:type] == "임시저장")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">임시저장(<%=@review_5%>)</a>
+            <a href="/managers/reviews?type=등록완료" class="btn <%= (params[:type] == "등록완료")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">등록완료(<%=@review_6%>)</a>
+          </div>
+
+          <div class="col table_title">No.</div>
+          <div class="col table_title">메일</div>
+          <div class="col-4 table_title">주소</div>
+          <div class="col table_title d-none d-md-block">날짜</div>     
+          <div class="col table_title">계약서</div>   
+          <div class="col table_title">리뷰</div>  
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center" style="text-align: center; margin-bottom:20px;">    
+      <% @reviews.each do |r| %>
+        <div class="col-12 col-sm-10 col-lg-10" style="margin-bottom:30px;">
+          
+          <div class="row bg-white table_col">
+            <div class="col img-gallery table_content d-flex">
+              <%= link_to r.id, "/checkRentalHouse/#{r.id}", method: "post" %>
+            </div>    
+            <div class="col img-gallery table_content d-flex">
+              <%= r.user.email unless r.user.nil? %>
+            </div>    
+            <div class="col-4 table_content d-flex">
+              <a href="/reviews/<%=r.id%>" target="_blank" >
+                <p style="font-weight:bold;"><%= r.bd_nm %></p>
+                <%= r.address %> <%#= r.extra_address %> <%#= r.detail_address %>
+              </a>
+            </div>    
+            <div class="col table_content d-none d-md-flex">
+              <%= raw r.updated_at.strftime("%Y.%m.%d <br> %H:%M") %>
+            </div>   
+            <div class="col table_content d-none d-md-flex flex-wrap" style="flex-direction: column;">
+              <p>
+                <%= r.imp_status == @imp_status[2] ? r.review_imp_imgs.pluck(:tag).first : r.imp_status %>(<%=r.review_imp_imgs.count%>)
+                <% if !r.review_confirms.where(confirm_type: "증빙").blank? %>
+                  <span id="imp_status_<%=r.id%>" class="badge badge-pill badge-info" style="cursor:pointer;" data-toggle="modal" data-target="#imp_status_box_<%=r.id%>">!</span>
+                <% end %>
+              </p>
+              <% if r.imp_status == @imp_status[0] %>
+                <a class="btn btn-link btn-sm" href="/managers/reviews/<%=r.id%>">확인</a>
+              <% end %>
+            </div>    
+            <% if !r.review_confirms.where(confirm_type: "증빙").blank? %>
+              <!-- 증빙 내역 -->
+              <div class="modal fade" id="imp_status_box_<%=r.id%>" tabindex="-1" role="dialog" aria-labelledby="imp_status_<%=r.id%>_title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="imp_status_<%=r.id%>_title">증빙 상태 내역</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <% r.review_confirms.where(confirm_type: "증빙").order(created_at: "DESC").each do |confirm|%>
+                        <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                          <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                            <%= confirm.status %>
+                            <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                          </p>
+                          <% unless confirm.memo.nil? %>
+                            <p class="text-left p-2"><%= confirm.memo %></p>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>              
+            <% end %>  
+            <div class="col table_content d-flex">
+              <p>
+                <% if r.edit_review.nil? %>
+                  <%= r.status %>
+                <% else %>
+                  <a href="/reviews/<%=r.id%>/retouch" target="_blank"><%= r.edit_review.status %></a>
+                <% end %>
+                <% if !r.review_confirms.where(confirm_type: "리뷰").blank? %>
+                  <span id="status_<%=r.id%>" class="badge badge-pill badge-info" style="cursor:pointer;" data-toggle="modal" data-target="#status_box_<%=r.id%>">!</span>
+                <% end %>
+              </p>
+            </div>  
+            <% if !r.review_confirms.where(confirm_type: "리뷰").blank? %>
+              <!-- 리뷰 내역 -->
+              <div class="modal fade" id="status_box_<%=r.id%>" tabindex="-1" role="dialog" aria-labelledby="status_<%=r.id%>_title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="status_<%=r.id%>_title">리뷰 상태 내역</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <% r.review_confirms.where(confirm_type: "리뷰").order(created_at: "DESC").each do |confirm|%>
+                        <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                          <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                            <%= confirm.status %>
+                            <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                          </p>
+                          <% unless confirm.memo.nil? %>
+                            <p class="text-left p-2"><%= confirm.memo %></p>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>              
+            <% end %>
+           
+            <% if r.status == "등록신청" %>
+              <div class="col-12 table_content d-flex" style="justify-content: flex-end !important;padding-top:9px">
+                <div class="">
+                  <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#ReviewRejectModal" data-form-action="/review_reject/<%= r.id %>" data-addr="<%=r.address%> <%= r.detail_address%> (<%=r.bd_nm%>)">
+                    반려하기
+                  </button>
+                  <a href="/review_confirm/<%=r.id%>" class="btn btn-success btn-sm" data-method="post" data-confirm="정말로 등록 하시겠습니까?" data-title= "리뷰 등록" data-commit="등록하기" data-cancel="취소">
+                    등록하기
+                  </a>
+                </div>
+              </div>
+            <% end %>
+            <% if !r.edit_review.nil? %>
+              <% if r.edit_review.status == @status[5] %>
+                <div class="col-12 table_content d-flex" style="justify-content: flex-end !important;padding-top:9px">
+                  <div class="">
+                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#ReviewRejectModal" data-form-action="/edit_reject/<%= r.id %>" data-addr="<%=r.address%> <%= r.detail_address%> (<%=r.bd_nm%>)">
+                      반려하기
+                    </button>
+                    <a href="/edit_confirm/<%=r.id%>" class="btn btn-success btn-sm" data-method="post" data-confirm="정말로 등록 하시겠습니까?" data-title= "리뷰 등록" data-commit="등록하기" data-cancel="취소">
+                      수정하기
+                    </a>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+
+        <% if r.status == "수정신청" %>
+          <!-- Modal -->
+          <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <%= form_tag("/edit_reject/#{r.id}", class:"modal-content", style:"", multipart: true ) do %>
+                <div class="modal-header">
+                  <h5 class="modal-title text-left" id="ModalCenterTitle">
+                    리뷰 수정 반려 메세지
+                    <p style="font-weight:400; font-size:12px;"><%=r.address%> <%= r.detail_address%> (<%=r.bd_nm%>)</p>
+                  </h5>
+                  
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <textarea class="d_textarea" name="memo" placeholder="반려 사유를 작성해주세요" style="border: 1px solid rgba(0, 0, 0, 0.1);" required></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                  <input type="submit" class="btn btn-danger" value="반려하기"/>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+      <% end %>
+
+    </div>
+    <div class="row mx-0" style="margin-top: 15px;">
+      <div class="col-12 d-flex align-items-center justify-content-center">
+        <%= paginate @reviews %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ReviewRejectModal" tabindex="-1" role="dialog" aria-labelledby="ReviewRejectModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <%= form_tag("", class:"modal-content", style:"", multipart: true ) do %>
+      <div class="modal-header">
+        <h5 class="modal-title text-left" id="ReviewRejectModalTitle">
+          리뷰 반려 메세지
+          <p class="modal-address" style="font-weight:400; font-size:12px;"></p>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea class="d_textarea" name="memo" placeholder="반려 사유를 작성해주세요" style="border: 1px solid rgba(0, 0, 0, 0.1);" required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        <input type="submit" class="btn btn-danger" value="반려하기"/>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
+<%= content_for 'javascript_content' do %>
+<script>
+$('#ReviewRejectModal').on('show.bs.modal', function (e) {
+  var $modal = $(e.target),
+    $form = $modal.find('.modal-content'),
+    $addr = $form.find('.modal-address'),
+    data_form_action = $(e.relatedTarget).data('form-action'),
+    data_addr = $(e.relatedTarget).data('addr');
+  $form.attr("action", data_form_action);
+  $addr.text(data_addr);
+});
+
+
+$(document).ready(function(){
+  $('.down_arrow').on("click",function(e){
+    var $confirm_box = $("#" + this.getAttribute('data-value'));
+    var $icon = $(this).children(".material-icons");
+    if ($confirm_box.hasClass('box_none')) {  
+      $confirm_box.removeClass('box_none');
+      $icon.text('keyboard_arrow_up');
+    } else {
+      $confirm_box.addClass('box_none');
+      $icon.text('keyboard_arrow_down');
+    }
+  });
+});
+</script>
+<% end %>
+

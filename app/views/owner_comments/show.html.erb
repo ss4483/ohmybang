@@ -1,0 +1,193 @@
+<div class="main_container">
+  <div class="container" style="padding-bottom:90px">
+    <div class="row d-flex justify-content-center">
+
+      <div class="col-12 col-sm-9 mt-3 mb-2 mt-md-5 mb-md-4 p-sm-0">
+        <div class=" d-flex justify-content-start" style="position: relative;width: 100%;">
+          <div class="review_img_box">
+            <img class="room_img" src="<%= image_url(room_img(@owner_comment.room))%>" alt="" />
+          </div>
+          <div class="d-flex align-items-center" style="width: 100%;">
+            <div class="search_txt_box">
+              <p class="bd_nm"><%= @owner_comment.bd_nm %></span></p>
+              <p class="address"><%= @owner_comment.address %> <%= @owner_comment.extra_address %> <%=@owner_comment.detail_address%></p>
+              <hr class="d-none d-sm-block" style="margin: 10px 0px 10px;">
+              <div class="d-none d-sm-block">
+                <span style="padding: 4px 0px; font-size: 13px; display: inline-block;">#<%= @owner_comment.room %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-100"></div>
+      <%# 탭 %>
+      <div class="col-12 col-lg-3 col-xl-3">
+        <div class="list-group list-group-flush" id="list-tab" role="tablist" style="overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+          <a class="list-group-item list-group-item-action comment active" id="list-comment-list" data-toggle="list" href="#list-comment" role="tab" aria-controls="comment">
+            <div class="review_show_title" >
+              <p class="review_show_title_ko">PR</p>
+              <p class="review_show_title_en">HOUSE OWNER PR</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <%# 탭 바디 %>
+      <div class="pane_body col-12 offset-xl-0 col-lg-7 p-lg-0">
+        <div class="tab-content" id="nav-tabContent">
+          
+          <div class="tab-pane fade show active" id="list-comment" role="tabpanel" aria-labelledby="list-comment-list">
+ 
+ 
+            <div style="background-color: #1ba1b8; margin-bottom: 15px; color: white;">
+              <div class="p-2">
+                <i class="material-icons" style="vertical-align: top;">perm_phone_msg</i>
+                <span>임대인 연락</span>
+                <p style="margin-left: 28px; font-size: 14px;">
+                  <%= @owner_comment.contact_method.join(', ') %> (<%= @owner_comment.contact_time %>)
+                </p>
+              </div>
+              <% if @owner_comment.hidden_camera == "완료" %>
+                <div class="p-2">
+                  <i class="material-icons" style="vertical-align: top;">photo_camera</i>
+                  <span>몰래카메라 검사 </span><span style="font-weight:bold">완료 </span>
+                </div>
+              <% end %>
+            </div>
+
+    
+            <% if !@owner_comment.remodeling_date.blank? %>
+              <div class="d-flex align-items-center review_show_sub"style="background-color:#515050ad;">
+                <p class="review_show_sub_title">
+                  리모델링 <span style="font-size:12px;">(<%=@owner_comment.remodeling_date%>)</span>
+                </p>
+              </div>
+              <div style="margin: 11px 12px 30px 30px;">
+                <div style="margin-bottom: 14px;">
+                  <div class="remodeling-before-gallery" style="padding: 10px 0 0; width:48%;margin-right:2%; display: inline-block; overflow-x:auto; white-space: nowrap;">
+                    <% @owner_comment.owner_comment_imgs.where(tag: "리모델링 전").each_with_index do |img, i| %>
+                      <a href="/images/owner/<%=img.name%>" title="remodeling-before-<%=i+1%>">
+                        <img class="gallery_image" src='/images/owner/<%=img.name%>'  style="width:100%;height: auto;" >
+                      </a>
+                    <% end %>
+                  </div><%#
+                %><div class="remodeling-after-gallery" style="padding: 10px 0 0; width:48%;margin-left:2%; display: inline-block; overflow-x:auto; white-space: nowrap;">
+                    <% @owner_comment.owner_comment_imgs.where(tag: "리모델링 후").each_with_index do |img, i| %>
+                      <a href="/images/owner/<%=img.name%>" title="remodeling-after-<%=i+1%>">
+                        <img class="gallery_image" src='/images/owner/<%=img.name%>'  style="width:100%;height: auto;" >
+                      </a>
+                    <% end %>
+                  </div><%#
+                %><p class="text-center d-inline-block" style="width:50%">Before (<%= @owner_comment.owner_comment_imgs.where(tag: "리모델링 전").count %>)</p><p class="text-center d-inline-block" style="width:50%">After (<%= @owner_comment.owner_comment_imgs.where(tag: "리모델링 후").count %>)</p>
+                </div>
+                <div class="comment_box_triangle"></div>
+                <div class="bg-white">
+                  <div class="comment_box" style="max-height: 150px;">
+                    <p style="white-space: pre-line;"><%=@owner_comment.remodeling_txt%></p>
+                  </div>
+                </div>
+              </div>
+
+            <%end%>
+
+            <% if !@owner_comment.long_term_txt.blank? %>
+              <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                <p class="review_show_sub_title">
+                  장기 계약 시 혜택
+                </p>
+              </div>
+              <div style="margin: 11px 12px 30px 30px;">
+                <div class="comment_box_triangle"></div>
+                <div class="comment_box" style="max-height: 150px;">
+                  <p  style="white-space: pre-line;"><%=@owner_comment.long_term_txt%></p>
+                </div>
+              </div>
+            <% end %>
+
+            <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+              <p class="review_show_sub_title">
+                소개 및 장점
+              </p>
+            </div>
+            <div style="margin: 11px 12px 30px 30px;">
+              <div class="comment_box_triangle"></div>
+              <div class="comment_box" style="max-height: 150px;">
+                <p  style="white-space: pre-line;"><%=@owner_comment.intro_txt%></p>
+              </div>
+              <div class="intro-gallery" style="backgrounnd-color: #f7f5f5;padding: 10px 20px; width:100%; overflow-x:auto; white-space: nowrap;">
+                <% @owner_comment.owner_comment_imgs.where(tag: "소개 및 장점").each_with_index do |img, i| %>
+                  <a href="/images/owner/<%=img.name%>" title="intro-<%=i+1%>">
+                    <img class="gallery_image" src='/images/owner/<%=img.name%>'  >
+                  </a>
+                <% end %>
+              </div>
+            </div>
+
+          </div>
+          
+        </div>
+      </div>
+      
+
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function(){
+    $('.intro-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1] 
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+
+    $('.remodeling-before-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+    $('.remodeling-after-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+  });
+</script>

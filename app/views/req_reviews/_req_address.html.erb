@@ -1,0 +1,55 @@
+<div id="address_<%=req_address.id%>" class="req_address_wrap col-12">
+  <p data-value="req_comments_<%=req_address.id%>" class="address_title">
+    <%= req_address.si_nm %> <%= req_address.sgg_nm %> <%= req_address.emd_nm %><%= raw("<span class='count'>#{req_address.req_comments.count}</span>") if req_address.req_comments.count != 1 %>
+    <i class="title_arrow material-icons">keyboard_arrow_down</i>
+  </p>
+  <div id="req_comments_<%=req_address.id%>" class="req_comments box_none">
+    <% req_address.req_comments.order("created_at DESC").each do |comment| %>
+      <div id="comment_<%=comment.id%>" class="req_comment">
+        <p><%= comment.content %></p>
+        <p class="date">
+          <i class="material-icons" data-toggle="modal" data-target="#comment_delete_<%=comment.id%>">delete_forever</i>
+          <%= comment.created_at.strftime("%Y.%m.%d %H:%M") %>
+        </p>
+      </div>
+      <div class="modal fade" id="comment_delete_<%=comment.id%>" tabindex="-1" role="dialog" aria-labelledby="comment_delete_<%=comment.id%>_title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <%= form_tag("/reqReviews/#{comment.id}", method: "delete", class:"modal-content") do %>
+            <div class="modal-header">
+              <h5 class="modal-title" id="comment_delete_<%=comment.id%>_title">게시글 삭제하기</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="password" name="password" minlength="6" maxlength="6" placeholder="비밀번호를 입력해주세요" style="font-size: 12px; width: 100%; padding: 9px; border: 2px solid #eeeeee;" required >
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+              <button type="submit" class="btn btn-ohmybang">삭제</button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+    <% end %>
+  </div>
+  <% if req_review_count(req_address) > 0 %>
+    <p  data-value="reviews_<%=req_address.id%>" class="reviews_title">
+      └ 해당 주소의 리뷰가 작성되었습니다.<%= raw("<span class='count'>#{req_review_count(req_address)}</span>") %>
+      <i class="reviews_title_arrow material-icons">keyboard_arrow_down</i>
+    </p>
+    <div id="reviews_<%=req_address.id%>" class="reviews box_none">
+      <% req_review(req_address).each do |review| %>
+        <a class="review" href="/reviews/<%=review.id%>">
+          <%= review.address %> <%= review.detail_address %>
+          <p class="text-right" style="color: black; font-size: 10px;">
+            <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px;" src="<%= image_url("ic/message.png")%>" /> <span style="padding-right: 5px;"><%= ReviewItem.where(review_id: review.id).select(:comment).map(&:comment).compact.join.length + review.long_comment.to_s.length %>자 <%#= ReviewItem.where(review_id: r.id).select(:comment).map(&:comment).compact.count%> </span>
+            <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px;" src="<%= image_url("ic/camera.png")%>" /> <%= ReviewImg.where(review_id: review.id).count %>개
+            <img style="height: 12px; display: inline-block; padding-bottom: 1px; margin-bottom: 2px; padding-left: 5px;" src="<%= image_url("ic/video.png")%>" /> <%= ReviewVideo.where(review_id: review.id).count %>개
+          </p>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+</div>

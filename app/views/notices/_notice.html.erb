@@ -1,0 +1,31 @@
+<div class="notice col-12 col-sm-10 col-lg-8 px-0">
+  <div id="title_<%=notice.id%>" class="title" data-value="content_<%=notice.id%>">
+    <p><span style="color:#8c8c8c;">[<%=notice.post_type%>] </span><%= notice.title %> <%= event_remaining_period(notice) %></p>
+    <p class="date">
+      <% if notice.post_type == "공지" %>
+        <%= notice.created_at.strftime("%Y. %m. %d") %>
+      <% else %>
+        <%= notice.start_date.strftime("%Y. %m. %d") %> - <%= notice.end_date.strftime("%Y. %m. %d") %>
+      <% end %>
+    </p>
+  </div>
+  <div id="content_<%=notice.id%>" class="content box_none">
+    <% unless notice.img_url.blank? %>
+      <img src="<%=notice.img_url%>" />
+    <% end %>
+    <p><%= (notice.content).gsub(/\n/, '<br/>').html_safe %></p>
+  </div>
+</div>
+<% notice.winners.each do |w| %>
+  <div class="notice col-12 col-sm-10 col-lg-8 px-0">
+    <div id="title_<%=w.id%>" class="title" data-value="content_<%=w.id%>">
+      <p><span style="color:#8c8c8c;">[<%=w.post_type%>] </span><%= w.title %></p>
+    </div>
+    <div id="content_<%=w.id%>" class="content box_none">
+      <% unless w.img_url.blank? %>
+        <img src="<%=w.img_url%>" />
+      <% end %>
+      <p><%= (w.content).gsub(/\n/, '<br/>').html_safe %></p>
+    </div>
+  </div>
+<% end %>

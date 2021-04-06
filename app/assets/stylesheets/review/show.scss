@@ -1,0 +1,316 @@
+
+.contract_container {
+  margin-bottom: 40px; 
+  .contract_header {
+    border: 2px solid #DCDCDC; border-bottom:0;
+    // background-color: #525252;
+    background-color: #1e9497;
+    padding: 5px 0;
+    text-align: center;
+    .contract_date_title {
+      display: inline-block;
+      color: white;
+      margin-right: 10px;
+    }
+    .contract_date {
+      display: inline-block;
+      color: white;
+    }
+  } 
+  .contract_body {
+    border: 2px solid #DCDCDC;
+    border-top: 0;
+    .contract_body_1 {
+      margin: 15px 0; 
+      .contract_box {
+        padding: 2px 20px;
+        .contract_title {
+          display: inline-block;
+          width: 100px;
+          padding-left: 10px;
+        }
+        .contract_content {
+          display: inline-block;
+          font-weight: 600;
+          width: calc(100% - 100px);
+          text-align: right;
+          padding-right: 28px;
+        }
+      }
+    }
+    .contract_body_2 {
+      margin: 15px 0; 
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      .total_price {
+        font-weight: 600;
+        font-size: 55px;
+        margin: 2px 0;
+        height: 100%;
+        display: flex;
+        align-items: center!important;
+        justify-content: center!important;
+      }
+    }
+  }
+}
+
+.review_etc_container {
+  display: table;
+  font-size: 1rem;
+  padding: 6px 45px 6px 32px;
+  .review_etc_title { display: inline-block; width: 100px; }
+  .review_etc { display: table-cell; font-weight: 700; vertical-align: middle; width: 100%; text-align: right; }
+}
+.short_comment_container {
+  margin-bottom: 40px;
+  display: table;
+  width: 100%;
+  font-weight: 700;
+  .short_comment_title { 
+    width: 60px;
+    vertical-align: middle;
+    display: table-cell;
+  }
+  .short_comment { 
+    display: table-cell;
+    min-width: 0;
+    border: 2px solid #DCDCDC; 
+    padding: 5px 10px;
+  }
+}
+.category_ic_container {
+  margin-bottom: 40px;
+  border: 2px solid #DCDCDC;
+  padding: 25px;
+  .category_ic_header {
+    text-align: center;
+    .category_ic_title {
+      margin: 20px 15px 40px;
+      cursor: pointer;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #fff;
+      &:hover { 
+        border-bottom: 3px solid #DCDCDC;
+      }
+      &.select { 
+        border-bottom: 3px solid black;
+      }
+    }
+  }
+  .category_ic_body {
+    text-align: center;
+    &.none { display: none; }
+    .category_ic {
+      div { display: inline-block; width: 70px; margin-bottom: 15px; }
+    }
+  }
+}
+
+
+
+
+.info_container {
+  display: table;
+  .room_img { 
+    width: 110px;
+    height: 110px;
+    display: table-cell;
+    margin-right: 10px;
+  }
+  .info_box { width: 100%; display: table-cell; vertical-align: bottom; }
+  .score_img { 
+    height: 18px; 
+    margin: 10px 3px 10px 0;
+  }
+  .score { vertical-align: sub; font-size: 15px; color: #1e9497; font-weight: 700;}
+  .bd_nm { 
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .bd_address { font-size: 12px; }
+}
+
+.blur_black_text {
+  color: transparent !important;
+  text-shadow: 0 0 7px rgba(0,0,0,0.8);
+}
+.blur_white_text {
+  color: transparent !important;
+  text-shadow: 0 0 7px rgba(255,255,255,0.8);
+}
+.blur_box {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 20px);
+  background-color: #000000a6;
+  display: flex;
+  .btn {
+    color: white;
+    border: 1px solid white;
+    padding:10px 15px;
+    &:hover {
+      background-color: white;
+      color:black;
+    }
+  }
+
+}
+
+
+
+@media (min-width: 576px) { 
+  .contract_container {
+    margin-bottom: 40px; 
+    .contract_body {
+      .contract_body_1 {
+        .contract_box {
+          .contract_title {
+            display: inline-block;
+            width: 130px;
+            padding-left: 27px;
+          }
+          .contract_content {
+            width: calc(100% - 130px);
+            padding-right: 27px;
+          }
+        }
+      }
+      .contract_body_2 {
+        margin: 15px 0; 
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        .total_price {
+          font-weight: 600;
+          font-size: 55px;
+          margin: 2px 0;
+          height: 100%;
+          display: flex;
+          align-items: center!important;
+          justify-content: center!important;
+        }
+      }
+    }
+  }
+  .review_etc_container {
+    display: table;
+    font-size: 1rem;
+    padding: 6px 49px 6px;
+    .review_etc_title { display: inline-block; width: 100px; }
+    .review_etc { display: table-cell; font-weight: 700; vertical-align: middle; padding-right: 0; width: 100%; text-align: right; }
+  }
+  
+  .info_container {
+    .room_img { 
+      width: 160px;
+      height: 160px;
+      margin-right: 20px;
+    }
+    .info_box { vertical-align: bottom; }
+    .score_img { 
+      height: 25px; 
+      margin: 15px 5px 15px 0;
+    }
+    .score { vertical-align: sub; font-size: 22px; color: #1e9497; font-weight: 700;}
+    .bd_nm { 
+      font-size: 27px;
+      font-weight: 700;
+    }
+  }
+  
+
+}
+@media (min-width: 768px) {
+  .contract_container {
+    margin-bottom: 40px; 
+    .contract_header {
+      border: 2px solid #DCDCDC; border-bottom:0;
+      // background-color: #525252;
+      background-color: #1e9497;
+      padding: 5px 0;
+      text-align: center;
+      .contract_date_title {
+        display: inline-block;
+        color: white;
+        margin-right: 10px;
+      }
+      .contract_date {
+        display: inline-block;
+        color: white;
+      }
+    } 
+    .contract_body {
+      border: 2px solid #DCDCDC;
+      border-top: 0;
+      .contract_body_1 {
+        margin: 15px 0; 
+        border-right: 2px solid #DCDCDC;
+        .contract_box {
+          padding: 10px 20px;
+          .contract_title {
+            display: inline-block;
+            width: 140px;
+          }
+          .contract_content {
+            width: calc(100% - 140px);
+            display: inline-block;
+            font-weight: 600;
+          }
+        }
+      }
+      .contract_body_2 {
+        margin: 15px 0; 
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        .total_price {
+          font-weight: 600;
+          font-size: 55px;
+          margin: 10px 0;
+          height: 100%;
+          display: flex;
+          align-items: center!important;
+          justify-content: center!important;
+        }
+      }
+    }
+  }
+  .review_etc_container {
+    display: table;
+    font-size: 14px;
+    padding: 6px 0;
+    .review_etc_title { display: inline-block; width: 140px; padding-left: 40px;}
+    .review_etc { display: table-cell; font-weight: 700; vertical-align: middle; padding-right: 0; text-align: left; }
+  }
+  .category_ic_container {
+    margin-bottom: 20px 20px 40px;
+    border: 2px solid #DCDCDC;
+    padding: 25px;
+    .category_ic_header {
+      text-align: center;
+      .category_ic_title {
+        margin: 20px;
+        cursor: pointer;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #fff;
+        &:hover { 
+          border-bottom: 3px solid #DCDCDC;
+        }
+        &.select { 
+          border-bottom: 3px solid black;
+        }
+      }
+    }
+    .category_ic_body {
+      &.none { display: none; }
+      .category_ic {
+        div { display: inline-block; width: 150px; margin-bottom: 15px; }
+      }
+    }
+  }
+
+}

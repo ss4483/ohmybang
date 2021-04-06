@@ -1,0 +1,168 @@
+<% provide :title, "이용권 구매하기" %>
+
+<div class="main_container">
+  <div class="container">
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; ">
+        <p>리뷰 이용권 구매하기</p>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <a href="/viewers/new?kind=first&type=1" class="col-12 col-sm-10 col-lg-8 viewer_box">
+        <div class="viewer_price">
+          <p><%=@first_items[:type_1][:amount]%>개</p>
+          <p><%=number_with_delimiter(@first_items[:type_1][:price] )%>원</p>
+        </div>
+        <p class="viewer_btn">구매하기</p>
+      </a>
+      <a href="/viewers/new?kind=first&type=10" class="col-12 col-sm-10 col-lg-8 viewer_box">
+        <div class="viewer_price">
+          <p><%=@first_items[:type_2][:amount]%>개</p>
+          <p class="price">
+            <span class="sale_per"><%=@first_items[:type_2][:discount]%>% 할인</span>
+            <del> <%=number_with_delimiter(@first_items[:type_1][:price] * @first_items[:type_2][:amount] )%>원 </del> 
+            <%=number_with_delimiter(@first_items[:type_2][:price] )%>원
+          </p>
+        </div>
+        <p class="viewer_btn">구매하기</p>
+      </a>
+      <a href="/viewers/new?kind=first&type=30" class="col-12 col-sm-10 col-lg-8 viewer_box">
+        <div class="viewer_price">
+          <p><%=@first_items[:type_3][:amount]%>개</p>
+          <p class="price">
+            <span class="sale_per"><%=@first_items[:type_3][:discount]%>% 할인</span>
+            <del> <%=number_with_delimiter(@first_items[:type_1][:price] * @first_items[:type_3][:amount] )%>원 </del> 
+            <%=number_with_delimiter(@first_items[:type_3][:price] )%>원
+          </p>
+        </div>
+        <p class="viewer_btn">구매하기</p>
+      </a>
+    </div>
+
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px;">
+        <p>전/월세금 이용권 구매하기</p>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <a href="/viewers/new?kind=sec&type=1" class="col-12 col-sm-10 col-lg-8 viewer_box">
+        <div class="viewer_price">
+          <p><%=@sec_items[:type_1][:amount]%>개</p>
+          <p><%=number_with_delimiter(@sec_items[:type_1][:price] )%>원</p>
+        </div>
+        <p class="viewer_btn">구매하기</p>
+      </a>
+      <a href="/viewers/new?kind=sec&type=10" class="col-12 col-sm-10 col-lg-8 viewer_box">
+        <div class="viewer_price">
+          <p><%=@sec_items[:type_2][:amount]%>개</p>
+          <p class="price">
+            <span class="sale_per"><%=@sec_items[:type_2][:discount]%>% 할인</span>
+            <del class="add_p"> <%=number_with_delimiter(@sec_items[:type_1][:price] * @sec_items[:type_2][:amount] )%>원 </del> 
+            <%=number_with_delimiter(@sec_items[:type_2][:price] )%>원
+          </p>
+        </div>
+        <p class="viewer_btn">구매하기</p>
+      </a>
+      <a href="/viewers/new?kind=sec&type=30" class="col-12 col-sm-10 col-lg-8 viewer_box">
+        <div class="viewer_price">
+          <p><%=@sec_items[:type_3][:amount]%>개</p>
+          <p class="price">
+            <span class="sale_per"><%=@sec_items[:type_3][:discount]%>% 할인</span>
+            <del> <%=number_with_delimiter(@sec_items[:type_1][:price] * @sec_items[:type_3][:amount] )%>원 </del> 
+            <%=number_with_delimiter(@sec_items[:type_3][:price] )%>원
+          </p>
+        </div>
+        <p class="viewer_btn">구매하기</p>
+      </a>
+    </div>
+
+
+
+
+
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px;">
+        <p>이용권이란?</p>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-10 col-lg-8"> 
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <div class="py-4 px-3" style="background-color:white; box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2); min-height:150px;">
+              <p class="mb-2" style="font-weight: bold">원하는 주소의 리뷰 상세 열람</p>
+              <p style="font-size:14px; color: hsl(0, 0%, 45%); margin-left:10px;">이용권을 사용하여 리뷰를 상세 열람하게 됩니다.</p>
+              <p style="font-size:14px; color: hsl(0, 0%, 45%); margin-left:10px;">상세 열람하게 되면 블러 처리되어 있던 리뷰의 모든 정보를 볼 수 있습니다.</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="py-4 px-3" style="background-color:white; box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2); min-height:150px;">
+              <p class="mb-2" style="font-weight: bold">리뷰 영구 보관</p>
+              <p style="font-size:14px; color: hsl(0, 0%, 45%); margin-left:10px;">마이페이지 - 이용권내역 에서 이용권 구매 및 사용 정보와 이미 구매한 리뷰를 다시 열람이 가능합니다.</p>
+            </div>
+          </div>
+
+          <div class="col-12 mt-5" style="font-size: 14px;">
+            <p class="mb-2" style="font-weight: bold; font-size:16px;">이용권 구매 안내</p>
+
+            <ul style="list-style: circle; color: hsl(0, 0%, 45%);">
+              <li style="margin-left: 25px;"><p>환불(1개 이상 사용하지 않은 이용권, 1개 이상 사용한 이용권)</p></li>
+              <li style="margin-left: 25px;">
+                <p>
+                  1개 이상 사용하지 않은 이용권은 구매 이후 5일 이내로 결제 취소 가능하며, <br>
+                  취소하신 금액은 결제하신 방법 및 회사 정책에 따라 상이하기에 상세한 문의는 해당 결제사에 문의해주시길 바랍니다.
+                </p>
+              </li>
+              <li style="margin-left: 25px;">
+                <p>
+                  1개 이상 사용한 이용권은 단일 상품과 묶음 상품이 있으며,<br>
+                  단일 상품은 정상 가격이고, 묶음 상품은 단일 상품 대비 최소 10%~최대 20% 할인이 적용되었으며,<br>
+                  단일 상품 및 묶음 상품의 남은 이용권 전부가 환불 가능하고, 전체 환불 금액의 70%가 최대 14일 이내로 포인트로 반환되며, 해당 포인트는 등록된 계좌에서 정상적으로 이체할 수 있습니다.
+                </p>
+              </li>
+              <%# <li style="margin-left: 25px;"><p>구매한 뷰어는 유효기간이 없습니다. 사용하기 전에 소모 되지 않습니다.</p></li>
+              <li style="margin-left: 25px;"><p>뷰어 구매/사용 내역은 마이페이지 - 뷰어내역 에서 확인 하실 수 있습니다.</p></li>
+              <li style="margin-left: 25px; color: red"><p>부분환불은 어쩌고 저렇고 그렇다.</p></li>
+              <li style="margin-left: 25px; color: red"><p>사용하지 않은 뷰어는 7일 이내에 청약철회 등 환불을 할 수 있습니다.</p></li>
+              <li style="margin-left: 25px;"><p>자세한 안내는 유료서비스 이용약관 및 고객센터에 문의해주세요.</p></li> %>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<%#= javascript_include_tag "viewers" %>
+<script>
+
+$(document).ready(function(){  
+  $(".viewer_radio").change(function(){
+    var toggle_box = $(this).parents('div').parents('div');
+
+    var id = $(this).attr('id');
+    var amount = $(this).val();
+    if (amount == "1500") {
+      var count = "1"
+    } else if (amount == "14000") {
+      var count = "10"
+    } else if (amount == "36000") {
+      var count = "30"
+    }
+    $('input[name=count]').val(count);
+
+    
+    $('label').each( function() {
+      $(this).removeClass('viewer_radio_label_checked'); 
+    } );
+
+    if ($(this).is(":checked")){
+      $('label[for="' + id + '"]').addClass('viewer_radio_label_checked');
+    } else {
+      $('label[for="' + id + '"]').removeClass('viewer_radio_label_checked');
+    }
+  });
+});
+</script>

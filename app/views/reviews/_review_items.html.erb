@@ -1,0 +1,137 @@
+<div class="col-12 col-lg-3 col-xl-3">
+  <p class="review_title_ko" style="line-height: 1;">방 내부</p>
+  <p class="review_title_en my-2">INSIDE THE ROOM</p>
+  <div class="d-none d-xl-block">
+    <img class="review_show_title_img" src="<%= image_url("ic/inside_the_room.png")%>" alt=""/>
+  </div>
+</div>
+<div class="col-12 col-lg-9 col-xl-9">
+  <div class="d-flex align-items-center review_show_sub">
+    <p class="review_show_sub_title">
+    <img src="<%= image_url("ic/home.png")%>" alt="">집 전체</p>
+  </div>
+  <% review_tags.select{|k, _| [:"채광", :"환기/냄새", :"벌레", :"파손"].include?(k) }.each do |r| %>
+    <%= render partial: "reviews/review_item", locals: { i: r.to_a, item: review.review_items.find_by(tag: r.to_a[0]) || ReviewItem.new } %>
+  <% end %>
+
+  <div class="d-flex align-items-center review_show_sub" style="margin-top: 20px;">
+    <p class="review_show_sub_title">
+    <img src="<%= image_url("ic/wall.png")%>" alt="">벽</p>
+  </div>
+  <% review_tags.select{|k, _| [:"방음", :"누수", :"외풍", :"곰팡이"].include?(k) }.each do |r| %>
+    <%= render partial: "reviews/review_item", locals: { i: r.to_a, item: review.review_items.find_by(tag: r.to_a[0]) || ReviewItem.new } %>
+  <% end %>
+
+  <div class="d-flex align-items-center review_show_sub" style="margin-top: 20px;">
+    <p class="review_show_sub_title">
+    <img src="<%= image_url("ic/bath.png")%>" alt="">주방/화장실</p>
+  </div>
+  <% review_tags.select{|k, _| [:"수압", :"수온", :"배수"].include?(k) }.each do |r| %>
+    <%= render partial: "reviews/review_item", locals: { i: r.to_a, item: review.review_items.find_by(tag: r.to_a[0]) || ReviewItem.new } %>
+  <% end %>
+</div>
+
+<div class="col-12 col-lg-3 col-xl-3 mt-5">
+  <p class="review_title_ko" style="line-height: 1;">방 외부</p>
+  <p class="review_title_en my-2">OUT OF THE ROOM</p>
+  <div class="d-none d-xl-block">
+    <img class="review_show_title_img" src="<%= image_url("ic/outside_the_room.png")%>" alt=""/>
+  </div>
+</div>
+<div class="col-12 col-lg-9 col-xl-9 mt-0 mt-xl-5">
+ <div class="d-flex align-items-center review_show_sub">
+    <p class="review_show_sub_title">
+    <img src="<%= image_url("ic/home.png")%>" alt="">외부</p>
+  </div>
+  <% review_tags.select{|k, _| [:"치안상태", :"분리수거", :"주차장"].include?(k) }.each do |r| %>
+    <%= render partial: "reviews/review_item", locals: { i: r.to_a, item: review.review_items.find_by(tag: r.to_a[0]) || ReviewItem.new } %>
+  <% end %>
+  <div class="d-flex align-items-center review_show_sub" style="margin-top: 20px;" >
+    <p class="review_show_sub_title">
+    <img src="<%= image_url("ic/seasonal.png")%>" alt="" />시간 및 계절별 특이사항</p>
+  </div>
+  <div class="pl-0 pl-sm-4" style="margin-top: 10px">
+    <textarea class="d_textarea mt-0" name="hourly_seasonal_txt" placeholder="집에서 경험한 '시간 및 계절별 특이사항'에 대한 당신의 이야기를 들려주세요.&#13;&#10;예) 집 앞 오르막길이 겨울에는 빙판길이 심해요.&#13;&#10;      집 맞은 편에 치킨집이 있어서 기름냄새 때문에 창문 열기가 힘들어요."><%=review.hourly_seasonal_txt%></textarea>
+  </div>
+</div>
+
+
+<div class="col-12 col-lg-3 col-xl-3 mt-5">
+  <p class="review_title_ko" style="line-height: 1;">임대인</p>
+  <p class="review_title_en my-2">HOUSE OWNER</p>
+  <div class="d-none d-xl-block">
+    <img class="review_show_title_img" src="<%= image_url("ic/house_owner.png")%>" alt=""/>
+  </div>
+</div>
+<div class="col-12 col-lg-9 col-xl-9 mt-0 mt-xl-5">
+  <div class="d-flex align-items-center review_show_sub" style="background-color:#fac341;">
+    <p class="review_show_sub_title" style="color: #6f5c2b; font-weight: 700;">
+    <img src="<%= image_url("ic/deposit.png")%>" alt="" />보증금</p>
+  </div>
+  <% review_tags.select{|k, _| [:"보증금 반환 만족도"].include?(k) }.each do |i| %>
+    <% @item = review.review_items.find_by(tag: i[0]) || ReviewItem.new  %>
+    <div class="review_container <%=i[1]%>_container">
+      <div>
+        <span class="review_item" style="font-size:18px !important;"><%= i[0] %> (<img src="<%= image_url("ic/#{review_tags[:"#{i[0]}"]}.png")%>" alt="" width="15px" style="margin:0 5px;"/>)</span>
+        <span style="color: transparent;">A</span>
+        <div class="toggle_box d-flex justify-content-between" style="float:right; width:135px;">
+          <label class="d-none d-sm-inline-block toggle_radio_label trans <%= "checked" if @item.score == 1 %>" for="<%=i[1]%>-poor" style="font-size:18px !important;">별로</label>
+          <label class="d-none d-sm-inline-block toggle_radio_label trans <%= "checked" if @item.score == 5 %>" for="<%=i[1]%>-good" style="font-size:18px !important;">좋음</label>
+          <input class="toggle_radio" id="<%=i[1]%>-poor" type="radio" name="item-<%=i[1]%>" value="1" <%= "checked" if @item.score == 1%> required >
+          <input class="toggle_radio" id="<%=i[1]%>-good" type="radio" name="item-<%=i[1]%>" value="5" <%= "checked" if @item.score == 5 %>>
+        </div>
+        <div class="d-inline-block review_ics" style="">
+          <img id="<%=i[1]%>_imgs" class="camera_ic btn_ic" src="<%= image_url("ic/camera.png")%>" />
+          <img id="<%=i[1]%>-message" class="message_ic btn_ic mr-0 <%= "stop_toggle" if @item.score == 1 %>" src="<%= image_url("ic/message.png")%>" />
+        </div>
+      </div>
+      <div class="toggle_box d-flex d-sm-none justify-content-between" style="width:135px; padding-left:10px; margin-top:5px;">
+        <label class="toggle_radio_label trans <%= "checked" if @item.score == 1 %>" for="<%=i[1]%>-poor" style="font-size:18px !important;">별로</label>
+        <label class="toggle_radio_label trans <%= "checked" if @item.score == 5 %>" for="<%=i[1]%>-good" style="font-size:18px !important;">좋음</label>
+      </div>
+    </div>
+    <div class="pl-0 pl-sm-4">
+      <div class="custom-file-container category_uploader" data-upload-id="<%=i[1]%>_upload"  style="margin: 10px 0 0 !important;">
+        <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+        <label class="d-none custom-file-container__custom-file" >
+          <input type="file" name="<%=i[1]%>_imgs[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+          <span class="custom-file-container__custom-file__custom-file-control"></span>
+        </label>
+        <div class="custom-file-container__image-preview"></div>
+      </div>
+      <textarea id="<%=i[1]%>-message-txt" class="mt-0 d_textarea <%= "d_none" if @item.comment.blank? && @item.score != 1 %>" name="item-<%=i[1]%>-txt" placeholder="'<%= i[0] %>'에 대한 리뷰를 상세하게 작성해주세요&#13;&#10;('별로' 인 경우에는 필수로 작성해주세요.)"><%= @item.comment %></textarea>
+      <div id="<%=i[1]%>_imgs_box" class="d-none">
+        <% @item.review_imgs.each_with_index do |i, index| %>
+          <span><%= i.name %></span>
+        <% end %>
+      </div>
+      <div id="<%=i[1]%>_videos_box" class="d-none">
+        <% @item.review_videos.each_with_index do |i, index| %>
+          <span><%= i.name %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="d-flex align-items-center review_show_sub" style="margin-top: 20px;">
+    <p class="review_show_sub_title">
+    <img src="<%= image_url("ic/owner.png")%>" alt="" />계약 기간 중</p>
+  </div>
+  <% review_tags.select{|k, _| [:"응대", :"수리 및 보완", :"혜택"].include?(k) }.each do |r| %>
+    <%= render partial: "reviews/review_item", locals: { i: r.to_a, item: review.review_items.find_by(tag: r.to_a[0]) || ReviewItem.new } %>
+  <% end %>
+
+</div>
+
+<div class="col-12">
+
+  <p class="review_title" style="margin-top:54px; margin-bottom:10px">이 집을 한마디로 표현해 주세요:D</p>
+  <div class="pl-0 pl-sm-4">
+    <input placeholder="예) 제가 다시 입주한다 해도 좋을 정도로 좋은 기억만 남기고 가는 집이에요!" type="text" name="short_comment" style="background-color: rgba(0,0,0,0);width: 100%; padding: 10px; border: 1px solid rgb(169, 169, 169);" value="<%= review.short_comment %>" required/>
+  </div>
+
+  <p class="review_title" style="margin-top:31px; margin-bottom:10px">더 하고싶은 말이 있다면?<span class="text-secondary" style="font-size:12px;">(선택)</span></p>
+  <div class="pl-0 pl-sm-4">
+    <textarea class="d_textarea mt-0" name="long_comment" style="margin-bottom:77px; height: 110px;" placeholder="예비 세입자를 위해 내가 알고 있는 팁이나 전해주고 싶은 이야기를 들려주세요.&#13;&#10;예) 혹시 1년 이상 월세 사시는 분들은, 집주인분께 1년 이상 산다고 말하면 할인해 주실 거예요! 또, 중소기업 청년전세자금대출이 되는 원룸이라 엄청 용이합니다 참고 꼭 하세요!"><%= review.long_comment %></textarea>
+  </div>
+</div>

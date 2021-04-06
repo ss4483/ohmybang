@@ -1,0 +1,48 @@
+<div class="box">
+  <div class="container h-100" style="position: relative; padding-top: 146px;">
+
+  
+    <div class="row d-flex justify-content-center  mt-5 mx-0" style="width:100%; padding-bottom: 120px;">
+
+      <div class="col-12 col-sm-6 col-lg-5 col-xl-8" style="margin-bottom: 40px;" >
+        <p class="text-center" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 40px; font-weight: 600;">로그인</p>
+      </div>
+      <div class="w-100"></div>
+
+      <div class="col-12 col-sm-6 col-lg-5 col-xl-4" >
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+          <div class="field">
+            <%#= f.label :email %>
+            <%= f.email_field :email, class: "form-control my-3", autofocus: true, autocomplete: "email", placeholder: "이메일을 입력해주세요.",style: 'margin: auto; max-width:350px;', required: true %>
+          </div>
+
+          <div class="field">
+            <%#= f.label :password %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "form-control my-3", placeholder: "비밀번호를 입력해주세요." , style: 'margin: auto; max-width:350px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";', required: true %>
+          </div>
+
+          <% if devise_mapping.rememberable? %>
+            <div class="field text-right">
+              <%= f.check_box :remember_me, onclick: "alert('개인정보 보호를 위해 개인 PC에서만 사용하세요.')" %>
+              <%= f.label :remember_me %>
+            </div>
+          <% end %>
+
+          <div class="actions">
+            <%= f.submit "로그인", class: "btn-block btn btn-outline-dark mt-3" %>
+          </div>
+        <% end %>
+
+        <div class="text-center mt-2">
+          <%= link_to "회원가입", '/users/sign_up_before_policy', style: "font-size:15px; text-decoration: underline;" %> / <%= link_to "비밀번호 찾기", new_password_path(resource_name), style: "font-size:15px; text-decoration: underline;"  %>
+        </div>
+        
+
+  
+
+        <%#= render "devise/shared/links" %>
+      </div>
+
+    </div>
+  </div>
+</div>

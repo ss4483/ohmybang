@@ -1,0 +1,28 @@
+    <div class="col-12 col-lg-9">
+        <%# 리뷰 내용 다른거  %>
+        <% @review.diff(@edit_review).each do |r| %>
+          <p><%= r[0] %> : <%= r[1][0] %> / <%= r[1][1] %></p>
+        <% end %>
+        <hr style="border-top: 2px solid #DCDCDC; margin: 40px 0;">
+        <%# 모든 리뷰 항목 나열 %>
+        <% review_tags.each do |r| %>
+          <p><%= r %></p>
+
+          <% @review.review_items.find_by(tag: r.to_a[0]).review_imgs.each_with_index do |i, index| %>
+            <p><%= i.name %></p>
+          <% end %>
+          <% @edit_review.review_items.find_by(tag: r.to_a[0]).review_imgs.each_with_index do |i, index| %>
+            <p><%= i.name %></p>
+          <% end %>
+          <% @review.review_items.find_by(tag: r.to_a[0]).review_videos.each_with_index do |i, index| %>
+            <p><%= i.name %></p>
+          <% end %>
+          <% @edit_review.review_items.find_by(tag: r.to_a[0]).review_videos.each_with_index do |i, index| %>
+            <p><%= i.name %></p>
+          <% end %>
+          <%# 리뷰 항목 다른거  %>
+          <% @review.review_items.find_by(tag: r.to_a[0]).diff(@edit_review.review_items.find_by(tag: r.to_a[0])) .each do |i| %>
+            <p><%= i[0] %> : <%= i[1][0] %> / <%= i[1][1] %></p>
+          <% end %>
+        <% end %>
+      </div>

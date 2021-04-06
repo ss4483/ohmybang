@@ -1,0 +1,223 @@
+<div class="main_container">
+  <div class="container" style="font-size:12px; padding-bottom: 100px;">
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>임대인 코멘트 승인</p>
+      </div>
+    </div>
+
+    <div class="row justify-content-center" style="text-align: center; margin-bottom:20px; margin-top: 30px;">    
+      <div class="col-12 col-sm-10 col-lg-8">
+        <div class="row">
+          <div class="col-12 text-right mb-4">
+            <a href="/managers/owner_comments?type=all" class="btn <%= (params[:type] == "all")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">모두보기(<%=@count_0%>)</a>
+            <a href="/managers/owner_comments?type=등록신청" class="btn <%= (params[:type] == "등록신청" || !params[:type].present?)? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">등록신청(<%=@count_1%>)</a>
+            <a href="/managers/owner_comments?type=수정신청" class="btn <%= (params[:type] == "수정신청")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">수정신청(<%=@count_2%>)</a>
+            <a href="/managers/owner_comments?type=수정반려" class="btn <%= (params[:type] == "수정반려")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">수정반려(<%=@count_3%>)</a>
+            <a href="/managers/owner_comments?type=등록반려" class="btn <%= (params[:type] == "등록반려")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">등록반려(<%=@count_4%>)</a>
+            <a href="/managers/owner_comments?type=임시저장" class="btn <%= (params[:type] == "임시저장")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">임시저장(<%=@count_5%>)</a>
+            <a href="/managers/owner_comments?type=등록완료" class="btn <%= (params[:type] == "등록완료")? "btn-secondary" : "btn-outline-secondary" %> btn-sm"style="font-size: 10px;">등록완료(<%=@count_6%>)</a>
+          </div>
+          <div class="col table_title">증빙 자료</div>    
+          <div class="col-4 table_title">주소</div>
+          <div class="col table_title d-none d-md-block">날짜</div>    
+          <div class="col table_title">상태</div>  
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center" style="text-align: center; margin-bottom:20px;">    
+      <% @owner_comments.each do |c| %>
+        <div class="col-12 col-sm-10 col-lg-8" style="margin-bottom:30px;">
+          <div class="row bg-white table_col">
+            <div class="col img-gallery table_content d-flex">
+              <% c.owner_comment_imp_imgs.each do |imp| %>
+                <a href="/imp_images/owner/<%= imp.name %>" title="">
+                  <img src='/imp_images/owner/<%= imp.name %>' width="55" height="55" >
+                </a>
+              <% end %>
+            </div>    
+            <div class="col-4 table_content d-flex">
+              <a href="/owner_comments/<%=c.id%>" target="_blank">
+                <span style="font-weight:bold;"><%= c.bd_nm %></span><br>
+                <%= c.address %> <%= c.extra_address %> <%= c.detail_address %>
+              </a>
+            </div>    
+            <div class="col table_content d-none d-md-flex">
+              <%= raw c.updated_at.strftime("%Y.%m.%d <br> %H:%M") %>
+            </div>    
+            <div class="col table_content d-flex">
+              <% if c.status == "수정신청"%>
+                <a href="/owner_comments/<%=c.id%>/edit_content" target="_blank"><%= c.status %></a>
+              <% else %>
+                <%= c.status %>
+              <% end %>
+            </div>  
+
+            <% if !Review.where(status: "등록완료",address: c.address, detail_address: c.detail_address).blank? %>
+              <div class="col-12">
+                <p class="text-left">(관련 리뷰)</p>
+                <% Review.where(status: "등록완료",address: c.address, detail_address: c.detail_address).each do |r|%>
+                  <a href="/reviews/<%=r.id%>" class="d-block" style="border-top: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                    <p class="text-left" style="position:relative; font-size:14px; padding:10px">
+                      <span><%= r.id %>. <%= r.short_comment %></span>
+                    </p>
+                  </a>
+                <% end %>
+              </div>
+            <% end %>
+
+            <% if !c.owner_comment_confirms.blank? %>
+              <div class="col-12 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                <div id="owner_comment_confirm_box_<%=c.id%>" class="review_confirm_box box_none row justify-content-center mx-0 ">
+                  <div class="col-12 text-left p-0" style="margin-bottom: 14px; margin-top: 7px;">
+                    (등록 신청 내역)
+                  </div>
+                  <div class="col-12" style="height: 100px; overflow-y: auto;">
+                    <% c.owner_comment_confirms.order(created_at: "DESC").each do |confirm|%>
+                      <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 8px; padding-bottom: 5px;">
+                        <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                          <%= confirm.status %>
+                          <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                        </p>
+                        <% if confirm.status == "등록반려" %>
+                          <p class="text-left p-2"><%= confirm.memo %></p>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="down_arrow" data-value="owner_comment_confirm_box_<%=c.id%>">
+                  <i class="material-icons mt-2">keyboard_arrow_down</i>
+                </div>
+              </div>
+            <% end %>
+
+
+           
+            <% if c.status == "등록신청" %>
+              <div class="col-12 table_content d-flex" style="justify-content: flex-end !important;padding-top:9px">
+                <div class="">
+                  <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                    반려하기
+                  </button>
+                  <a href="/owner_comment_confirm/<%=c.id%>" class="btn btn-success btn-sm" data-method="post" data-confirm="정말로 등록 하시겠습니까?" data-title= "리뷰 등록" data-commit="등록하기" data-cancel="취소">
+                    등록하기
+                  </a>
+                </div>
+              </div>
+            <% end %>
+                       
+            <% if c.status == "수정신청" %>
+              <div class="col-12 table_content d-flex" style="justify-content: flex-end !important;padding-top:9px">
+                <div class="">
+                  <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                    반려하기
+                  </button>
+                  <a href="/edit_owner_comment_confirm/<%=c.id%>" class="btn btn-success btn-sm" data-method="post" data-confirm="정말로 등록 하시겠습니까?" data-title= "리뷰 등록" data-commit="등록하기" data-cancel="취소">
+                    등록하기
+                  </a>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <% if c.status == "등록신청" %>
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <%= form_tag("/owner_comment_reject/#{c.id}", class:"modal-content", style:"", multipart: true ) do %>
+
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalCenterTitle">리뷰 반려 메세지</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <textarea class="d_textarea" name="memo" placeholder="반려 사유를 작성해주세요" style="border: 1px solid rgba(0, 0, 0, 0.1);" required></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                  <input type="submit" class="btn btn-danger" value="반려하기"/>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if c.status == "수정신청" %>
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <%= form_tag("/edit_owner_comment_reject/#{c.id}", class:"modal-content", style:"", multipart: true ) do %>
+
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalCenterTitle">리뷰 수정 반려 메세지</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <textarea class="d_textarea" name="memo" placeholder="반려 사유를 작성해주세요" style="border: 1px solid rgba(0, 0, 0, 0.1);" required></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                  <input type="submit" class="btn btn-danger" value="반려하기"/>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+
+    </div>
+    <div class="row mx-0" style="margin-top: 15px;">
+      <div class="col-12 d-flex align-items-center justify-content-center">
+        <%= paginate @owner_comments %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+<%= content_for 'javascript_content' do %>
+<script>
+$(document).ready(function(){
+  $('.img-gallery').magnificPopup({
+    delegate: 'a',
+    type: 'image',
+    tLoading: 'Loading image #%curr%...',
+    mainClass: 'mfp-img-mobile',
+    gallery: {
+      enabled: true,
+      navigateByImgClick: true,
+      preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+    },
+    image: {
+      tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+      titleSrc: function(item) {
+        return item.el.attr('title');
+        // + '<small>by Marsel Van Oosten</small>';
+      }
+    }
+  });
+
+    $('.down_arrow').on("click",function(e){
+      var $confirm_box = $("#" + this.getAttribute('data-value'));
+      var $icon = $(this).children(".material-icons");
+      if ($confirm_box.hasClass('box_none')) {  
+        $confirm_box.removeClass('box_none');
+        $icon.text('keyboard_arrow_up');
+      } else {
+        $confirm_box.addClass('box_none');
+        $icon.text('keyboard_arrow_down');
+      }
+    });
+  });
+</script>
+<% end %>

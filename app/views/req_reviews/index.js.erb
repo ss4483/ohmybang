@@ -1,0 +1,8 @@
+$('#content').append(`<%= render partial: "req_reviews/req_address", collection: @req_addresses, format: 'html' %>`);
+
+<% if @req_addresses.current_page == @req_addresses.total_pages %>
+  $('#view-more a').attr('href', '#');
+  $('#view-more-box').remove();
+<% else %>
+  $('#view-more a').attr('href', '<%= url_for(page: @req_addresses.current_page + 1, search: params[:search]) %>');
+<% end %>

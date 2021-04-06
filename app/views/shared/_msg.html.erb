@@ -1,0 +1,14 @@
+<div class="alert alert-<%=k%> fade show mr-5" role="alert" style="z-index:9000; position:absolute; top: 20px; right: 20px;">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="alert-heading pr-5">알림
+  </h4>
+  <hr class="my-2">
+  <p class="mb-0"><%=v.html_safe%></p>
+</div>
+<script>
+  window.setTimeout(function() {
+      $(".alert").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove(); 
+      });
+  }, 4000);
+</script>

@@ -1,0 +1,51 @@
+<div class="review_container <%=i[1]%>_container" >
+
+  <div>
+    <span class="review_item"  style="font-size:18px !important;"><%= i[0] %> (<img src="<%= image_url("ic/#{review_tags[:"#{i[0]}"]}.png")%>" alt="" width="15px" style="margin:0 5px;"/>)</span>
+    <span style="color: transparent;">A</span>
+    
+    <div class="toggle_box d-flex justify-content-between" style="float:right; width:135px;">
+      <label class="d-none d-sm-inline-block toggle_radio_label trans <%= "checked" if item.score == 1 %>" for="<%=i[1]%>-poor" style="font-size:18px !important;">별로</label>
+      <label class="d-none d-sm-inline-block toggle_radio_label trans <%= "checked" if item.score == 3 %>" for="<%=i[1]%>-fair" style="font-size:18px !important;">보통</label>
+      <label class="d-none d-sm-inline-block toggle_radio_label trans <%= "checked" if item.score == 5 %>" for="<%=i[1]%>-good" style="font-size:18px !important;">좋음</label>
+      
+      <input class="toggle_radio" id="<%=i[1]%>-poor" type="radio" name="item-<%=i[1]%>" value="1" <%= "checked" if item.score == 1%> required >
+      <input class="toggle_radio" id="<%=i[1]%>-fair" type="radio" name="item-<%=i[1]%>" value="3" <%= "checked" if item.score == 3 %>>
+      <input class="toggle_radio" id="<%=i[1]%>-good" type="radio" name="item-<%=i[1]%>" value="5" <%= "checked" if item.score == 5 %>>
+    </div>
+    <div class="review_ics" style="">
+      <img id="<%=i[1]%>_imgs" class="camera_ic btn_ic" src="<%= image_url("ic/camera.png")%>" />
+      <img id="<%=i[1]%>-message" class="message_ic btn_ic mr-0 <%= "stop_toggle" if item.score == 1 %>" src="<%= image_url("ic/message.png")%>" />
+    </div>
+  </div>
+  <div class="toggle_box d-flex d-sm-none justify-content-between" style="width:135px; padding-left:10px; margin-top:5px;">
+    <label class="toggle_radio_label trans <%= "checked" if item.score == 1 %>" for="<%=i[1]%>-poor" style="font-size:18px !important;">별로</label>
+    <label class="toggle_radio_label trans <%= "checked" if item.score == 3 %>" for="<%=i[1]%>-fair" style="font-size:18px !important;">보통</label>
+    <label class="toggle_radio_label trans <%= "checked" if item.score == 5 %>" for="<%=i[1]%>-good" style="font-size:18px !important;">좋음</label>
+  </div>
+  
+</div>
+
+<div class="pl-0 pl-sm-4">
+  <div class="custom-file-container category_uploader" data-upload-id="<%=i[1]%>_upload" style="margin: 10px 0 0 !important;">
+    <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+    <label class="d-none custom-file-container__custom-file" >
+      <input type="file" name="<%=i[1]%>_imgs[]" class="custom-file-container__custom-file__custom-file-input" <%# accept="image/gif, image/jpeg, image/jpg, image/png"%> accept="image/*, video/*" multiple aria-label="Choose File">
+      <span class="custom-file-container__custom-file__custom-file-control"></span>
+    </label>
+    <div class="custom-file-container__image-preview"></div>
+  </div>
+
+  <textarea id="<%=i[1]%>-message-txt" class="mt-0 d_textarea <%= "d_none" if item.comment.blank? && item.score != 1 %>" name="item-<%=i[1]%>-txt" placeholder="집에서 경험한 '<%= i[0] %>'에 대한 당신의 이야기를 들려주세요.&#13;&#10;('별로' 인 경우에는 필수로 작성해주세요.)"><%= item.comment %></textarea>
+
+  <div id="<%=i[1]%>_imgs_box" class="d-none">
+    <% item.review_imgs.each_with_index do |i, index| %>
+      <span><%= i.name %></span>
+    <% end %>
+  </div>
+  <div id="<%=i[1]%>_videos_box" class="d-none">
+    <% item.review_videos.each_with_index do |i, index| %>
+      <span><%= i.name %></span>
+    <% end %>
+  </div>
+</div>

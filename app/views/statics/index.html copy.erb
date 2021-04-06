@@ -1,0 +1,190 @@
+<div class="main_01">
+  <div class="container h-100 p-0">
+    <img src="<%= image_url("bg/main_text.png")%>" alt="살아봐야 안다!">
+
+
+  
+    <div id="main_search_container" class="d-none d-sm-block">
+      <div id="search_container" class="search_container_main d-flex justify-content-center">
+        <div id="search_box" class="d-none bg-white">
+          <div id="error_box">
+            <p>검색 결과가 없습니다.</p>
+            <p class="error_message">검색어가 입력되지 않았습니다.</p>
+          </div>
+          <div id="search_list" class="d-none">
+          </div>
+        </div>
+      </div>
+      <div class="">
+        <div style="opacity: 0.9;">
+          <%= form_tag('/reviews', {id: 'search_form', class: "bg-white ", method: 'get'}) do %>
+            <input class="room_checkbox d-none" id="room_01" type="checkbox" name="check[]" value="원룸" <%= "checked" if params[:check].blank? || params[:check].include?("원룸") %>>
+            <input class="room_checkbox d-none" id="room_02" type="checkbox" name="check[]" value="투/쓰리룸" <%= "checked" if params[:check].blank? || params[:check].include?("투/쓰리룸") %>>
+            <input class="room_checkbox d-none" id="room_03" type="checkbox" name="check[]" value="오피스텔" <%= "checked" if params[:check].blank? || params[:check].include?("오피스텔") %> >
+            <input class="room_checkbox d-none" id="room_04" type="checkbox" name="check[]" value="아파트" <%= "checked" if params[:check].blank? || params[:check].include?("아파트") %>>
+            <div style="position:relative;">
+              <div class="search_input_box d-block">
+                <input id="search_bar" class="d-block m-0 w-100" name="address" type="text" placeholder="지금 바로 정직한 리뷰를 검색해보세요!"  value="<%=params[:address]%>" autocomplete="off" onkeypress="if(event.keyCode==13) { $('#search_form').submit(); return false;}" required/>
+                <input id="detail_search_bar" class="d-block m-0 w-100 <%= "none" if !params[:detail_address].present? %>" name="detail_address" type="text" placeholder="ex) 101동 101호" value="<%=params[:detail_address]%>" autocomplete="off" onkeypress="if(event.keyCode==13) {$('#search_form').submit(); return false;}"/>
+              </div><!--
+           --><button class="detail_search d-none d-sm-inline-block bg-white" style="width:10%;  float: none; margin-right: 0; position: absolute; top: 0; right: 10%; height: 100%;">
+                <div class="detail_search_txt"><%= !params[:detail_address].present?? "+" : "-" %> 상세검색하기</div>
+              </button><!--
+           --><button class="search_btn bg-white" type="submit" style="">검색</button>
+            </div>
+            <hr class="d-sm-none m-0 w-100">
+            <button class="detail_search mobile d-sm-none bg-white">
+              <div class="detail_search_txt"><%= !params[:detail_address].present?? "+" : "-" %> 상세검색하기</div>
+            </button>
+          <% end %>
+        </div>
+      </div>
+      <div class="label_container main d-flex justify-content-center">
+        <div style="padding-top: 22px; opacity:0.9; color:white;">
+          <label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("원룸") %>" for="room_01">원룸</label><%#
+        %>|<%#
+        %><label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("투/쓰리룸") %>" for="room_02">투/쓰리룸</label><%#
+        %>|<%#
+        %><label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("오피스텔") %>" for="room_03">오피스텔</label><%#
+        %>|<%#
+        %><label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("아파트") %>" for="room_04">아파트</label>
+        </div>
+      </div>
+    </div>
+    <div class="d-block d-sm-none" style="position:absolute; bottom:0; width:100%;">
+      <a class="btn-bottom" href="/reviews" style="">리뷰 보러가기</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="main_02">
+  <div class="container h-100 " style="position: relative;">
+    <div class="row d-flex justify-content-center" style="position: absolute; top: 50%;transform: translate(0%, -50%);width: 100%;">
+      
+      <div class="col-12 col-sm-5 col-md-4 col-xl-4">
+        <img class="main_02_img" src="<%= image_url("img/main_02.png")%>"/>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-xl-6" >
+        <div class="main_02_container" >
+        <!--style="background-image:url('<%= image_path "bg/main_01.png"%>'); "-->
+          <p class="main_02_title"style="">실시간 등록된 정직 리뷰</p>
+          <p id="counter" class="main_02_counter" style="font-weight: 700;">
+            <span class="counter-value" data-count="<%=Review.where(status: "등록완료").count%>">0</span>건
+          </p>
+          <p class="main_02_title" style="margin-top:41px;">실시간 환전된 수익</p>
+          <p  class="main_02_counter" style="font-weight: 700;">
+            <span class="counter-value" data-count="<%=Exchange.where(status: "환전완료").map(&:actual_money).inject(0){|sum,x| sum + x }%>">0</span>원
+          </p>
+        </div>  
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div>
+</div>
+
+<div class="main_04">
+  <div class="container h-100 " style="position: relative;">
+    <div class="row justify-content-center"  style="position: absolute;top: 50%; width: 100%; transform: translate(0%, -50%);">
+      <div class="col-12 col-lg-8 col-xl-9 order-lg-1">
+        <p class="main_04_title">안살아보면 몰라요</p>
+        <p class="main_04_sub_title">오마방은 알아요</p>
+        <a href="/sample" class="main_sample_btn"></a>
+      </div>
+      <div class="w-100 d-none d-lg-block order-lg-2"></div>
+      <div class="col-12 col-lg-3 col-xl-5 order-lg-4 main_04_img_col" >
+        <div class="main_04_img_container" >
+          <div class="main_04_img_box">
+            <img class="inner_img" id="inside_img" src="<%= image_url("img/mobile_inside.png")%>" />
+            <img class="inner_img" id="outside_img" src="<%= image_url("img/mobile_outside.png")%>" style="display:none"/>
+            <img class="inner_img" id="owner_img" src="<%= image_url("img/mobile_owner.png")%>" style="display:none"/>
+            <img class="mockup_img" src="<%= image_url("img/mobile_mockup.png")%>" />
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5 col-xl-4 tab_container order-lg-3">
+        <div class="tab_box">
+          <ul class="main_tab d-inline">
+            <li id="inside_tab" class="main_tab_item">방내부</li>
+            <li id="outside_tab" class="main_tab_item">방외부</li>
+            <li id="owner_tab" class="main_tab_item">임대인</li>
+            <li class="main_tab_item slider"></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-12 order-lg-5" style="text-align:center;">
+        <a href="/reviews" class="btn_black_round d-inline-block" style="padding: 16px 30px; font-size: 17px;">리뷰 보러가기</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="main_03">
+  <div class="container h-100 p-0" style="position: relative;">
+     <div class="row d-flex justify-content-center" style=" position: absolute;top: 50%;margin: 0;width: 100%;transform: translate(0%, -50%);">
+
+      <div class="col-12 col-sm-9">
+        <p class="main_03_title">살아본 만큼 벌어보자</p>
+        <p class="main_03_sub_title">5년이내에 거주한 전/월세 리뷰는 모두 작성 가능</p>
+      </div>
+      <div class="col-12 col-sm-10 col-md-8 d-sm-flex justify-content-between" style="text-align: center;">
+        <div class="d-block d-sm-inline-block">
+          <img class="main_03_img" src="<%= image_url("img/write_01.png")%>" />
+          <br>
+          <img class="main_03_img_title" src="<%= image_url("img/write_11.png")%>" />
+        </div>
+        <div class="d-block d-sm-inline-block">
+          <img class="main_03_img second" src="<%= image_url("img/write_02.png")%>" />
+          <br>
+          <img class="main_03_img_title" src="<%= image_url("img/write_12.png")%>" />
+        </div>
+        <div class="d-block d-sm-inline-block">
+          <img class="main_03_img" src="<%= image_url("img/write_03.png")%>" />
+          <br>
+          <img class="main_03_img_title" src="<%= image_url("img/write_13.png")%>"/>
+        </div>
+      </div>
+
+      <div class="col-12 mt-5" style="text-align: center;">
+        <% if user_signed_in? %>
+          <% if current_user.reviews.where(status: "임시저장").empty? %>
+            <a href="<%= write_reviews %>" class="btn_black_round d-inline-block"style="padding: 16px 30px; font-size: 17px;">리뷰 작성하러가기</a>
+          <% else %>
+            <a href="/mypage/reviews" class="btn_black_round d-inline-block" onclick="return alert('임시저장 된 리뷰가 있습니다.')"style="padding: 16px 30px; font-size: 17px; ">리뷰 작성하러가기</a>
+          <% end %>
+        <% else %>
+            <a href="<%= write_reviews %>" class="btn_black_round d-inline-block"style="padding: 16px 30px; font-size: 17px;">리뷰 작성하러가기</a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="main_05" style="background-image:url('<%= image_path "bg/main_04.png"%>'); background-size: cover;">
+  <div class="container h-100" style="position: relative;">
+    <div class="row justify-content-center" style="position: absolute;top: 50%; width: 100%; transform: translate(0%, -50%);">
+      <div class="col-12">
+        <img class="main_05_img"src="<%= image_url("img/main_last.png")%>" />
+        
+        <p class="main_05_title">지금 당신에게 필요한 서비스,</p>
+        <p class="main_05_sub_title">오마방</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%# -webkit-box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.2);
+-moz-box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.2);
+box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.2); %>
+
+<%= content_for 'javascript_content' do %>
+  <%= javascript_include_tag params[:controller] %>
+<% end %>

@@ -1,0 +1,171 @@
+<%# 관리비, 주차비 유무 확인 %>
+<%= form_for @review, html: {class: "row m-0 d-flex justify-content-center",  multipart: true }  do |f| %>
+
+  <!-- 설명 -->
+  <div class="col-12 col-md-10">
+    <div class="d-flex justify-content-between review_explain_box"> 
+      <img class="review_explain_img" src="<%= image_url("how_review_1.png")%>" alt="" style="width:100%;height:100%"/>
+    </div>
+  </div>
+  
+  <div class="col-12 col-md-10" style="margin-bottom: 30px;">
+    <p class="review-title">증빙서류 제출하기</p>
+    <p class="review-sub_title">* 본 증빙 서류가 인위적으로 조작되었거나 허위일 시, 이로 인한 피해가 청구되고 본 리뷰로 인해 발생 한 수익은 반환 요청되며, 글쓴이의 동의 없이 삭제될 수 있음을 알립니다. 제출한 증빙서류는 심사 후, 보관됩니다.</p>
+  </div>
+
+  <div class="col-12 col-md-10">
+    <label for="imp_contract" class="imp_type_label <%= "none" if check_imp_type(@review, "초본") %>">
+      <input id="imp_contract" class="imp_type radio_dot" type="radio" name="imp_type" value="계약서" <%= "checked" if check_imp_type(@review, "계약서") %> required>전/월세 계약서 제출<span class="qn" data-toggle="modal" data-target="#contractModalCenter">?</span>
+    </label>
+    <%= render 'shared/modal_contract' %>
+    <div id="speech-bubble">
+      <div class="speech-bubble <%= "none" if check_imp_type(@review, "초본") %>" style="<%= "display: none" if check_imp_type(@review, "계약서") %>">
+        계약서 증빙 시 원하시는 리뷰의 <span style="font-weight: bold; color:#1e9497">전월세 계약금을 무료 1회 이용권</span>이 지급됩니다.<br>
+        오마방 서비스에 계약서의 일부 내용과 계약금이 기재되며 조회 시 수익금이 발생합니다.
+      </div>
+    </div>
+    <div id="contract_imgs" class="d-none">
+      <% @review.review_imp_imgs.where(tag: "계약서").each do |img| %>
+        <span><%= "#{img.name}" %></span>
+      <% end %>
+    </div>
+    <div id="contract_contents" style="<%= "display: none" unless check_imp_type(@review, "계약서") %>">
+      <div class="custom-file-container" data-upload-id="imp_imgs_upload_contract" >
+        <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+        <label class="d-none custom-file-container__custom-file" >
+          <input type="file" name="imp_imgs_contract[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+          <span class="custom-file-container__custom-file__custom-file-control"></span>
+        </label>
+        <div class="custom-file-container__image-preview" style="border-radius: 15px; border: 1px solid black; height: 150px !important;"></div>
+      </div>
+      <div class="item_box">
+        <div class="item_title">
+          <span>관리비</span>
+        </div>
+        <div class="item_content">
+          <label for="management_fee_f" class="item_radio_label">
+            <input id="management_fee_f" class="item_radio radio_dot" type="radio" name="management_fee" value="f" <%= "checked" if @review.management_fee.to_i < 0 %> required>
+            관리비 없음
+          </label>
+          <label for="management_fee_t" class="item_radio_label">
+            <input id="management_fee_t" class="item_radio radio_dot" type="radio" name="management_fee" value="t"  <%= "checked" if @review.management_fee.to_i >= 0 || @review.new_record? %>>
+            관리비 있음
+          </label>
+          <div class="item_text_box" style="<%= "display:none" if @review.management_fee.to_i < 0 %>">
+            <input class="item_text text-right" name="management_fee_price" type="number" placeholder="0" value="<%= @review.management_fee.to_i > 0 ? @review.management_fee : "0" %>"><span>만원</span>
+          </div>
+        </div>
+      </div>
+      <div class="item_box sub_item_box">
+        <div class="item_title"></div>
+        <div class="item_content">
+          <span class="item_checkbox_title">관리비항목 선택</span> 
+          <label for="management_type_1" class="item_checkbox_label <%= "disabled" if @review.management_fee.to_i < 0 %> <%= "checked" if @review.management_type.include?("인터넷")%>"><input id="management_type_1" class="item_checkbox d-none" type="checkbox" name="management_type[]" <%= "disabled" if @review.management_fee.to_i < 0 %> value="인터넷" <%= "checked" if @review.management_type.include?("인터넷")%>>인터넷</label>
+          <label for="management_type_2" class="item_checkbox_label <%= "disabled" if @review.management_fee.to_i < 0 %> <%= "checked" if @review.management_type.include?("유선TV")%>"><input id="management_type_2" class="item_checkbox d-none" type="checkbox" name="management_type[]" <%= "disabled" if @review.management_fee.to_i < 0 %> value="유선TV" <%= "checked" if @review.management_type.include?("유선TV")%>>유선TV</label>
+          <label for="management_type_3" class="item_checkbox_label <%= "disabled" if @review.management_fee.to_i < 0 %> <%= "checked" if @review.management_type.include?("청소비")%>"><input id="management_type_3" class="item_checkbox d-none" type="checkbox" name="management_type[]" <%= "disabled" if @review.management_fee.to_i < 0 %> value="청소비" <%= "checked" if @review.management_type.include?("청소비")%>>청소비</label>
+          <label for="management_type_4" class="item_checkbox_label <%= "disabled" if @review.management_fee.to_i < 0 %> <%= "checked" if @review.management_type.include?("수도세")%>"><input id="management_type_4" class="item_checkbox d-none" type="checkbox" name="management_type[]" <%= "disabled" if @review.management_fee.to_i < 0 %> value="수도세" <%= "checked" if @review.management_type.include?("수도세")%>>수도세</label>
+          <label for="management_type_5" class="item_checkbox_label <%= "disabled" if @review.management_fee.to_i < 0 %> <%= "checked" if @review.management_type.include?("난방비")%>"><input id="management_type_5" class="item_checkbox d-none" type="checkbox" name="management_type[]" <%= "disabled" if @review.management_fee.to_i < 0 %> value="난방비" <%= "checked" if @review.management_type.include?("난방비")%>>난방비</label>
+          <label for="management_type_6" class="item_checkbox_label <%= "disabled" if @review.management_fee.to_i < 0 %> <%= "checked" if @review.management_type.include?("기타")%>"><input id="management_type_6" class="item_checkbox d-none" type="checkbox" name="management_type[]" <%= "disabled" if @review.management_fee.to_i < 0 %> value="기타" <%= "checked" if @review.management_type.include?("기타")%>>기타</label>
+        </div>
+      </div>
+      <div class="item_box">
+        <div class="item_title">
+          <span>주차여부</span>
+        </div>
+        <div class="item_content">
+          <label for="parking_f" class="item_radio_label"><input id="parking_f" class="item_radio radio_dot" type="radio" name="parking" value="f" <%= "checked" if @review.parking.to_i < 0 %> required>불가능</label>
+          <label for="parking_t" class="item_radio_label"><input id="parking_t" class="item_radio radio_dot" type="radio" name="parking" value="t" <%= "checked" if @review.parking.to_i >= 0 || @review.new_record? %>>가능</label>
+          <div class="item_text_box" style="<%= "display:none" if !(@review.new_record? || @review.parking.to_i > 0)  %>">
+            <input class="item_text text-right" name="parking_price" type="number" value="<%= @review.parking.to_i > 0 ? @review.parking : "0" %>" placeholder="0"><span>만원</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-10">
+    <label for="imp_resident" class="imp_type_label <%= "none" if check_imp_type(@review, "계약서") %>">
+      <input id="imp_resident" class="imp_type radio_dot" type="radio" name="imp_type" value="초본"  <%= "checked" if check_imp_type(@review, "초본") %>>주민등록 초본<span class="qn" data-toggle="modal" data-target="#registrationModalCenter">?</span>
+    </label>
+    <%= render 'shared/modal_registration' %>
+    <div id="resident_imgs" class="d-none">
+      <% @review.review_imp_imgs.where(tag: "초본").each do |img| %>
+        <span><%= "#{img.name}" %></span>
+      <% end %>
+    </div>
+    <div id="resident_contents" style="<%= "display: none" unless check_imp_type(@review, "초본") %>">
+      <div class="custom-file-container" data-upload-id="imp_imgs_upload_resident" >
+        <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+        <label class="d-none custom-file-container__custom-file" >
+          <input type="file" name="imp_imgs_resident[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+          <span class="custom-file-container__custom-file__custom-file-control"></span>
+        </label>
+        <div class="custom-file-container__image-preview" style="border-radius: 15px; border: 1px solid black; height: 150px !important;"></div>
+      </div>
+    </div>
+  </div>
+
+  <%= render 'shared/modal_contract' %>
+  <%= render 'shared/modal_registration' %>
+
+
+  <!-- 제출 -->
+  <div class="col-12 col-md-10">
+    <div style="text-align: right; margin-top: 20px;">
+      <input type="submit" class="btn btn-outline-dark" value="<%= @review.new_record?? "✎ 저장하기" : "✎ 수정하기" %>" onclick="_submit(this)" style="font-size: 16px;">
+    </div>
+  </div>
+<% end %>
+
+
+
+
+<!-- 계약서 신청 Modal -->
+<div class="modal fade" id="contract_next_step" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content d-flex justify-content-center align-items-center" style="border-radius: 0; height: 280px;">
+      <p class="modal_txt_title">계약서 증빙이 정상적으로 신청되었습니다!</p>
+      <p class="modal_txt">등록이 완료되면 <span class="modal_txt_emph">계약서 리뷰 무료 1회 이용권</span>이 지급됩니다.</p>
+      <button type="button" id="contract_ok" class="btn btn-outline-dark btn-sm" style="padding: 4px 15px;">확인</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="next_step" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content d-flex justify-content-center align-items-center" style="border-radius: 0; height: 280px;">
+      <p class="modal_txt mb-0" style='font-family: "s-core-dream-bold", sans-serif !important;'>하우스 리뷰를 작성해주세요!</p>
+      <p class="modal_txt mb-4" style='font-family: "s-core-dream-bold", sans-serif !important;'>리뷰 등록시 <span class="modal_txt_emph">하우스 리뷰 무료 1회 이용권</span>이 지급됩니다.</p>
+      <a id="next_step_review" href="#">리뷰 쓰러 가기</a>
+      <a id="next_step_mypage" href="#">리뷰 다음에 쓰기</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- 리뷰 다음에 쓰기 MODAL -->
+<div class="modal fade" id="mypage_next_step" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content d-flex justify-content-center align-items-center" style="border-radius: 0; height: 280px;">
+      <p class="modal_txt mb-0" style='font-size:18px; font-family: "s-core-dream-bold", sans-serif !important;'><span class="modal_txt_emph">마이페이지 > 리뷰내역</span> 에 들어가서</p>
+      <p class="modal_txt mb-4" style='font-size:18px; font-family: "s-core-dream-bold", sans-serif !important;'>해당 리뷰를 이어 작성 하실 수 있습니다.</p>
+      <p style='font-size: 14px; font-family: "s-core-dream-medium", sans-serif !important;'><span id="mypage_sec">3</span> 초 뒤에 자동으로 이동됩니다.</p>
+      <%# <a href="/mypage/reviews">(페이지가 이동되지 않을 시 클릭해주세요)</a> %>
+    </div>
+  </div>
+</div>
+
+
+
+  
+
+<%= content_for 'javascript_content' do %>
+  <script src="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+  <script src="https://unpkg.com/formdata-polyfill"></script>
+  <%= javascript_include_tag "review/form" %>
+<% end %>

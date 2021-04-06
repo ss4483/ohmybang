@@ -1,0 +1,482 @@
+<%= form_for @review, url: { action: 'retouch_review' }, html: {class: "row m-0 d-flex justify-content-center",  multipart: true }  do |f| %>
+
+  <div class="col-12  col-md-10">
+
+    <div class="item_box">
+      <div class="item_title"><span>주소</span></div>
+      <div class="item_content">
+        <%= f.text_field :address, id: "review_address", class: "item_text text-left", placeholder: "주소", style: "border: 1px solid darkgray;width: 100%;", readonly: true %>
+      </div>
+    </div>
+
+    <div class="item_box">
+      <div class="item_title"><span>상세주소</span></div>
+      <div class="item_content">
+        <%= f.text_field :detail_address, id: "review_detail_address", class: "item_text text-left", style: "border: 1px solid darkgray;", placeholder: "상세주소", readonly: true %>
+        <%= f.text_field :extra_address, id: "review_extra_address", class: "item_text text-left", style: "border: 1px solid darkgray;", placeholder: "참고항목", readonly: true %>
+      </div>
+    </div>
+
+    <%= f.hidden_field :bd_nm, id: "review_bd_nm", readonly: true %>
+    <%= f.hidden_field :si_nm, id: "review_si_nm", readonly: true %>
+    <%= f.hidden_field :sgg_nm, id: "review_sgg_nm", readonly: true %>
+    <%= f.hidden_field :emd_nm, id: "review_emd_nm", readonly: true %>
+
+
+    <div id="main_imgs_box" class="d-none">
+      <% if @edit_review.nil? %>    
+        <% unless @review.main_img_name.blank? %>
+          <span><%=@review.main_img_name%></span>
+        <% end %>
+      <% else %>
+        <% unless @edit_review.main_img_name.blank? %>
+          <span><%=@edit_review.main_img_name%></span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="custom-file-container" data-upload-id="main_imgs_upload" style="margin: 20px 10px 45px !important;">
+      <label style="float: right; font-size: 12px; margin:0 12px 0 0;"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image">삭제</a></label>
+      <label class="d-none custom-file-container__custom-file" >
+        <input type="file" name="main_img" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" aria-label="Choose File">
+        <span class="custom-file-container__custom-file__custom-file-control"></span>
+      </label>
+      <div class="custom-file-container__image-preview" style="text-align: center; border-radius: 15px; border: 1px solid black; height: 150px !important; background-color: white !important;   background-size: 150px !important;"></div>
+    </div>
+    
+
+    <div class="item_box">
+      <div class="item_title"><span>유형</span></div>
+      <div class="item_content">
+        <% if @edit_review.nil? %>    
+          <label for="room_01" class="item_radio_label"><input id="room_01" class="item_radio radio_dot" type="radio" name="review[room]" value="원룸" <%="checked" if (@review.room == "원룸" || @review.room.blank?)%> required>원룸</label>
+          <label for="room_02" class="item_radio_label"><input id="room_02" class="item_radio radio_dot" type="radio" name="review[room]" value="투/쓰리룸" <%= "checked" if (@review.room == "투/쓰리룸")%>>투/쓰리룸</label>
+          <label for="room_03" class="item_radio_label"><input id="room_03" class="item_radio radio_dot" type="radio" name="review[room]" value="오피스텔" <%= "checked" if @review.room == "오피스텔"%>>오피스텔</label>
+          <label for="room_04" class="item_radio_label"><input id="room_04" class="item_radio radio_dot" type="radio" name="review[room]" value="아파트" <%= "checked" if @review.room == "아파트"%>>아파트</label>
+        <% else %>
+          <label for="room_01" class="item_radio_label"><input id="room_01" class="item_radio radio_dot" type="radio" name="review[room]" value="원룸" <%="checked" if (@edit_review.room == "원룸" || @edit_review.room.blank?)%> required>원룸</label>
+          <label for="room_02" class="item_radio_label"><input id="room_02" class="item_radio radio_dot" type="radio" name="review[room]" value="투/쓰리룸" <%= "checked" if (@edit_review.room == "투/쓰리룸")%>>투/쓰리룸</label>
+          <label for="room_03" class="item_radio_label"><input id="room_03" class="item_radio radio_dot" type="radio" name="review[room]" value="오피스텔" <%= "checked" if @edit_review.room == "오피스텔"%>>오피스텔</label>
+          <label for="room_04" class="item_radio_label"><input id="room_04" class="item_radio radio_dot" type="radio" name="review[room]" value="아파트" <%= "checked" if @edit_review.room == "아파트"%>>아파트</label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item_box">
+      <div class="item_title">
+        <span>거주기간</span>
+      </div>
+      <div class="item_content">
+        <% if @edit_review.nil? %>    
+          <select class="custom-select" name="review[start_year]" required>
+            <option value="2014" <%="selected" if @review.start_year.nil? || @review.start_year == 2014 %>>2014 년</option> 
+            <% (2015..2020).each do |y| %>
+              <option value="<%=y%>" <%="selected" if @review.start_year == y %>><%=y%> 년</option>
+            <% end %>
+          </select>
+          <span class="custom-select-dash">-</span>
+          <select class="custom-select" name="review[end_year]" required>
+            <% (2014..2019).each do |y| %>
+              <option value="<%=y%>" <%="selected" if @review.end_year == y %>><%=y%> 년</option>
+            <% end %>
+            <option value="2020" <%="selected" if @review.end_year.nil? || @review.end_year == 2020 %>>2020 년</option>
+          </select>
+        <% else %>
+          <select class="custom-select" name="review[start_year]" required>
+            <option value="2014" <%="selected" if @edit_review.start_year.nil? || @edit_review.start_year == 2014 %>>2014 년</option> 
+            <% (2015..2020).each do |y| %>
+              <option value="<%=y%>" <%="selected" if @edit_review.start_year == y %>><%=y%> 년</option>
+            <% end %>
+          </select>
+          <span class="custom-select-dash">-</span>
+          <select class="custom-select" name="review[end_year]" required>
+            <% (2014..2019).each do |y| %>
+              <option value="<%=y%>" <%="selected" if @edit_review.end_year == y %>><%=y%> 년</option>
+            <% end %>
+            <option value="2020" <%="selected" if @edit_review.end_year.nil? || @edit_review.end_year == 2020 %>>2020 년</option>
+          </select>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item_box">
+      <div class="item_title">
+        <span>반려동물</span>
+      </div>
+      <div class="item_content">
+        <% if @edit_review.nil? %>    
+          <label for="pet_f" class="item_radio_label"><input id="pet_f" class="item_radio radio_dot" type="radio" name="review[pet]" value="f" <%= "checked" if @review.pet.blank? %> required>불가능</label>
+          <label for="pet_t" class="item_radio_label"><input id="pet_t" class="item_radio radio_dot" type="radio" name="review[pet]" value="t" <%= "checked" if !@review.pet.blank? %>>가능</label>
+          <div class="item_text_box" style="<%= "display:none;" if @review.pet.blank? %> ">
+            <input class="item_text" name="review[pet_txt]" type="text" value="<%= @review.pet %>" placeholder="ex)강아지, 고양이 " style="text-align: left;">
+          </div>
+        <% else %>
+          <label for="pet_f" class="item_radio_label"><input id="pet_f" class="item_radio radio_dot" type="radio" name="review[pet]" value="f" <%= "checked" if @edit_review.pet.blank? %> required>불가능</label>
+          <label for="pet_t" class="item_radio_label"><input id="pet_t" class="item_radio radio_dot" type="radio" name="review[pet]" value="t" <%= "checked" if !@edit_review.pet.blank? %>>가능</label>
+          <div class="item_text_box" style="<%= "display:none;" if @edit_review.pet.blank? %> ">
+            <input class="item_text" name="review[pet_txt]" type="text" value="<%= @edit_review.pet %>" placeholder="ex)강아지, 고양이 " style="text-align: left;">
+          </div>
+        <% end %>
+      </div>
+    </div>
+  
+
+    <div class="item_box">
+      <div class="item_title loan">
+        <span>
+          중소기업청년<br>전세자금대출
+          <div class="w-100"></div>
+          <span class="qn" data-toggle="modal" data-target="#loan_1_ModalCenter">?</span>
+        </span>
+        
+      </div>
+      <div class="item_content d-block d-sm-flex align-items-center">
+        <% if @edit_review.nil? %>   
+          <label for="loan_1_n" class="item_radio_label" style="vertical-align: middle"><input id="loan_1_n" class="item_radio radio_dot" type="radio" name="review[loan_1]" value="f" <%= "checked" if (@review.loan_1.blank? || @review.loan_1 == "f") %>>불가능</label>
+          <label for="loan_1_y" class="item_radio_label" style="vertical-align: middle"><input id="loan_1_y" class="item_radio radio_dot" type="radio" name="review[loan_1]" value="t" <%= "checked" if @review.loan_1 == "t"%> required>가능</label>
+        <% else %>
+          <label for="loan_1_n" class="item_radio_label" style="vertical-align: middle"><input id="loan_1_n" class="item_radio radio_dot" type="radio" name="review[loan_1]" value="f" <%= "checked" if (@edit_review.loan_1.blank? || @edit_review.loan_1 == "f") %>>불가능</label>
+          <label for="loan_1_y" class="item_radio_label" style="vertical-align: middle"><input id="loan_1_y" class="item_radio radio_dot" type="radio" name="review[loan_1]" value="t" <%= "checked" if @edit_review.loan_1 == "t"%> required>가능</label>
+        <% end %>
+      </div>
+    </div>
+    <%= render 'shared/modal_loan_1' %>
+
+
+
+    <div class="item_box">
+      <div class="item_title">
+        <span>엘리베이터</span>
+      </div>
+      <div class="item_content">
+        <% if @edit_review.nil? %>   
+          <label for="elevator_f" class="item_radio_label"><input id="elevator_f" class="item_radio radio_dot" type="radio" name="review[elevator]" value="f" <%= "checked" if @review.elevator == "f" || @review.elevator.blank? %> required>없음</label>
+          <label for="elevator_t" class="item_radio_label"><input id="elevator_t" class="item_radio radio_dot" type="radio" name="review[elevator]" value="t" <%="checked" if @review.elevator == "t" %>>있음</label>
+        <% else %>
+          <label for="elevator_f" class="item_radio_label"><input id="elevator_f" class="item_radio radio_dot" type="radio" name="review[elevator]" value="f" <%= "checked" if @edit_review.elevator == "f" || @edit_review.elevator.blank? %> required>없음</label>
+          <label for="elevator_t" class="item_radio_label"><input id="elevator_t" class="item_radio radio_dot" type="radio" name="review[elevator]" value="t" <%="checked" if @edit_review.elevator == "t" %>>있음</label>
+        <% end %>
+      </div>
+    </div>
+    <div class="item_box">
+      <div class="item_title">
+        <span>베란다/발코니</span>
+      </div>
+      <div class="item_content">
+        <% if @edit_review.nil? %>   
+          <label for="balcony_f" class="item_radio_label"><input id="balcony_f" class="item_radio radio_dot" type="radio" name="review[balcony]" value="f" <%= "checked" if @review.balcony == "f" || @review.balcony.blank? %> required>없음</label>
+          <label for="balcony_t" class="item_radio_label"><input id="balcony_t" class="item_radio radio_dot" type="radio" name="review[balcony]" value="t" <%="checked" if @review.balcony == "t" %>>있음</label>
+        <% else %>
+          <label for="balcony_f" class="item_radio_label"><input id="balcony_f" class="item_radio radio_dot" type="radio" name="review[balcony]" value="f" <%= "checked" if @edit_review.balcony == "f" || @edit_review.balcony.blank? %> required>없음</label>
+          <label for="balcony_t" class="item_radio_label"><input id="balcony_t" class="item_radio radio_dot" type="radio" name="review[balcony]" value="t" <%="checked" if @edit_review.balcony == "t" %>>있음</label>
+        <% end %>
+      </div> 
+    </div>
+
+    <div class="item_box">
+      <div class="item_title">
+        <span>추천</span>
+      </div>
+      <div class="item_content">
+        <% if @edit_review.nil? %>   
+          <label for="unrecommend" class="item_radio_label"><input id="unrecommend" class="item_radio radio_dot" type="radio" name="review[is_recommend]" value="f" <%="checked" if @review.is_recommend == "f" %>>비추천</label>
+          <label for="recommend" class="item_radio_label"><input id="recommend" class="item_radio radio_dot" type="radio" name="review[is_recommend]" value="t" <%= "checked" if @review.is_recommend == "t" || @review.is_recommend.blank? %> required>추천</label>
+        <% else %>
+          <label for="unrecommend" class="item_radio_label"><input id="unrecommend" class="item_radio radio_dot" type="radio" name="review[is_recommend]" value="f" <%="checked" if @edit_review.is_recommend == "f" %>>비추천</label>
+          <label for="recommend" class="item_radio_label"><input id="recommend" class="item_radio radio_dot" type="radio" name="review[is_recommend]" value="t" <%= "checked" if @edit_review.is_recommend == "t" || @edit_review.is_recommend.blank? %> required>추천</label>
+        <% end %>
+      </div>
+    </div>
+
+
+    <hr style="margin: 40px 0px; ">
+
+    <p class="review_item_title">리뷰 작성 시 움이 되는 글!</p>
+    <section class="box_agree" style="margin-bottom: 30px">
+      <div class="box_policy" style="height: fit-content;">
+        <%#= render partial: "policies/policy_1" %>
+        <ul style="list-style:circle; padding-left:1rem;">
+          <li>
+            각 항목별 만족도를 [ <b>별로</b> , <b>보통</b> , <b>좋음</b> ] 중에서 선택하여 표현해주세요
+          </li>
+          <li>
+            <img src="<%= image_url("ic/message.png")%>" height="16px" style="vertical-align: text-bottom;"/> 아이콘을 통해 선택적으로 상세 내용을 입력하실 수 있습니다.<br>단, <b>별로</b> 인 경우에는 필수 작성입니다.
+          </li>
+          <li>
+            <img src="<%= image_url("ic/camera.png")%>" height="16px" style="vertical-align: text-bottom;"/> 아이콘을 통해 이미지 또는 영상을 추가 할 수 있습니다.<br>(이미지는 용량 제한 3MB 미만 / 영상 용량 제한 30MB 미만)
+          </li>
+          <li>
+            <b>성의 있는 글과 사진, 영상 첨부는 글의 신뢰도를 높이고 클릭 수를 높이는데 기여해요!</b>
+          </li>  
+          <li>
+            너무 안 좋은 기억이 있는 집이라도 일방적인 비방보다는 <b>‘~가 개선됐으면 좋겠습니다’</b>로 얘기해주세요!
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-12  col-md-10">
+    <div class="row">
+      <% if @edit_review.nil? %>   
+        <%= render partial: "reviews/review_items", locals: { review: @review } %>
+      <% else %>
+        <%= render partial: "reviews/review_items", locals: { review: @edit_review } %>
+      <% end %>
+    </div>
+  </div>
+
+
+  <div class="col-12 col-md-10">
+    <div style="text-align: right;">
+      <input type="button" class="btn_trans" onclick="_submit(this)" value="수정신청하기" style="font-size: 16px; margin: 0 20px 0 0;"
+      data-confirm="수정 신청 하시겠습니까?">
+    </div>
+
+  </div>
+<% end %>
+
+
+<p style="position:fixed; bottom: 25px; right: 60px;"><span class="text_count">0</span>/500</p>
+
+<%= content_for 'javascript_content' do %>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+  <script src="https://unpkg.com/formdata-polyfill"></script>
+  <%= javascript_include_tag "review/form_review" %>
+  <script>
+    $(document).ready(function() {
+      var init_length = 0;
+      <% review_tags.each do |k,v| %>
+        init_length += $("#<%=v%>-message-txt").val().length;
+      <% end %>
+      init_length += $("textarea[name=hourly_seasonal_txt]").val().length;
+      init_length += $("textarea[name=long_comment]").val().length;
+      $(".text_count").text(init_length);
+      if (init_length < 500) 
+        $('.text_count').addClass('text-danger');
+      else 
+        $('.text_count').removeClass('text-danger');
+    });
+
+    $(document).keyup(function(event){
+      var keycode = (event.keyCode ? event.keyCode : event.which);
+      var text_length = 0;
+      <% review_tags.each do |k,v| %>
+        text_length += $("#<%=v%>-message-txt").val().length;
+      <% end %>
+      text_length += $("textarea[name=hourly_seasonal_txt]").val().length;
+      text_length += $("textarea[name=long_comment]").val().length;
+      
+      $(".text_count").text(text_length);
+      if (text_length < 500) 
+        $('.text_count').addClass('text-danger');
+      else 
+        $('.text_count').removeClass('text-danger');
+    });
+    
+    $("input[name='review[pet]']").change(function(){
+      if ($(this).val() == "t") {
+        $(this).parents('.item_content').find('.item_text_box').show();
+      } else {
+        $(this).parents('.item_content').find('.item_text_box').hide();
+      }
+    });
+
+    var main_imgs_box = $("#main_imgs_box").children().toArray().map(function(i){ return "/images/reviews/" + i.innerText }),
+        main_imgs_upload = new FileUploadWithPreview('main_imgs_upload', {
+        showDeleteButtonOnImages: true,
+        presetFiles: main_imgs_box,
+        images: { baseImage: '<%= asset_path('upload_profile.png') %>', backgroundImage: '' }
+      });
+
+    <% review_tags.each do |k,v| %>
+      var <%= v + "_imgs_box" %> = $("#<%=v%>_imgs_box").children().toArray().map(function(i){ return "/images/review/" + i.innerText }),
+        <%= v + "_videos_box" %> = $("#<%=v%>_videos_box").children().toArray().map(function(i){ return "/videos/review/" + i.innerText }),
+        <%= v + "_upload" %> = new FileUploadWithPreview('<%=v%>_upload', {
+        showDeleteButtonOnImages: true,
+        presetFiles: <%= v + "_imgs_box" %>.concat(<%=v + "_videos_box" %>),
+        images: { baseImage: '', backgroundImage: '' }
+      });
+    <% end %>
+    $(".custom-file-container__image-preview").on('click', function (e) {
+      if ($(e.target).hasClass("custom-file-container__image-preview")){ $(this).prev().children("input").trigger('click'); }
+    });
+    $(".camera_ic").on('click', function (e) { $("input[name='" + $(e.target).attr("id") + "[]']").trigger('click'); });
+
+    function _submit(btn){
+      event.preventDefault();
+      var length = 0;
+      var str = "";
+      <% review_tags.each do |k,v| %>
+        length += $("#<%=v%>-message-txt").val().length;
+      <% end %>
+      length += $("textarea[name=hourly_seasonal_txt]").val().length;
+      length += $("textarea[name=long_comment]").val().length;
+      if (length >= 500) {
+        str = "<br><br><p style='text-align:right; font-size:12px;'>한마디 표현을 제외한 글자 수 : " + length + "/500</p>"
+      } else {
+        str = "<p><br>한마디 표현을 제외한 글자 수가 <b style='color: red'>500자 미만</b>입니다. 등록완료 후에는 변경이 어렵습니다.<br><b style='color: red'>500자 이상</b> 일 시 양질의 리뷰를 제공하실 수 있습니다.<br>그런데도 계속하시겠습니까?</p>" +
+              "<br><br><p style='text-align:right; font-size:12px;'>한마디 표현을 제외한 글자 수 : " + length + "/500</p>"
+      }
+      dataConfirmModal.confirm({
+        title: '리뷰등록',
+        text: $(btn).data("confirm") + str,
+        commit: '등록',
+        cancel: '취소',
+        zIindex: 10099,
+        onConfirm: function() {  
+          var form_check = true,
+              imp_img_check = true,
+              $form = $(btn).closest("form")[0], 
+              formUrl = $(btn).closest("form").attr("action"),
+              formData = new FormData($form),
+              formDataEntries = formData.entries(), 
+              formDataEntry = formDataEntries.next(), pair,
+              imageMaxSize  = 3145728, videoMaxSize  = 31457280,
+              imageMaxSizeMb  = 3, videoMaxSizeMb  = 30;
+          
+          // 보내기 누를때마다 다시 파일 추가하기 위한 것 & 이미지 크기 확인
+          <% review_tags.each do |k,v| %>
+            formData.delete("<%= v %>_imgs[]");
+            for(var i = 0; i < <%= v + "_upload" %>.cachedFileArray.length; i++){
+              formData.append('<%= v %>_imgs[]', <%= v + "_upload" %>.cachedFileArray[i], <%= v + "_upload" %>.cachedFileArray[i].name);
+            }
+      
+            for(var i = 0; i < formData.getAll('<%= v %>_imgs[]').length; i++){
+              if (formData.getAll('<%= v %>_imgs[]')[i].name.length != 0) {
+                if (formData.getAll('<%= v %>_imgs[]')[i].type.indexOf('image') >= 0 ) {
+                  if (!(formData.getAll('<%= v %>_imgs[]')[i].size < imageMaxSize)) { 
+                    $('html,body').animate({scrollTop:$("div[data-upload-id=<%=v%>_upload]").offset().top - 120}, 500);
+                    $("div[data-upload-id=<%=v%>_upload]").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+                    window.setTimeout(function() {
+                      $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                      });
+                    }, 2000);
+                    form_check = false;
+                    break;
+                  }
+                } else {
+                  if (!(formData.getAll('<%= v %>_imgs[]')[i].size < videoMaxSize)) { 
+                    $('html,body').animate({scrollTop:$("div[data-upload-id=<%=v%>_upload]").offset().top - 120}, 500);
+                    $("div[data-upload-id=<%=v%>_upload]").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i> 영상 크기는 " + videoMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+                    window.setTimeout(function() {
+                      $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                      });
+                    }, 2000);
+                    form_check = false;
+                    break;
+                  }
+                }  
+              }
+                
+            }
+          <% end %>
+
+          if ($(btn).attr("name") == "temporary") {
+            formData.append("temporary", "t");
+          } else {
+            while (!formDataEntry.done) {
+              pair = formDataEntry.value;
+              // 주소 확인
+              if (pair[0] == "review[address]" && pair[1].length == 0) { 
+                $('html,body').animate({scrollTop:$("input[name='" + pair[0] + "']").offset().top - 120}, 500);
+                $("input[name='" + pair[0] + "']").focus();
+                $("input[name='" + pair[0] + "']").before("<p class='blank_alert text-danger' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                blank_alert();
+                form_check = false;
+                break;
+              }
+              // 상세 주소 확인
+              if (pair[0] == "review[detail_address]" && pair[1].length == 0) { 
+                $('html,body').animate({scrollTop:$("input[name='" + pair[0] + "']").offset().top - 120}, 500);
+                $("input[name='" + pair[0] + "']").focus();
+                $("input[name='" + pair[0] + "']").before("<p class='blank_alert text-danger' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                blank_alert();
+                form_check = false;
+                break;
+              }
+              // 애완동물 확인
+              if (pair[0] == "review[pet]" && pair[1] == "t" && formData.get("review[pet_txt]").length == 0) {
+                $('html,body').animate({scrollTop:$("input[name='" + pair[0] + "']").offset().top - 120}, 500);
+                $("input[name='" + pair[0] + "']").focus();
+                $("input[name='review[pet_txt]']").before("<p class='blank_alert text-danger' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                blank_alert();
+                form_check = false;
+                break;
+              }
+              
+              // 각 항목 확인
+              <% review_tags.each do |k,v| %>
+                if (formData.has("item-<%=v%>")) { // 항목 만족도 선택 된 경우
+                  if (pair[0] == "item-<%=v%>") { // 
+                    if (pair[1] == "1" && formData.get("item-<%=v%>-txt").length == 0) { // 1점 일 때 txt 있어야함
+                      $("#<%=v%>-message-txt").focus();
+                      $("#<%=v%>-message-txt").before("<p class='blank_alert text-danger' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                      blank_alert();
+                      form_check = false;
+                      break;
+                    }
+                  }
+                } else { // 항목 만족도 선택을 안했을 경우 / 해당 항목 만족도 체크 요구하기
+                  $('html,body').animate({scrollTop:$(".<%=v%>_container").offset().top - 120}, 500);
+                  $(".<%=v%>_container").before("<p class='blank_alert text-danger text-right' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 만족도를 선택해주세요.</p>");
+                  blank_alert();
+                  form_check = false;
+                  break;
+                }
+              <% end %>
+
+              // 한마디 표현
+              if (pair[0] == "short_comment" && pair[1].length == 0) {
+                $('html,body').animate({scrollTop:$("input[name='" + pair[0] + "']").offset().top - 120}, 500);
+                $("input[name='" + pair[0] + "']").focus();
+                $("input[name='" + pair[0] + "']").before("<p class='blank_alert text-danger' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                blank_alert();
+                form_check = false;
+                break;
+              }
+              
+              formDataEntry = formDataEntries.next();
+            }
+          }
+
+          if (form_check) {
+            $.ajax({
+              type : "POST", enctype: 'multipart/form-data',
+              url : formUrl,
+              processData: false, contentType: false,
+              dataType : "json", cache : false,
+              data : formData,
+              beforeSend: function () {
+                $('#Progress_Loading').show();
+              },
+              error : function() {
+                alert("예기치 못한 오류가 발생했습니다. 다시 작성해주세요.");
+                location.reload();
+              },
+              success : function(data){
+                location.replace(data.redirect_to);
+              }
+            });
+          }
+
+        }, onCancel:  function() { }
+      });
+    }
+
+    var blank_alert = function () {
+       window.setTimeout(function() {
+        $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){ 
+          $(this).remove(); 
+        }); 
+      }, 2000);
+    };
+
+  </script>
+<% end %>

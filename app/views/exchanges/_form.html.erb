@@ -1,0 +1,296 @@
+<%= form_for @exchange, html: {class: "row justify-content-center" } do %>
+ 
+  <div class="col-12 col-sm-10 col-lg-8">
+    <p>■ 환전 신청시 꼭 읽어주세요!</p>
+  </div>
+  <div class="col-12 col-sm-10 col-lg-8" >
+    <section class="box_agree" style="margin:10px;">
+      <div class="box_policy">
+        <%= render partial: "policies/exchanges" %>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-12 col-sm-10 col-lg-8 px-md-5">
+    <div class="row">
+      <div class="col-6 col-md-4">
+        <p class="py-1">환전이 가능한 포인트</p>
+        <label class="py-1" style="margin-bottom: 2px; display: block ;">환전 신청할 포인트</label>
+        <p class="py-1">환전 수수료</p>
+        <p class="py-1">실제 수령액</p>
+      </div>
+      <div class="col-6 col-md-8">
+        <p class="py-1"><%= number_with_delimiter(@available_pt) %></p>
+        <div class="py-1">
+          <input id="point" min="<%=@minimum_pt%>" max="<%=@available_pt%>"  step="100" value="<%=@exchange.pt || @minimum_pt%>" type="number" name="point" style="background-color: rgba(0,0,0,0); margin-left: 0px; border-top: 0px; border-left: 0px; border-right: 0px; line-height: 1rem; padding: 0 !important;"/>
+        </div>
+        <p class="py-1"><span id="fees"><%=number_with_delimiter(@fees)%></span> 원</p>
+        <p class="py-1"><span id="actual_money"><%= number_with_delimiter(@exchange.pt.to_i - @fees) %></span> 원</p>
+        <!--<span class="ex_point"><%=number_with_delimiter(@exchange.pt || @minimum_pt)%></span>-->
+      </div>
+    </div>
+  </div>      
+
+  <div class="col-12 col-sm-10 col-lg-8 mt-5" style="margin: 15px 0;">
+    <div  style="margin-bottom:20px;border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+      <p>개인 정보</p>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-6 mb-3" style="padding-left: 40px; padding-right: 40px;">
+        <label for="buyer_email" style="padding-left: 10px">이메일</label>
+        <input type="text" id="buyer_email" name="buyer_email" value="<%=@exchange.user.email || current_user.email %>" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px 0;"/>
+      </div>
+      <div class="col-12 col-sm-6 mt-3 mb-3 mt-sm-0" style="padding-left: 40px; padding-right: 40px;">
+        <label for="buyer_phone" style="padding-left: 10px">휴대폰</label>
+        <input value="<%=@exchange.phone%>" type="text" id="buyer_phone" name="buyer_phone" placeholder="숫자만 입력 해주세요" onKeyup="inputPhoneNumber(this)" maxlength="13" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px 0;"/>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-12 col-sm-10 col-lg-8 mt-5">
+    <div style="margin-bottom:20px;border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+      <p>계좌 정보</p>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-6 mb-3" style="padding-left: 40px; padding-right: 40px;">
+        <label for="bank_select" style="padding-left: 10px">은행</label>
+        <select id="bank_select" class="custom-select" style="height:38px;font-size: 12px; margin-left:10px;">
+          <% banks.each_with_index do |bank, i| %>
+            <option value="<%=bank%>" <%="selected" if @exchange.bank == bank || (i == 0 && @exchange.new_record?)%>><%=bank%></option>
+          <% end %>
+          <option value="" <%="selected" if (!banks.include?(@exchange.bank) && !@exchange.new_record?) %>>기타</option>
+        </select>
+        <input class="<%="d-none" if (banks.include?(@exchange.bank) || @exchange.new_record?) %>" type="text" name="bank" value="<%=(@exchange.bank.nil?)? "국민은행" : @exchange.bank%>" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px 0 ;"/>
+      </div>
+      <div class="col-12 col-sm-6 mt-3 mb-3 mt-sm-0" style="padding-left: 40px; padding-right: 40px;">
+        <label for="account_holder" style="padding-left: 10px">예금주</label>
+        <input placeholder="이름을 입력해주세요" value="<%=current_user.name%>" type="text" id="account_holder" name="account_holder" maxlength="13" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px 0;" readonly="readonly"/>
+      </div>
+
+      <div class="col-12" style="padding-left: 40px; padding-right: 40px;">
+        <label for="account_number" style="padding-left: 10px">계좌번호</label>
+        <input value="<%=@exchange.account_number%>" type="number" id="account_number" name="account_number" placeholder="숫자만 입력 해주세요" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px 0;"/>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-10 col-lg-8 mt-5">
+    <div style="margin-bottom:20px;border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+      <p>신분증 사본 첨부</p>
+    </div>
+    <div class="row">
+      <div class="col-12" style="padding-left: 40px; padding-right: 40px;">
+        <section style="border: 1px solid #dfdfdf; border-bottom: 0px;">
+          <div style="font-size: 12px; overflow-y: auto; padding: 1rem 1rem 1rem 1rem;">
+            <p>1.<b>전/월세 계약서</b>  2.<b>주민등록증 뒷면</b>(주소이전 한 경우)  3.<b>주민등록 초본</b>(주소이전 한 경우)</p>
+            <p style="color:red;">※ 면책 멘트 & 사실이 아닐 경우 ~~~</p>
+          </div>
+        </section>
+        <div class="custom-file-container" data-upload-id="imp_imgs_upload"  style="margin:0px !important;">
+          <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+          <label class="d-none custom-file-container__custom-file" >
+            <input type="file" name="imp_imgs[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File" required>
+            <span class="custom-file-container__custom-file__custom-file-control"></span>
+          </label>
+          <div class="custom-file-container__image-preview" style="border: 1px solid #dfdfdf; border-top:0; height: 150px !important; background-color: white !important; background-size:150px !important;"></div>
+        </div>
+      </div>  
+    </div>
+  </div>      
+
+  
+
+  <div class="col-12 col-sm-10 col-lg-8 mt-5 text-right">
+    <input type="button" class="btn_trans" onclick="_submit(this)" value="등록신청" style="font-size: 16px; margin: 0 20px 0 0;"
+      data-confirm="환전신청은 수정이 불가능합니다.<br>정확히 입력 하셨습니까?" >
+  </div>      
+<% end %>
+
+
+<%= content_for 'javascript_content' do %>
+
+  <script src="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+  <script src="https://unpkg.com/formdata-polyfill"></script>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+  <script>
+
+    function _submit(btn){
+      event.preventDefault();
+
+      dataConfirmModal.confirm({
+        title: '환전신청',
+        text: $(btn).data("confirm"),
+        commit: '등록',
+        cancel: '취소',
+        zIindex: 10099,
+        onConfirm: function() {  
+          var form_check = true;
+          var imp_img_check = true;
+          var $form = $(btn).closest("form")[0], 
+              formUrl = $(btn).closest("form").attr("action"),
+              formData = new FormData($form),
+              formDataEntries = formData.entries(), 
+              formDataEntry = formDataEntries.next(), pair;
+          for(var i = 0; i < imp_upload.cachedFileArray.length; i++){
+            if (!(imp_upload.cachedFileArray[i] instanceof File)) {
+              formData.append('imp_imgs[]', imp_upload.cachedFileArray[i], imp_upload.cachedFileArray[i].name);
+            }
+          }
+          while (!formDataEntry.done) {
+            pair = formDataEntry.value;
+            console.log(pair[0])
+            console.log("@@@@ " + pair[1])
+            if (pair[0] == "imp_imgs[]" && pair[1].name.length != 0) {
+              imp_img_check = false;
+            }
+
+            if (pair[1].length == 0) {
+              $('html,body').animate({scrollTop:$("input[name='" + pair[0] + "']").offset().top - 120}, 500);
+              $("input[name='" + pair[0] + "']").focus();
+              $("input[name='" + pair[0] + "']").before("<p class='blank_alert text-danger' style='font-size:12px; bottom: -7px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+              window.setTimeout(function() {
+                $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                  $(this).remove(); 
+                });
+              }, 2000);
+              form_check = false;
+              break;
+            } 
+            
+            formDataEntry = formDataEntries.next();
+          }
+
+          if (imp_img_check) {
+            $('html,body').animate({scrollTop:$("div[data-upload-id=imp_imgs_upload]").offset().top - 120}, 500);
+            $("div[data-upload-id=imp_imgs_upload]").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>증빙 서류를 첨부해주세요.</p>");
+            window.setTimeout(function() {
+              $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+              });
+            }, 2000);
+            form_check = false;
+          }
+
+
+          if (form_check) {
+            $.ajax({
+              type : "POST",
+              enctype: 'multipart/form-data',
+              url : formUrl,
+              processData: false,
+              contentType: false,
+              dataType : "json",
+              cache : false,
+              data: formData,
+              beforeSend: function () {
+                $('#Progress_Loading').show();
+              },
+              error : function() {
+                alert("예기치 못한 오류가 발생했습니다. 다시 작성해주세요.");
+                location.reload();
+              },
+              success : function(data){
+                location.replace(data.redirect_to);
+              }
+            });
+          }
+        },
+        onCancel:  function() {
+        } 
+          
+      });
+    }
+
+    var imp_upload = new FileUploadWithPreview('imp_imgs_upload', {
+      showDeleteButtonOnImages: true,
+      presetFiles: [
+        <% @exchange.exchange_imp_imgs.each_with_index do |i, index| %>
+          "/imp_images/exchange/<%= i.name %>"       
+          <%= "," if index != @exchange.exchange_imp_imgs.count - 1 %>
+        <% end %>
+      ],
+      images: {
+        baseImage: '<%= image_url("upload.png")%>',
+        backgroundImage: ''
+      }
+    })
+    $(".custom-file-container__image-preview").on('click', function (e) {
+      if ($(e.target).hasClass("custom-file-container__image-preview")){
+        $(this).prev().children("input").trigger('click');
+      }
+    });
+
+  
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function inputPhoneNumber(obj) {
+      var number = obj.value.replace(/[^0-9]/g, "");
+      var phone = "";
+
+      if(number.length < 4) {
+          return number;
+      } else if(number.length < 7) {
+          phone += number.substr(0, 3);
+          phone += "-";
+          phone += number.substr(3);
+      } else if(number.length < 11) {
+          phone += number.substr(0, 3);
+          phone += "-";
+          phone += number.substr(3, 3);
+          phone += "-";
+          phone += number.substr(6);
+      } else {
+          phone += number.substr(0, 3);
+          phone += "-";
+          phone += number.substr(3, 4);
+          phone += "-";
+          phone += number.substr(7);
+      }
+      obj.value = phone;
+    }
+   
+    $(document).ready(function(){
+      // actual_money_cal();
+      let point = $("#point");
+      point.data('oldVal', point.val());
+      point.on("propertychange change keyup paste input", function() {
+        // If value has changed...
+        if (point.data('oldVal') != point.val()) {
+          if (parseInt(point.val()) < parseInt("<%=@minimum_pt%>")) {
+            point.val("<%=@minimum_pt%>")
+          }
+          if (parseInt(point.val()) > parseInt("<%=@available_pt%>")) {
+            point.val("<%=@available_pt%>")
+          }
+          // Updated stored value
+          point.data('oldVal', point.val());
+          // $('.ex_point').text(numberWithCommas(parseInt(point.val())));
+          $("#actual_money").text(numberWithCommas(parseInt(point.val()) - parseInt($("#fees").text())));
+        }
+      });
+      (function () {
+        let point = $("#point");
+        $("#actual_money").text(numberWithCommas(parseInt(point.val()) - parseInt($("#fees").text())));
+      })()
+
+      $("#bank_select").change(function(){
+        $("input[name=bank]").val($(this).val());
+        if ($(this).val().length == 0){
+          $("input[name=bank]").removeClass("d-none");
+          $("input[name=bank]").focus();
+        } else {
+          $("input[name=bank]").addClass("d-none");
+        }
+      });
+
+    })
+  </script>
+<% end %>

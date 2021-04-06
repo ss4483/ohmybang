@@ -1,0 +1,264 @@
+$(".custom-file-container__image-preview").on('click', function (e) {
+  if ($(e.target).hasClass("custom-file-container__image-preview")){
+    $(this).prev().children("input").trigger('click');
+  }
+});
+
+var contract_imgs = $("#contract_imgs").children().toArray().map(function(i){ return "/imp_images/review/" + i.innerText })
+var imp_upload_contract = new FileUploadWithPreview('imp_imgs_upload_contract', {
+  showDeleteButtonOnImages: true,
+  presetFiles: contract_imgs,
+  images: {
+    baseImage: '<%= asset_path('upload_contract.png') %>',
+    backgroundImage: ''
+  }
+})
+
+var resident_imgs = $("#resident_imgs").children().toArray().map(function(i){ return "/imp_images/review/" + i.innerText })
+var imp_upload_resident = new FileUploadWithPreview('imp_imgs_upload_resident', {
+  showDeleteButtonOnImages: true,
+  presetFiles: resident_imgs,
+  images: {
+    baseImage: '<%= asset_path('upload_resident.png') %>',
+    backgroundImage: ''
+  }
+})
+
+// 제출 타입 설정
+$("input.imp_type").change(function(){
+  if ($(this).val() == "계약서"){
+    $("#speech-bubble").hide();
+    $("#contract_contents").show();
+    $("#resident_contents").hide();
+    
+    $(".imp_type_label[for='imp_contract']").removeClass("none");
+    $(".imp_type_label[for='imp_resident']").addClass("none");
+    // $("input[name='review[pet_txt]']").attr("required", "true");
+  } else {
+    $("#speech-bubble").show();
+    $("#contract_contents").hide();
+    $("#resident_contents").show();
+
+    $(".imp_type_label[for='imp_contract']").addClass("none");
+    $(".imp_type_label[for='imp_resident']").removeClass("none");
+
+    $(".speech-bubble").addClass("none");
+    // $("input[name='review[pet_txt]']").removeAttr("required");
+  }
+});
+
+// 관리비 t/f 설정
+$("input[name='management_fee']").change(function(){
+  if ($(this).val() == "t") {
+    $(this).parents('.item_content').find('.item_text_box').show();
+    $("input[name='management_type[]']").attr('disabled', false);
+    $(".item_checkbox_label").removeClass("disabled");
+  } else {
+    $(this).parents('.item_content').find('.item_text_box').hide();
+    $("input[name='management_type[]']").attr('disabled', true);
+    $(".item_checkbox_label").addClass("disabled");
+  }
+});
+
+// 주차여부 t/f 설정
+$("input[name='parking']").change(function(){
+  if ($(this).val() == "t") {
+    $(this).parents('.item_content').find('.item_text_box').show();
+  } else {
+    $(this).parents('.item_content').find('.item_text_box').hide();
+  }
+});
+
+$(".item_checkbox").change(function(){
+  var id = $(this).attr("id");
+  if($(this).is(":checked")){
+    $('label[for="' + id + '"]').addClass('checked');
+  } else {
+    $('label[for="' + id + '"]').removeClass('checked');
+  }
+});
+
+// 보내기 버튼
+function _submit(btn){
+  event.preventDefault();
+  
+  var $form = $(btn).closest("form")[0],
+    formUrl = $(btn).closest("form").attr("action"),
+    formData = new FormData($form),
+    imageMaxSize  = 3145728, imageMaxSizeMb  = 3,
+    imp_type = $("input[name='imp_type']:checked").val(),
+    // management_fee  = $("input[name='management_fee']:checked").val(),
+    // management_fee_price = $("input[name='management_fee_price']").val(),
+    // parking = $("input[name='parking']:checked").val(),
+    // parking_price = $("input[name='parking_price']").val(),
+    imp_img_check = true;
+    
+
+  if (typeof imp_type == "undefined") {
+  } else if (imp_type == "계약서") {
+    // 보내기 누를때마다 다시 파일 추가하기 위한 것
+    formData.delete("imp_imgs_contract[]")
+    for(var i = 0; i < imp_upload_contract.cachedFileArray.length; i++) 
+      formData.append('imp_imgs_contract[]', imp_upload_contract.cachedFileArray[i], imp_upload_contract.cachedFileArray[i].name);
+    
+    // 이미지 첨부 확인
+    if (formData.getAll("imp_imgs_contract[]").length <= 0) {
+      imp_img_check = false;
+      $('html,body').animate({scrollTop:$("label[for='imp_contract']").offset().top - 120}, 500);
+      $(".custom-file-container[data-upload-id='imp_imgs_upload_contract']").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>증빙 서류를 첨부해주세요.</p>");
+      window.setTimeout(function() {
+        $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove(); 
+        });
+      }, 2000);
+    }
+    // 이미지 크기 확인
+    for(var i = 0; i < formData.getAll('imp_imgs_contract[]').length; i++){
+      if (formData.getAll('imp_imgs_contract[]')[i].name.length != 0) {
+        if (!(formData.getAll('imp_imgs_contract[]')[i].size < imageMaxSize)) { 
+          imp_img_check = false;
+          $('html,body').animate({scrollTop:$("label[for='imp_contract']").offset().top - 120}, 500);
+          $(".custom-file-container[data-upload-id='imp_imgs_upload_contract']").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+          window.setTimeout(function() {
+            $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){ $(this).remove(); });
+          }, 2000);
+          break;
+        }
+      }
+    }
+  } else if (imp_type == "초본") {
+    // 보내기 누를때마다 다시 파일 추가하기 위한 것
+    formData.delete("imp_imgs_resident[]")
+    for(var i = 0; i < imp_upload_resident.cachedFileArray.length; i++) 
+      formData.append('imp_imgs_resident[]', imp_upload_resident.cachedFileArray[i], imp_upload_resident.cachedFileArray[i].name);
+    
+    // 이미지 첨부 확인
+    if (formData.getAll("imp_imgs_resident[]").length <= 0) {
+      imp_img_check = false;
+      $('html,body').animate({scrollTop:$("label[for='imp_resident']").offset().top - 120}, 500);
+      $(".custom-file-container[data-upload-id='imp_imgs_upload_resident']").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>증빙 서류를 첨부해주세요.</p>");
+      window.setTimeout(function() {
+        $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove(); 
+        });
+      }, 2000);
+    }
+    // 이미지 크기 확인
+    for(var i = 0; i < formData.getAll('imp_imgs_resident[]').length; i++){
+      if (formData.getAll('imp_imgs_resident[]')[i].name.length != 0) {
+        if (!(formData.getAll('imp_imgs_resident[]')[i].size < imageMaxSize)) { 
+          imp_img_check = false;
+          $('html,body').animate({scrollTop:$("label[for='imp_resident']").offset().top - 120}, 500);
+          $(".custom-file-container[data-upload-id='imp_imgs_upload_resident']").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+          window.setTimeout(function() {
+            $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){ $(this).remove(); });
+          }, 2000);
+          break;
+        }
+      }
+    }
+
+  }
+  
+  if (imp_img_check) { 
+    $.ajax( {
+      type : "POST",
+      enctype: 'multipart/form-data',
+      url : formUrl,
+      processData: false,
+      contentType: false,
+      dataType : "json",
+      cache : false,
+      data: formData,
+      beforeSend: function () {
+        $('#Progress_Loading').show();
+      },
+      error : function() {
+        alert("예기치 못한 오류가 발생했습니다. 다시 작성해주세요.");
+        location.reload();
+      },
+      success : function(data) {
+        if (data.type == "create") {
+          if (imp_type == "계약서") {
+            $('#next_step_review').attr('href', data.redirect_to);
+            if (data.redirect_to == "#") { $('#next_step_review').addClass('disabled'); }
+            $('#contract_next_step').modal({ backdrop: 'static', keyboard: false }, 'show')
+          } else if (imp_type == "초본") {
+            $('#next_step_review').attr('href', data.redirect_to);
+            if (data.redirect_to == "#") { $('#next_step_review').addClass('disabled'); }
+            $('#next_step').modal({ backdrop: 'static', keyboard: false }, 'show')
+          }
+        } else if (data.type == "update") {
+          $('#next_step_review').attr('href', data.redirect_to);
+          if (data.redirect_to == "#") { $('#next_step_review').addClass('disabled'); }
+          $('#next_step').modal({ backdrop: 'static', keyboard: false }, 'show')
+        }
+      }
+    });
+  } else {
+    console.log("error");
+  }
+  
+}
+
+
+$('#contract_next_step').click(function() {
+  $('#contract_next_step').modal('hide')
+  $('#next_step').modal({ backdrop: 'static', keyboard: false }, 'show')
+});
+
+
+$('#next_step_mypage').click(function() {
+  $('#next_step').modal('hide')
+  $('#mypage_next_step').modal({ backdrop: 'static', keyboard: false }, 'show')
+  var counter = 3;
+  var interval = setInterval(function() {
+      counter--;
+      // Display 'counter' wherever you want to display it.
+      $("#mypage_sec").text(counter);
+      if (counter == 0) {
+        // Display a login box
+        clearInterval(interval); // 메모리 누수 없에기위해 꼭 해야됨
+        window.location.replace("/mypage/reviews");
+      }
+  }, 1000);  
+});
+
+
+
+// // 프로필 사진 
+// function readURL() {    
+//   var $input = $(this);
+//   var $newinput =  $('#room_main_img ');
+//   if (this.files && this.files[0]) {
+//     var reader = new FileReader();
+//     var filename = $("#main_img").val();
+//     // filename = filename.substring(filename.lastIndexOf('\\')+1);
+//     reader.onload = function(e) {
+//       reset($newinput.next('.delbtn'), true);
+//       $newinput.attr('src', e.target.result).show();
+//       $newinput.after('<div class="delbtn" style="background: #EDEDE8; cursor:pointer; top:-6px; left:-6px; position: absolute; width: 20px; height: 20px; border-radius: 50%; text-align: center; box-shadow: 0 4px 10px 0 rgba(51, 51, 51, 0.25)"> <span class="  removebtn" style="color: #6a6a53;display: block;margin-top: -2px;" >×</span> </div>');
+//       $("#room_main_img_default").hide();
+//       $('#room_main_img').fadeIn(500);      
+//     }
+//     reader.readAsDataURL(this.files[0]);    
+//   } 
+// }
+// function reset(elm, prserveFileName) {
+//   if (elm && elm.length > 0) {
+//     var $input = elm;
+    
+//     $input.prev('#room_main_img').attr('src', '').hide();
+//     if (!prserveFileName) {
+//       $("#room_main_img").hide();
+//       $("#room_main_img_default").fadeIn(500);    
+//       $('input#main_img ').val("");
+//       //input.fileUpload and input#uploadre both need to empty values for particular div
+//     }
+//     elm.remove();
+//   }
+// }
+// $("#main_img").change(readURL);
+// $("form").on('click', '.delbtn', function (e) {
+//   reset($(this));
+// });

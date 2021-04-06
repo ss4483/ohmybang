@@ -1,0 +1,57 @@
+<div class="offset-md-1 col-md-10 col-12">
+
+  <div class="row" style="padding: 0 15px; margin-top: 10px;">
+    <div class="review-container col-12 col-lg-9 d-flex align-items-center">
+      <img class="review_room_img" src="<%= review_room_img(r)%>"  style="background-color:<%= color %>;"/>
+      <div class="review-box">
+        <p class="review_bd_nm">
+          <%= review_title(r) %> <span class="review_detail_address"><%= r.detail_address %></span>
+        </p>
+        <p class="review_address">
+          <%= r.address %> <%=r.extra_address%> <%= r.detail_address%>
+        </p>
+        <% if r.status == @status[4] %>
+          <div class="review-etc">
+
+            <img class="recommend_ic" src="<%= review_is_recommend(r.is_recommend)%>" /><!--
+            --><%= content_tag(:span, r.is_recommend == "t" ? "추천" : "비추천", class: "recommend_txt",style: "color: #{r.is_recommend == "t" ? "#18716b" : "#fa4c47"}") %>
+
+            <img class="text_count_ic" src="<%= image_url("ic/message.png")%>" /><!--
+            --><%= content_tag(:span, "#{ReviewItem.where(review_id: r.id).select(:comment).map(&:comment).compact.join.length + r.long_comment.to_s.length}자", class: "text_count_txt") %>
+
+            <img class="img_count_ic" src="<%= image_url("ic/camera.png")%>" /><!--
+            --><%= content_tag(:span, "#{ReviewImg.where(review_id: r.id).count}개", class: "img_count_txt") %>
+            <% if ReviewVideo.where(review_id: r.id).count != 0 %>
+              <img class="video_count_ic"  src="<%= image_url("ic/video.png")%>" /><!--
+              --><%= content_tag(:span, "#{ReviewVideo.where(review_id: r.id).count}개", class: "video_count_txt") %>
+            <% end %>
+
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-3">
+      <div class="row review-btn-group">
+        <a href="/reviews/<%=r.id%>" class="review-btn col-6 col-lg-12 <%= "disabled" if r.review_imp_imgs.pluck(:tag).first != "계약서" %>">
+          계약서
+          <% if user_signed_in? %>
+            <% if current_user.sec_viewer_histories.where(review_id: r.id).nil? %>
+              <span class="material-icons">done</span>
+            <% end %>
+          <% end %>
+          
+        </a>
+        <a href="/reviews/<%=r.id%>" class="review-btn col-6 col-lg-12 <%= "disabled" if r.status != @status[4] %>">
+          리뷰
+          <% if user_signed_in? %>
+            <% if current_user.viewer_histories.where(review_id: r.id).nil? %>
+              <span class="material-icons">done</span>
+            <% end %>
+          <% end %>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>

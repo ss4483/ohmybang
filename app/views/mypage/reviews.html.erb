@@ -1,0 +1,176 @@
+<% provide :title, "마이페이지/리뷰내역" %>
+
+<div class="main_container">
+  <div class="container">
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>리뷰 내역</p>
+      </div>
+    </div>
+    <%= render partial: "mypage/reviews_table", locals: { reviews: @reviews } %>
+
+
+    <%# 포인트 환전 %>
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 80px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>포인트 환전 <span style="font-weight: 400; font-size:14px;"><%= "(환전 신청 중)" if current_user.exchanges.where(status: "환전신청").present? %></span></p>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-10 col-lg-8" >
+        <div style="font-size: 12px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 18px; margin: 0 15px;">
+          <p style="font-size: 12px;">포인트 보유현황 확인 및 포인트 환전 신청을 하실수 있습니다. </p>
+          <p style="font-size: 12px;">포인트 환전 처리 완료가 되어야 보유 포인트에서 차감됩니다.</p>
+          <hr>
+          <p><%= current_user.email %>님이 보유하신 "<b><i>환전 가능 포인트</i></b>"는 <span class="point"><%= @available_pt %></span> 입니다. </p>
+          <p style="font-weight: bold; margin-top: 20px">누적 포인트 <span class="point"><%= @cumulative_points %></span></p>
+          <p style="font-weight: bold; margin-bottom: 20px">이미 환전한 포인트 <span class="point"><%= @exchanged_points %></span></p>
+          <p>환전은 "<b><i>환전 가능 포인트</i></b>"가 최소 <span class="point"><%=@minimum_pt%></span> 이상이어야 신청이 가능하고 환전 수수료 건당 <span class="point"><%=@fees%></span> 포인트가 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <%# 포인트 내역 %>
+    <%# TABLE HEADER %>
+    <div class="row d-flex justify-content-center" style="margin-top: 45px;;">
+      <div class="col-12 col-sm-10 col-lg-8">
+        <div class="row">
+          <div class="col table_title">포인트</div>
+          <div class="col table_title">메모</div>
+          <div class="col table_title">리뷰</div>
+          <div class="col table_title">날짜</div>
+        </div>
+      </div>
+    </div>
+    <%# TABLE BODY %>
+    <div class="row d-flex justify-content-center " style="margin-top: 30px;">
+      <% if @point_histories.blank? %>
+        <div class="col-12 col-sm-10 col-lg-8" style="padding: 100px 15px;">
+          <p class="text-center" style="color: hsl(0, 0%, 70%);">내역이 없습니다.</p>
+        </div>
+      <% else %>
+        <% @point_histories.each do |h|%>
+          <div class="col-12 col-sm-10 col-lg-8">
+            <div class="table_col row">
+              <% if h.pt == 0 %>
+                <div class="col table_content d-flex">무료 이용권</div>
+              <% else %>
+                <div class="col table_content d-flex"><%=(h.memo == "환전완료")? "- " : "+ " %><%= h.pt %></div>
+              <% end %>
+              <div class="col table_content d-flex"><%= h.memo %></div>
+              <div class="col table_content d-flex">
+                <% if h.review.present? %>
+                  <a href="/reviews/<%=h.review.id%>">
+                    <%= h.review.address %> <%= h.review.extra_address %> <%= h.review.detail_address %>
+                  </a>
+                <% end %>
+              </div>
+              <div class="col table_content d-flex"><%= raw h.created_at.strftime("%Y.%m.%d <br> %H:%M") %></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# PAGINATE %>
+    <div class="row justify-content-center " style="margin-top: 32px; margin-bottom: 32px;">
+      <div class="col-12 col-sm-10 col-lg-8 d-flex align-items-center justify-content-center" style="padding: 20px 0px;">
+        <%= paginate @point_histories, param_name: :history_page %>
+      </div>
+    </div>
+
+
+    <div class="row justify-content-center">
+      <div class="col-12 my-5" style="text-align: center">
+        <% if (@available_pt >= @minimum_pt) && (current_user.exchanges.where(status: "환전신청").empty? ) %>
+          <a href="/exchanges/new" class="btn_trans_round d-inline-block" style="padding: 16px 30px; font-size: 17px;">환전 신청하기</a>
+        <% else %>
+          <a href="#" class="btn_trans_round d-inline-block" style="padding: 16px 30px; font-size: 17px;" onclick="alert('최소 포인트(<%=@minimum_pt%>)가 부족하거나 이미 환전신청 중입니다.')">환전 신청하기</a>
+        <% end %>
+      </div> 
+    </div>
+
+
+    <%# 포인트 환전 처리 결과 %>
+    <% if !@exchanges.blank? %>
+      <div class="row d-flex justify-content-center" style="margin-top: 45px;;">
+        <div class="col-12 col-sm-10 col-lg-8">
+          <div class="row">
+            <div class="col table_title">계좌 정보</div>
+            <div class="col table_title">환전 신청 일시</div>
+            <div class="col d-none d-md-block table_title">환전 신청 포인트</div>
+            <div class="col d-none d-md-block table_title">실수령 금액</div>
+            <div class="col d-none d-md-block table_title">상태</div>
+            <div class="col table_title"></div>
+          </div>
+        </div>
+      </div>
+
+      <% @exchanges.each do |e|%>
+
+        <div class="row d-flex justify-content-center" style="margin-top: 7px; ">
+          <div class="col-12 col-sm-10 col-lg-8">
+            <div class="row table_col">
+              <div class="col table_content d-flex">
+                <%= e.account_holder  %> /<%= e.bank  %><br><%= e.account_number  %>
+              </div>
+              <div class="col table_content d-flex"><%= raw e.created_at.strftime("%Y.%m.%d <br> %H:%M") %></div>
+              <div class="col table_content d-none d-md-flex"><%= number_with_delimiter(e.pt) %></div>
+              <div class="col table_content d-none d-md-flex"><%= number_with_delimiter(e.actual_money) %> 원</div>
+              <div class="col table_content d-none d-md-flex" style="color: <%=review_status_color(e.status)%>; font-weight: bold;"><%= e.status %></div>
+              <div class="col table_content d-flex">
+                <% if e.status == "환전신청"%>
+                  <div class="col d-flex table_content">
+                    <p>환전 대기 중</p>
+                  </div>
+                <% elsif e.status == "환전반려"%>
+                  <a href="/exchanges/<%=e.id%>/edit" class="edit_review col d-flex table_content" style="font-weight:bold">
+                    <p>수정하기</p>
+                  </a>
+                <% end %>
+              </div>
+
+              <% if e.exchange_confirms.present? %>
+                <div class="col-12 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                  <div id="exchange_confirm_box_<%=e.id%>" class="review_confirm_box box_none row justify-content-center mx-0">
+                    <div class="col-12 text-left p-0" style="margin-bottom: 10px; margin-top: 7px;">
+                      (환전 신청 내역)
+                    </div>
+                    <div class="col-12" style="height: 100px; overflow-y: auto;">
+                      <% e.exchange_confirms.order(created_at: "DESC").each do |confirm|%>
+                        <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                          <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                            <%= confirm.status %>
+                            <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                          </p>
+                          <% if confirm.status == "환전반려" %>
+                            <p class="text-left p-2"><%= confirm.memo %></p>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div class="down_arrow" data-value="exchange_confirm_box_<%=e.id%>">
+                    <i class="material-icons mt-2">keyboard_arrow_down</i>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="row justify-content-center " style="margin-top: 32px;">
+        <div class="col-12 col-sm-10 col-lg-8" style="text-align:right; font-size:12px; margin-top: 20px;     padding-top: 10px;">
+          (누적 환전 총액 : <%=number_with_delimiter(@exchanged_money)%>원)
+        </div>
+        <div class="col-12 col-sm-10 col-lg-8 d-flex align-items-center justify-content-center" style="padding: 20px 0px;">
+          <%= paginate @exchanges, param_name: :ex_page %>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+</div>

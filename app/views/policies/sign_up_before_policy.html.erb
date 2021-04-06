@@ -1,0 +1,67 @@
+<div class="box" style="height:100%;">
+  <div class="container h-100" style="position: relative; padding-top: 146px;">
+
+    <div class="row d-flex justify-content-center mt-5 mx-0" style="width:100%; padding-bottom: 120px;">
+
+      <div class="col-12 col-lg-10 col-xl-8" style="margin-bottom: 40px;" >
+        <p class="text-center" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 40px; font-weight: 600;">회원가입</p>
+        <img class="d-block" src="<%= image_url("sign_up_1_step.png")%>" style="width:100px; margin: 15px auto;"/>
+
+        <p class="text-center" style="font-size: 30px; color: #42817A;">오마방에 오신 것을 환영합니다.</p>
+        <p class="text-center">약관, 개인정보 수집 및 이용, 프로모션 안내 메일 수신(선택)에 동의해 주세요.</p>
+      </div>
+
+      <div class="w-100"></div>
+      <%= form_tag("/users/sign_up", class:"col-12 col-lg-8", style:"", multipart: true ) do %>
+        <section class="box_agree">
+          <div class="sec_header">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="true" id="policy1" required>
+              <label class="form-check-label" for="policy1">
+                (필수) 서비스 이용약관 동의
+              </label>
+            </div>
+          </div>
+          <div class="box_policy">
+            <%= render partial: "policies/policy_1" %>
+          </div>
+        </section>
+
+        <section class="box_agree">
+          <div class="sec_header">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="true" id="policy2" required>
+              <label class="form-check-label" for="policy2">
+                (필수) 개인정보 수집 및 이용 동의
+              </label>
+            </div>
+          </div>
+          <div class="box_policy">
+            <%= render partial: "policies/policy_2" %>
+          </div>
+        </section>
+
+        <section class="box_agree">
+          <div class="sec_header">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="p" value="t" id="policy3">
+              <label class="form-check-label" for="policy3">
+                (선택) 이벤트 등 프로모션 알림 메일 수신 동의
+              </label>
+            </div>
+          </div>
+          <div class="box_policy" style="height:80px">
+            오마방이 제공하는 이벤트와 관련된 프로모션 알림 메일 수신에 동의합니다.
+          </div>
+        </section>
+
+        <input type="hidden" name="policy" value="t" />
+
+        <div class="actions">
+          <input type="submit" class="btn-block btn btn-green btn-lg mt-3 p-2" value="동의" />
+        </div>
+      <% end %>
+
+    </div>
+  </div>          
+</div>

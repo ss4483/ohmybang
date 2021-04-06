@@ -1,0 +1,864 @@
+<% provide :title, "리뷰 검색" %>
+
+<div class="main_container">
+  <div class="container p-0" style="position: relative;">
+    
+    <div class="search_container">
+      <div class="d-flex justify-content-center">
+        <div class="label_container">
+          <label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("원룸") %>" for="room_01">원룸</label>
+          |
+          <label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("투/쓰리룸") %>" for="room_02">투/쓰리룸</label>
+          |
+          <label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("오피스텔") %>" for="room_03">오피스텔</label>
+          |
+          <label class="room_label <%= "checked" if params[:check].blank? || params[:check].include?("아파트") %>" for="room_04">아파트</label>
+        </div>
+      </div>
+      <div class="">
+        <div style="opacity: 0.9;">
+          <%= form_tag('/reviews', {id: 'search_form', method: 'get'}) do %>
+            <input class="room_checkbox d-none" id="room_01" type="checkbox" name="check[]" value="원룸" <%= "checked" if params[:check].blank? || params[:check].include?("원룸") %>>
+            <input class="room_checkbox d-none" id="room_02" type="checkbox" name="check[]" value="투/쓰리룸" <%= "checked" if params[:check].blank? || params[:check].include?("투/쓰리룸") %>>
+            <input class="room_checkbox d-none" id="room_03" type="checkbox" name="check[]" value="오피스텔" <%= "checked" if params[:check].blank? || params[:check].include?("오피스텔") %> >
+            <input class="room_checkbox d-none" id="room_04" type="checkbox" name="check[]" value="아파트" <%= "checked" if params[:check].blank? || params[:check].include?("아파트") %>>
+
+            <div style="position:relative;">
+              <div class="search_input_box d-block">
+                <input id="search_bar" class="d-block m-0 w-100" name="address" style="background-color:#f7f5f5!important" type="text" placeholder="지금 바로 정직한 리뷰를 검색해보세요! (ex: <%=@default_address%>)"  value="<%=params[:address]%>" autocomplete="off" onkeypress="if(event.keyCode==13) { $('#search_form').submit(); return false;}" required/>
+                <input id="detail_search_bar" class="d-block m-0 w-100 <%= "none" if !params[:detail_address].present? %>" style="background-color:#f7f5f5!important" name="detail_address" type="text" placeholder="ex) 101동 101호" value="<%=params[:detail_address]%>" autocomplete="off" onkeypress="if(event.keyCode==13) {$('#search_form').submit(); return false;}"/>
+                <input id="search_si_nm" name="si_nm" class="d-none" value="<%=params[:si_nm]%>">
+              </div><!--
+           --><button class="detail_search d-none d-sm-inline-block" style="background-color:#f7f5f5!important; width:10%;  float: none; margin-right: 0; position: absolute; top: 0; right: 10%; height: 100%;">
+                <div class="detail_search_txt"><%= !params[:detail_address].present?? "+" : "-" %> 상세검색하기</div>
+              </button><!--
+           --><button class="search_btn" type="submit" style="background-color:#f7f5f5!important" >검색</button>
+            </div>
+            <hr class="d-sm-none m-0 w-100">
+            <button class="detail_search mobile d-sm-none" style="background-color:#f7f5f5!important" >
+              <div class="detail_search_txt"><%= !params[:detail_address].present?? "+" : "-" %> 상세검색하기</div>
+            </button>
+          <% end %>
+
+        </div>
+      </div>
+      
+      <div id="search_container" class="d-flex justify-content-center" >
+        <div id="search_box" class="d-none" style="background-color:#f7f5f5!important" >
+          <div id="error_box"  >
+            <p>검색 결과가 없습니다.</p>
+            <p class="error_message">검색어가 입력되지 않았습니다.</p>
+          </div>
+          <div id="search_list" class="d-none">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <div class="row m-0" style="padding-bottom: 100px;">
+      <% if @address_check %>
+        <div class="blank_search col-12">
+          <p class="" style="text-align: center;"><%=@search_word%> 의 검색 결과가 없습니다.</p> 
+          <p style="text-align: center;">검색 주소를 다시 확인해주세요</p>
+        </div>
+      <% end %>
+
+      <!-- 지도 -->
+      <div id="map" class="col-12 offset-md-1 col-md-10 map" style="">
+      </div>
+      <div class="map_icons col-12 offset-md-1 col-md-10 p-0" style="">
+        <% if @matching_reviews.blank? && @reviews.blank? %>
+          <img src="<%= image_url("map_none.png")%>" style="height: 20px;" />
+          <span> 검색 주소 리뷰 없음 </span>
+          <% if !@nearby_reviews.blank? %>
+            | <img src="<%= image_url("map_icon_03.png")%>" style="height: 20px;" />
+            <span > 근방 <%=(@kilometers).round()%>km내 리뷰</span>
+          <% end %>
+        <% else %>
+          <img src="<%= image_url("map_icon_01.png")%>" style="height: 20px;" />
+          <span > 검색 주소 리뷰  |</span>
+          <img src="<%= image_url("map_icon_02.png")%>" style="height: 20px;" />
+          <span > 같은 건물 리뷰  |</span>
+          <img src="<%= image_url("map_icon_03.png")%>" style="height: 20px;" />
+          <span > 근방 <%=(@kilometers).round()%>km내 리뷰</span>
+        <% end%>
+      </div>
+
+
+      <!-- 상세검색 리뷰 -->
+      <% if @matching_check %>
+        <% if @matching_reviews.blank? %>
+          <div class="col-12" style="margin-top:100px; margin-bottom:100px;text-align:center">
+            <% if @reviews.blank? %> 
+              <p style="text-align:center"><b><%= params[:address] %> <%= params[:detail_address]%></b> 하우스 리뷰가 없습니다.</p>
+            <% else %>
+              <p style="font-size:10px">(<%=params[:address]%>)</p> 
+              <p ><b><%= @reviews.take.bd_nm %> <%= params[:detail_address]%></b> 하우스 리뷰가 없습니다.</p>
+            <% end %>
+          </div>
+        <% else %>
+          <% @matching_reviews.each do |r| %>
+            <%= render partial: "reviews/search_review", locals: { r: r, color: "#1e7770" } %>
+          <% end %>
+        <% end %>
+        <div class="col-12 offset-md-1 col-md-10" style="margin-top: 20px"><hr></div>
+      <% end %>
+
+
+
+
+      <!-- 같은 건물 리뷰 -->
+      <% if @reviews.blank? %>
+        <div class="col-12" style="margin-top:100px; margin-bottom:100px; text-align:center">
+          <% if @matching_reviews.blank? %> 
+            <p><b><%= params[:address] %> <%= params[:detail_address]%></b> 하우스 리뷰가 없습니다.</p>
+          <% else %>
+            <p style="font-size:10px">(<%=params[:address]%>)</p> 
+            <p><b><%= @matching_reviews.take.bd_nm %> <%= params[:detail_address]%></b> 하우스 리뷰가 없습니다.</p>
+          <% end %>
+        </div>
+        <div class="col-12 offset-md-1 col-md-10" style="margin-top: 20px"><hr></div>
+      <% else %>
+        <div class="col-12 offset-md-1 col-md-10" style="">
+          <p class="review_search_title" ><img src="<%= image_url("map_icon_02.png")%>" style="height: 20px; margin-right: 5px" /><b><%= @reviews.take.bd_nm %></b> <span class="d-none d-md-inline-block">(<%=params[:address]%>)</span> 리뷰</p>
+        </div>
+        <% @reviews.each do |r| %>
+          <%= render partial: "reviews/search_review", locals: { r: r, color: "#a3cec6" } %>
+        <% end %>
+        <div class="offset-lg-2 col-lg-8 offset-md-1 col-md-10 col-12 justify-content-center d-flex mt-3">
+          <%= paginate @reviews %>
+        </div>
+        <div class="col-12 offset-md-1 col-md-10"><hr></div>
+      <% end %>
+
+      <!-- 근방 리뷰 -->
+      <% if @nearby_reviews.blank? %>
+        <div class="col-12" style="margin-top:100px; margin-bottom:100px; text-align:center">
+          <% if !@reviews.blank? %>
+            <p style="font-size:10px">(<%= params[:address] %>)</p> 
+            <p><b><%= @reviews.take.bd_nm %> <%= params[:detail_address]%></b> 근방 <%=(@kilometers).round()%>km 내 하우스 리뷰가 없습니다.</p>
+          <% elsif !@matching_reviews.blank? %>
+            <p style="font-size:10px">(<%= params[:address] %>)</p> 
+            <p><b><%= @matching_reviews.take.bd_nm %> <%= params[:detail_address]%></b> 근방 <%=(@kilometers).round()%>km 내 하우스 리뷰가 없습니다.</p>
+          <% else %>
+            <p><b><%= params[:address] %> <%= params[:detail_address]%></b> 근방 <%=(@kilometers).round()%>km 내 하우스 리뷰가 없습니다.</p>
+          <% end %>
+        </div>
+      <% else %>
+        <% if !@reviews.blank? %>
+          <div class="col-12 offset-md-1 col-md-10">
+            <p class="review_search_title"><img src="<%= image_url("map_icon_03.png")%>"/><b><%= @reviews.take.bd_nm %></b> <span class="d-none d-md-inline-block">(<%=params[:address]%>)</span> 근방 <%=(@kilometers).round()%>km내 리뷰</p>
+          </div>
+        <% elsif !@matching_reviews.blank? %>
+          <div class="col-12 offset-md-1 col-md-10">
+            <p class="review_search_title"><img src="<%= image_url("map_icon_03.png")%>" /><b><%= @matching_reviews.take.bd_nm %></b> <span class="d-none d-md-inline-block">(<%=params[:address]%>)</span> 근방 <%=(@kilometers).round()%>km내 리뷰</p>
+          </div>
+        <% else %>
+          <div class="col-12 offset-md-1 col-md-10" style=" ">
+            <p class="review_search_title"><img src="<%= image_url("map_icon_03.png")%>" /><b><%= params[:address] %></b> 근방 <%=(@kilometers).round()%>km내 리뷰</p>
+          </div>
+        <% end %>
+        <% @nearby_reviews.each do |r|%>
+          <%= render partial: "reviews/search_review", locals: { r: r, color: "#e6dfc6" } %>
+        <% end %>
+        <div class="offset-lg-2 col-lg-8 offset-md-1 col-md-10 col-12 justify-content-center d-flex mt-3">
+          <%= paginate @nearby_reviews, param_name: :nearby_page %>
+        </div>
+      <% end %>
+
+      <%#= line_chart([ @house_1_1, @house_1_2, @house_1_3, @house_1_4 ], min: @house_1_min, max: @house_1_max, curve: false, title: "#{params[:si_nm]} 전세가격지수") %>
+      <%#= line_chart([ @house_2_1, @house_2_2, @house_2_3, @house_2_4 ], min: @house_2_min, max: @house_2_max, curve: false, title: "#{params[:si_nm]} 월세가격지수") %>
+      <%#= column_chart([ @house_5_1, @house_5_2, @house_5_3, @house_5_4 ], min: @house_5_min, max: @house_5_max, ytitle: "가격 (천원)", thousands: ",", title: "#{params[:si_nm]} 평균월세보증금") %>
+      <%#= column_chart([ @house_4_1, @house_4_2, @house_4_3, @house_4_4 ], min: @house_4_min, max: @house_4_max, ytitle: "가격 (천원)", thousands: ",", title: "#{params[:si_nm]} 평균월세가격") %>
+      <%#= column_chart([ @house_3_1, @house_3_2, @house_3_3, @house_3_4 ], min: @house_3_min, max: @house_3_max, ytitle: "가격 (천원)", thousands: "," , title: "#{params[:si_nm]} 평균전세가격") %>
+
+    </div>
+
+  </div>
+</div>
+
+
+<% if @matching_reviews.blank? && @reviews.blank? && @nearby_reviews.blank? %>
+  <!-- Modal -->
+  <div class="modal fade" id="newReview" tabindex="-1" role="dialog" aria-labelledby="newReviewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newReviewTitle">해당 주소에 리뷰가 없습니다.</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>리뷰를 요청하러 가시겠습니까?</p>
+        </div>
+        <div class="modal-footer">
+          <%# <a href="/sample" style="position: absolute; padding-left:1rem; left:0; font-size:12px; color:#888888">샘플 리뷰 보러가기</a> %>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+          <a href="/reqReviews" class="btn btn-danger">확인</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $('#newReview').modal('show');
+  </script>
+<% end %>
+
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<%=ENV["NAVER_YOUR_CLIENT_ID"]%>"></script>
+<%= javascript_include_tag "marker-clustering" %>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+  // static - main
+  $(document).ready(function(){  
+    /** 지도 **/
+    // 지도 초기화
+    var MARKER_ICON_URL = '<%= image_path "map_icon.png"%>';
+    var MARKER_HIGHLIGHT_ICON_URL = '<%= image_path "map_icon_highlight.png"%>';
+    var MARKER_SPRITE_X_OFFSET = 29;
+    var MARKER_SPRITE_Y_OFFSET = 50;
+
+    var MARKER_SPRITE_POSITION = {
+        "A0": [0, 0],
+        "B0": [MARKER_SPRITE_X_OFFSET, 0],
+        "C0": [MARKER_SPRITE_X_OFFSET*2, 0],
+        "D0": [MARKER_SPRITE_X_OFFSET*3, 0],
+        "E0": [MARKER_SPRITE_X_OFFSET*4, 0],
+        "F0": [MARKER_SPRITE_X_OFFSET*5, 0],
+        "G0": [MARKER_SPRITE_X_OFFSET*6, 0],
+        "H0": [MARKER_SPRITE_X_OFFSET*7, 0],
+        "I0": [MARKER_SPRITE_X_OFFSET*8, 0],
+        "A1": [0, MARKER_SPRITE_Y_OFFSET],
+        "B1": [MARKER_SPRITE_X_OFFSET, MARKER_SPRITE_Y_OFFSET],
+        "C1": [MARKER_SPRITE_X_OFFSET*2, MARKER_SPRITE_Y_OFFSET],
+        "D1": [MARKER_SPRITE_X_OFFSET*3, MARKER_SPRITE_Y_OFFSET],
+        "E1": [MARKER_SPRITE_X_OFFSET*4, MARKER_SPRITE_Y_OFFSET],
+        "F1": [MARKER_SPRITE_X_OFFSET*5, MARKER_SPRITE_Y_OFFSET],
+        "G1": [MARKER_SPRITE_X_OFFSET*6, MARKER_SPRITE_Y_OFFSET],
+        "H1": [MARKER_SPRITE_X_OFFSET*7, MARKER_SPRITE_Y_OFFSET],
+        "I1": [MARKER_SPRITE_X_OFFSET*8, MARKER_SPRITE_Y_OFFSET]
+    };
+    var map = new naver.maps.Map("map", {
+                useStyleMap: true,
+                center: new naver.maps.LatLng(<%=@lat%>, <%=@long%>),
+                zoom: 17,
+                minZoom: 9,
+                zoomControl: true,
+                zoomControlOptions: {
+                  position: naver.maps.Position.TOP_LEFT,
+                  style: naver.maps.ZoomControlStyle.SMALL
+                }
+              }),
+        markers = [];
+    // 클러스터링 html
+    var htmlMarker1 = {
+          content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background-image:url(\'<%= image_path "markers/cluster-marker-1.png"%>\');background-size:contain;"></div>',
+          size: N.Size(40, 40),
+          anchor: N.Point(20, 20)
+        },
+        htmlMarker2 = {
+          content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background-image:url(\'<%= image_path "markers/cluster-marker-2.png"%>\');background-size:contain;"></div>',
+          size: N.Size(40, 40),
+          anchor: N.Point(20, 20)
+        },
+        htmlMarker3 = {
+          content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background-image:url(\'<%= image_path "markers/cluster-marker-3.png"%>\');background-size:contain;"></div>',
+          size: N.Size(40, 40),
+          anchor: N.Point(20, 20)
+        },
+        htmlMarker4 = {
+          content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background-image:url(\'<%= image_path "markers/cluster-marker-4.png"%>\');background-size:contain;"></div>',
+          size: N.Size(40, 40),
+          anchor: N.Point(20, 20)
+        },
+        htmlMarker5 = {
+          content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:background-image:url(\'<%= image_path "markers/cluster-marker-5.png"%>\');background-size:contain;"></div>',
+          size: N.Size(40, 40),
+          anchor: N.Point(20, 20)
+        };
+
+    // 리뷰
+    var reviews = JSON.parse('<%= raw @reviews.map {|r| [r.lat, r.long, r.detail_address || "", r.bd_nm || "", r.id]} %>');
+    // 근처 리뷰
+    var nearby_reviews = JSON.parse('<%= raw @nearby_reviews.map {|r| [r.lat, r.long, r.detail_address || "", r.bd_nm || "", r.id]} %>');
+    // 일치하는 리뷰
+    var matching_reviews = JSON.parse('<%= raw @matching_reviews.map {|r| [r.lat, r.long, r.detail_address || "", r.bd_nm || "", r.id]} %>');
+      
+    var bounds = map.getBounds(),
+        southWest = bounds.getSW(),
+        northEast = bounds.getNE(),
+        lngSpan = northEast.lng() - southWest.lng(),
+        latSpan = northEast.lat() - southWest.lat();
+
+    var MarkerOverlapRecognizer = function(opts) {
+      this._options = $.extend({
+          tolerance: 5,
+          highlightRect: true,
+          highlightRectStyle: {
+              strokeColor: '#ff0000',
+              strokeOpacity: 1,
+              strokeWeight: 2,
+              strokeStyle: 'dot',
+              fillColor: '#ff0000',
+              fillOpacity: 0.5
+          },
+          intersectNotice: true,
+          intersectNoticeTemplate: '<div class="list_caption">{{bd_nm}} 리뷰 {{count}}개가 있습니다.</div>',
+          intersectList: true,
+          intersectListTemplate: '<div class="list_container">'
+              + '<p class="list_title">{{bd_nm}} ({{count}})</p>'
+              + '<hr class="list_hr">'
+              + '<div class="list_box">'
+              + '{{#repeat}}'
+              + '<div class="list_item {{matching}}"><p>{{detail}}</p></div>'
+              + '{{/#repeat}}'
+              + '</div>'
+              + '</div>'
+      }, opts);
+
+      this._listeners = [];
+      this._markers = [];
+
+      this._rectangle = new naver.maps.Rectangle(this._options.highlightRectStyle);
+      this._overlapInfoEl = $('<div style="position:absolute;z-index:100;margin:0;padding:0;display:none;"></div>');
+      this._overlapListEl = $('<div style="position:absolute;z-index:100;margin:0;padding:0;display:none;"></div>');
+    };
+    MarkerOverlapRecognizer.prototype = {
+      constructor: MarkerOverlapRecognizer,
+
+      setMap: function(map) {
+        var oldMap = this.getMap();
+
+        if (map === oldMap) return;
+
+        this._unbindEvent();
+
+        this.hide();
+
+        if (map) {
+          this._bindEvent(map);
+          this._overlapInfoEl.appendTo(map.getPanes().floatPane);
+          this._overlapListEl.appendTo(map.getPanes().floatPane);
+        }
+
+        this.map = map || null;
+      },
+
+      getMap: function() {
+        return this.map;
+      },
+
+      _bindEvent: function(map) {
+        var listeners = this._listeners,
+            self = this;
+
+        listeners.push(
+          map.addListener('idle', $.proxy(this._onIdle, this)),
+          map.addListener('click', $.proxy(this._onIdle, this))
+        );
+
+        this.forEach(function(marker) {
+          listeners = listeners.concat(self._bindMarkerEvent(marker));
+        });
+      },
+
+      _unbindEvent: function(map_) {
+        var map = map_ || this.getMap();
+
+        naver.maps.Event.removeListener(this._listeners);
+        this._listeners = [];
+
+        this._rectangle.setMap(null);
+        this._overlapInfoEl.remove();
+        this._overlapListEl.remove();
+      },
+
+      add: function(marker) {
+        this._listeners = this._listeners.concat(this._bindMarkerEvent(marker));
+        this._markers.push(marker);
+      },
+
+      remove: function(marker) {
+        this.forEach(function(m, i, markers) {
+          if (m === marker) {
+            markers.splice(i, 1);
+          }
+        });
+        this._unbindMarkerEvent(marker);
+      },
+
+      forEach: function(callback) {
+        var markers = this._markers;
+
+        for (var i=markers.length-1; i>=0; i--) {
+          callback(markers[i], i, markers);
+        }
+      },
+
+      hide: function() {
+        this._overlapListEl.hide();
+        this._overlapInfoEl.hide();
+        this._rectangle.setMap(null);
+      },
+
+      _bindMarkerEvent: function(marker) {
+        marker.__intersectListeners = [
+          marker.addListener('mouseover', $.proxy(this._onOver, this)),
+          marker.addListener('mouseout', $.proxy(this._onOut, this)),
+          marker.addListener('mousedown', $.proxy(this._onDown, this))
+        ];
+
+        return marker.__intersectListeners;
+      },
+
+      _unbindMarkerEvent: function(marker) {
+        naver.maps.Event.removeListener(marker.__intersectListeners);
+        delete marker.__intersectListeners;
+      },
+
+      getOverlapRect: function(marker) {
+        var map = this.getMap(),
+            proj = map.getProjection(),
+            position = marker.getPosition(),
+            offset = proj.fromCoordToOffset(position),
+            tolerance = this._options.tolerance || 3,
+            rectLeftTop = offset.clone().sub(tolerance, tolerance),
+            rectRightBottom = offset.clone().add(tolerance, tolerance);
+
+        return naver.maps.PointBounds.bounds(rectLeftTop, rectRightBottom);
+      },
+
+      getOverlapedMarkers: function(marker) {
+        var baseRect = this.getOverlapRect(marker),
+            overlaped = [{
+              marker: marker,
+              rect: baseRect
+            }],
+            self = this;
+
+        this.forEach(function(m) {
+          if (m === marker) return;
+
+          var rect = self.getOverlapRect(m);
+
+          if (rect.intersects(baseRect)) {
+            overlaped.push({
+              marker: m,
+              rect: rect
+            });
+          }
+        });
+
+        return overlaped;
+      },
+
+      _onIdle: function() {
+        this._overlapInfoEl.hide();
+        this._overlapListEl.hide();
+
+        this.getMap().setOptions({scrollWheel: true});
+
+      },
+
+      _onOver: function(e) {
+        var marker = e.overlay,
+            map = this.getMap(),
+            proj = map.getProjection(),
+            offset = proj.fromCoordToOffset(marker.getPosition()),
+            overlaped = this.getOverlapedMarkers(marker);
+
+        if (overlaped.length >= 1) {
+          if (this._options.highlightRect) {
+            var bounds;
+
+            for (var i=0, ii=overlaped.length; i<ii; i++) {
+              if (bounds) {
+                bounds = bounds.union(overlaped[i].rect);
+              } else {
+                bounds = overlaped[i].rect.clone();
+              }
+            };
+
+            var min = proj.fromOffsetToCoord(bounds.getMin()),
+                max = proj.fromOffsetToCoord(bounds.getMax());
+
+            this._rectangle.setBounds( naver.maps.LatLngBounds.bounds(min, max) );
+            this._rectangle.setMap(map);
+          }
+
+          if (this._options.intersectNotice) {
+            this._overlapInfoEl
+                .html(this._options.intersectNoticeTemplate.replace(/\{\{count\}\}/g, overlaped.length).replace(/\{\{bd_nm\}\}/g, overlaped[0].marker["bd_nm"]))
+                .css({
+                  left: offset.x + 15,
+                  top: offset.y - 40
+                })
+                .show();
+          }
+        } else {
+          this.hide();
+        }
+      },
+
+      _onOut: function(e) {
+        this._rectangle.setMap(null);
+        this._overlapInfoEl.hide();
+      },
+
+      _guid: function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+          var r = Math.random()*16|0, v = c == "x" ? r : (r&0x3|0x8);
+          return v.toString(16);
+        }).toUpperCase();
+      },
+
+      _renderIntersectList: function(overlaped, offset) {
+        if (!this._options.intersectList) return;
+
+        var listLayer = this._overlapListEl;
+
+        var REPEAT_REGEX = /\{\{#repeat\}\}([\s\S]*)\{\{\/#repeat\}\}/gm,
+            template = this._options.intersectListTemplate,
+            itemTemplate = null,
+            itemPlace = null,
+            matches = REPEAT_REGEX.exec(template),
+            uid = this._guid(),
+            self = this;
+
+        listLayer.empty();
+
+        if (matches && matches.length >= 1) {
+          template = template.replace(matches[0], '<div id="intersects-'+ uid +'"></div>');
+
+          template = $(template.replace(/\{\{bd_nm\}\}/g, overlaped[0].marker["bd_nm"]).replace(/\{\{count\}\}/g, overlaped.length));
+          
+          itemTemplate = matches[1];
+
+          listLayer.append($(template));
+
+          var placeholder = $('#intersects-'+ uid);
+
+          itemPlace = placeholder.parent();
+
+          placeholder.remove();
+          placeholder = null;
+        } else {
+          itemTemplate = template;
+          itemPlace = listLayer;
+        }
+        
+
+        var items = [];
+        for (var i=0, ii=overlaped.length; i<ii; i++) {
+          var c = overlaped[i]
+              item = $(itemTemplate.replace(/\{\{(\w+)\}\}/g, function(match, symbol) {
+                if (symbol === 'order') {
+                  return i+1;
+                } else if (symbol in marker) {
+                  return c.marker[symbol];
+                } else if (c.marker.get(symbol)) {
+                  return c.marker.get(symbol);
+                } else {
+                  match;
+                }
+              }));
+
+          item.on('click', $.proxy(self._onClickItem, self, c.marker));
+          items.push(item);
+        };
+
+        for (var j=0, jj=items.length; j<jj; j++) {
+          itemPlace.append(items[j]);
+        }
+
+        listLayer.css({
+          left: offset.x + 15,
+          top: offset.y
+        }).show();
+        this.getMap().setOptions({scrollWheel: false});
+      },
+
+      _onDown: function(e) {
+        var marker = e.overlay,
+            map = this.getMap(),
+            proj = map.getProjection(),
+            offset = proj.fromCoordToOffset(marker.getPosition()),
+            overlaped = this.getOverlapedMarkers(marker),
+            self = this;
+
+        naver.maps.Event.resumeDispatch(marker, 'click');
+
+        // if (overlaped.length <= 1) {
+        //   return;
+        // }
+
+        naver.maps.Event.stopDispatch(marker, 'click');
+        this._renderIntersectList(overlaped, offset);
+        this._overlapInfoEl.hide();
+
+        naver.maps.Event.trigger(this, 'overlap', overlaped);
+      },
+
+      _onClickItem: function(marker, e) {
+        naver.maps.Event.resumeDispatch(marker, 'click');
+
+        naver.maps.Event.trigger(this, 'clickItem', {
+          overlay: marker,
+          originalEvent: e.originalEvent
+        });
+
+        marker.trigger('click');
+      }
+    };
+
+    var recognizer = new MarkerOverlapRecognizer({
+      highlightRect: false,
+      tolerance: 5
+    });
+    recognizer.setMap(map);
+
+    var bounds = map.getBounds(),
+        southWest = bounds.getSW(),
+        northEast = bounds.getNE(),
+        lngSpan = northEast.lng() - southWest.lng(),
+        latSpan = northEast.lat() - southWest.lat();
+
+    function highlightMarker(marker) {
+        var icon = marker.getIcon();
+
+        if (icon.url !== MARKER_HIGHLIGHT_ICON_URL) {
+          icon.url = MARKER_HIGHLIGHT_ICON_URL;
+          marker.setIcon(icon);
+        }
+        marker.setZIndex(1000);
+    }
+
+    function unhighlightMarker(marker) {
+        var icon = marker.getIcon();
+
+        if (icon.url === MARKER_HIGHLIGHT_ICON_URL) {
+          icon.url = MARKER_ICON_URL;
+          marker.setIcon(icon);
+        }
+        marker.setZIndex(100);
+    }
+ 
+    function smoothScrollingTo(target){
+      $('html,body').animate({
+          scrollTop: $(target).offset().top - 110
+        }, 500, function() {
+          $(target).css("opacity", "0.3");
+          $(target).animate({opacity: "1"}, 800);
+        }
+      );
+
+       
+    }
+
+    for (var i = 0, ii = nearby_reviews.length; i < ii; i++) {
+      var position = new naver.maps.LatLng(nearby_reviews[i][0], nearby_reviews[i][1]);
+      var marker = new naver.maps.Marker({
+          map: map,
+          position: position,
+          bd_nm: nearby_reviews[i][3],
+          detail: nearby_reviews[i][3] + " " + nearby_reviews[i][2],
+          matching: "",
+          review_id: nearby_reviews[i][4],
+          icon: {
+            url: MARKER_ICON_URL,
+            size: new naver.maps.Size(24, 37),
+            anchor: new naver.maps.Point(12, 37),
+            origin: new naver.maps.Point(MARKER_SPRITE_POSITION["C0"][0], MARKER_SPRITE_POSITION["C0"][1])
+          },
+          shape: {
+            coords: [11, 0, 9, 0, 6, 1, 4, 2, 2, 4,
+                0, 8, 0, 12, 1, 14, 2, 16, 5, 19,
+                5, 20, 6, 23, 8, 26, 9, 30, 9, 34,
+                13, 34, 13, 30, 14, 26, 16, 23, 17, 20,
+                17, 19, 20, 16, 21, 14, 22, 12, 22, 12,
+                22, 8, 20, 4, 18, 2, 16, 1, 13, 0],
+            type: 'poly'
+          },
+          zIndex: 100
+      });
+      marker.addListener('mouseover', function(e) {
+        highlightMarker(e.overlay);
+      });
+      marker.addListener('mouseout', function(e) {
+        unhighlightMarker(e.overlay);
+      });
+      marker.addListener('click', function(e) {
+        var m = e.overlay;
+        smoothScrollingTo("#review_" + m.review_id);
+      });
+      markers.push(marker);
+      recognizer.add(marker);
+    };
+    for (var i = 0, ii = reviews.length; i < ii; i++) {
+      var position = new naver.maps.LatLng(reviews[i][0], reviews[i][1]);
+      var marker = new naver.maps.Marker({
+          map: map,
+          position: position,
+          bd_nm: reviews[i][3],
+          detail: reviews[i][3] + " " + reviews[i][2],
+          review_id: reviews[i][4],
+          matching: "",
+          icon: {
+            url: MARKER_ICON_URL,
+            size: new naver.maps.Size(24, 37),
+            anchor: new naver.maps.Point(12, 37),
+            origin: new naver.maps.Point(MARKER_SPRITE_POSITION["B0"][0], MARKER_SPRITE_POSITION["B0"][1])
+
+          },
+          shape: {
+            coords: [11, 0, 9, 0, 6, 1, 4, 2, 2, 4,
+                0, 8, 0, 12, 1, 14, 2, 16, 5, 19,
+                5, 20, 6, 23, 8, 26, 9, 30, 9, 34,
+                13, 34, 13, 30, 14, 26, 16, 23, 17, 20,
+                17, 19, 20, 16, 21, 14, 22, 12, 22, 12,
+                22, 8, 20, 4, 18, 2, 16, 1, 13, 0],
+            type: 'poly'
+          },
+          zIndex: 100
+      });
+      marker.addListener('mouseover', function(e) {
+        highlightMarker(e.overlay);
+      });
+      marker.addListener('mouseout', function(e) {
+        unhighlightMarker(e.overlay);
+      });
+      marker.addListener('click', function(e) {
+        var m = e.overlay;
+        
+        smoothScrollingTo("#review_" + m.review_id);
+      });
+      markers.push(marker);
+      recognizer.add(marker);
+    };
+    
+
+    for (var i = 0, ii = matching_reviews.length; i < ii; i++) {
+      var position = new naver.maps.LatLng(matching_reviews[i][0], matching_reviews[i][1]);
+      var marker = new naver.maps.Marker({
+          map: map,
+          position: position,
+          bd_nm: matching_reviews[i][3],
+          detail: matching_reviews[i][3] + " " + matching_reviews[i][2],
+          matching: "matching_list_item",
+          review_id: matching_reviews[i][4],
+          icon: {
+            url: MARKER_ICON_URL,
+            size: new naver.maps.Size(24, 37),
+            anchor: new naver.maps.Point(12, 37),
+            origin: new naver.maps.Point(MARKER_SPRITE_POSITION["A0"][0], MARKER_SPRITE_POSITION["A0"][1])
+          },
+          shape: {
+            coords: [11, 0, 9, 0, 6, 1, 4, 2, 2, 4,
+                0, 8, 0, 12, 1, 14, 2, 16, 5, 19,
+                5, 20, 6, 23, 8, 26, 9, 30, 9, 34,
+                13, 34, 13, 30, 14, 26, 16, 23, 17, 20,
+                17, 19, 20, 16, 21, 14, 22, 12, 22, 12,
+                22, 8, 20, 4, 18, 2, 16, 1, 13, 0],
+            type: 'poly'
+          },
+          zIndex: 100
+      });
+      marker.addListener('mouseover', function(e) {
+        highlightMarker(e.overlay);
+      });
+      marker.addListener('mouseout', function(e) {
+        unhighlightMarker(e.overlay);
+      });
+      marker.addListener('click', function(e) {
+        var m = e.overlay;
+        smoothScrollingTo("#review_" + m.review_id);
+      });
+      markers.push(marker);
+      recognizer.add(marker);
+    };
+
+    var overlapCoverMarker = null;
+    naver.maps.Event.addListener(recognizer, 'overlap', function(list) {
+      if (overlapCoverMarker) {
+        unhighlightMarker(overlapCoverMarker);
+      }
+
+      overlapCoverMarker = list[0].marker;
+
+      naver.maps.Event.once(overlapCoverMarker, 'mouseout', function() {
+        highlightMarker(overlapCoverMarker);
+      });
+    });
+
+    naver.maps.Event.addListener(recognizer, 'clickItem', function(e) {
+      recognizer.hide();
+
+      if (overlapCoverMarker) {
+        unhighlightMarker(overlapCoverMarker);
+
+        overlapCoverMarker = null;
+      }
+    });
+
+    // 클러스터링 초기화
+    var markerClustering = 
+      new MarkerClustering({
+        minClusterSize: 2,
+        maxZoom: 9,
+        map: map,
+        markers: markers,
+        disableClickZoom: false,
+        gridSize: 120,
+        icons: [htmlMarker1, htmlMarker2, htmlMarker3, htmlMarker4, htmlMarker5],
+        indexGenerator: [10, 100, 200, 500, 1000],
+        stylingFunction: function(clusterMarker, count) {
+          $(clusterMarker.getElement()).find('div:first-child').text(count);
+        }
+      });
+
+
+    var circle = new naver.maps.Circle({
+      map: map,
+      center: new naver.maps.LatLng(<%=@lat%>, <%=@long%>),
+      radius: <%= (1000 * @kilometers).round() %>,
+      strokeColor: "red",
+      fillColor: '#cccccc',
+      fillOpacity: 0.2
+    });
+   
+    <% if @matching_reviews.blank? && @reviews.blank? %>
+      var marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(<%=@lat%>, <%=@long%>),
+        map: map,
+        icon: {
+          url: '<%= image_path("map_none.png")%>',
+          scaledSize: new naver.maps.Size(25, 25)
+        }
+      });
+      var infoWindowElement = '<div class="list_caption" style="width:200px;">검색한 주소에 리뷰가 없습니다.</div>';
+
+      var infowindow = new naver.maps.InfoWindow({
+          content: infoWindowElement,
+          borderWidth: 0,
+          disableAnchor: true,
+          backgroundColor: 'transparent',
+          pixelOffset: new naver.maps.Point(0, -5),
+      });
+      naver.maps.Event.addListener(marker, "click", function(e) {
+        if (infowindow.getMap()) {
+          infowindow.close();
+        } else {
+          infowindow.open(map, marker);
+        }
+      });
+      infowindow.open(map, marker);
+    <% end %>
+    /** 지도 END **/
+  });
+
+
+</script>
+

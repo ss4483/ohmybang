@@ -1,0 +1,157 @@
+<%# TABLE HEADER %>
+<div class="row d-flex justify-content-center mx-0" style="margin-top: 45px;margin-bottom: 32px;">
+  <div class="col-12 col-sm-10 col-lg-8">
+    <div class="row">
+      <div class="table_title col">주소</div>
+      <div class="table_title col">마지막 수정 날짜</div>
+      <div class="table_title col">증빙 상태</div>
+      <div class="table_title col">리뷰 상태</div>
+    </div>
+  </div>
+</div>
+<%# TABLE HEADER END %>
+
+<%# TABLE BODY %>
+<% if reviews.empty? %>
+  <div class="row  justify-content-center" style="text-align:center; ">
+    <div class="col-12 col-sm-10 col-lg-8" style="padding: 100px 15px;">
+      <p style="color: hsl(0, 0%, 70%);">내역이 없습니다.</p>
+    </div>
+  </div>
+<% else %>
+  <% reviews.each_with_index do |r, index| %>
+    <div class="row d-flex justify-content-center " style="margin-top: 7px; ">
+      <div class="col-12 col-sm-10 col-lg-8">
+        <div class="row table_col">
+          <div class="col-12">
+            <div class="row">
+              <a href="/<%=r.model_name.plural%>/<%=r.id%>" class="col table_content d-flex" style="font-size: 10px;">
+                <%= r.address %> <%= r.extra_address %> <%= r.detail_address %>
+              </a>
+              <div class="col table_content d-sm-flex d-none">
+                <%= raw r.updated_at.strftime("%Y.%m.%d <br> %H:%M") %>
+              </div>
+              <div class="col table_content d-flex flex-column" style="color: <%=review_status_color(r.status)%>; font-weight: bold;">
+                <p>
+                  <%= r.imp_status %> 
+                  <% if !r.review_confirms.where(confirm_type: "증빙").blank? %>
+                    <span id="imp_status_<%=r.id%>" class="badge badge-pill badge-info" style="cursor:pointer;" data-toggle="modal" data-target="#imp_status_box_<%=r.id%>">!</span>
+                  <% end %>
+                </p>
+                <% if r.imp_status == @imp_status[1] %>
+                  <a href="/reviews/<%=r.id%>/edit">[수정]</a>
+                <% end %>
+              </div>
+              <% if !r.review_confirms.where(confirm_type: "증빙").blank? %>
+                <!-- 증빙 내역 -->
+                <div class="modal fade" id="imp_status_box_<%=r.id%>" tabindex="-1" role="dialog" aria-labelledby="imp_status_<%=r.id%>_title" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="imp_status_<%=r.id%>_title">증빙 상태 내역</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <% r.review_confirms.where(confirm_type: "증빙").order(created_at: "DESC").each do |confirm|%>
+                          <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                            <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                              <%= confirm.status %>
+                              <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                            </p>
+                            <% unless confirm.memo.nil? %>
+                              <p class="text-left p-2"><%= confirm.memo %></p>
+                            <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>              
+              <% end %>
+
+              <div class="col table_content d-flex flex-column" style="color: <%=review_status_color(r.status)%>; font-weight: bold;">
+                <p>
+                  <%= r.edit_review.nil? ? r.status : r.edit_review.status %>
+                  <% if !r.review_confirms.where(confirm_type: "리뷰").blank? %>
+                    <span id="status_<%=r.id%>" class="badge badge-pill badge-info" style="cursor:pointer;" data-toggle="modal" data-target="#status_box_<%=r.id%>">!</span>
+                  <% end %>
+                </p>
+                
+                <% if r.status == @status[0] || r.status == @status[1] || r.status == @status[3] %>
+                  <a href="/reviews/<%=r.id%>/review">[수정]</a>
+                <% elsif !r.edit_review.nil? %>
+                  <% if r.edit_review.status == @status[5] %>
+                    <a href="/reviews/<%=r.id%>/retouch">[수정 보기]</a>
+                  <% else %>
+                    <a href="/reviews/<%=r.id%>/review">[수정]</a>
+                  <% end%>
+                <% elsif (r.status == @status[4] || r.editable == "t") && r.edit_review.nil? %>
+                  <a href="/reviews/<%=r.id%>/review">[수정]</a>
+                <% end %>
+              </div>
+
+              <% if !r.review_confirms.where(confirm_type: "리뷰").blank? %>
+                <!-- 리뷰 내역 -->
+                <div class="modal fade" id="status_box_<%=r.id%>" tabindex="-1" role="dialog" aria-labelledby="status_<%=r.id%>_title" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="status_<%=r.id%>_title">리뷰 상태 내역</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <% r.review_confirms.where(confirm_type: "리뷰").order(created_at: "DESC").each do |confirm|%>
+                          <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                            <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                              <%= confirm.status %>
+                              <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                            </p>
+                            <% unless confirm.memo.nil? %>
+                              <p class="text-left p-2"><%= confirm.memo %></p>
+                            <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>              
+              <% end %>
+
+            </div>
+          </div>
+
+        </div>  
+      </div>  
+    </div>
+  <% end %>
+<% end %>
+<%# TABLE BODY END %>
+
+<%# paginate %>
+<div class="row justify-content-center " style="margin-top: 32px; margin-bottom: 32px;">
+  <div class="col-12 col-sm-10 col-lg-8 d-flex align-items-center justify-content-center" style="padding: 20px 0px;">
+    <%= paginate reviews %>
+  </div>
+</div>
+<%# paginate END %>
+
+<%= content_for 'javascript_content' do %>
+
+  <script>
+    $('.down_arrow').on("click",function(e){
+      var $confirm_box = $("#" + this.getAttribute('data-value'));
+      var $icon = $(this).children(".material-icons");
+      if ($confirm_box.hasClass('box_none')) {  
+        $confirm_box.removeClass('box_none');
+        $icon.text('keyboard_arrow_up');
+      } else {
+        $confirm_box.addClass('box_none');
+        $icon.text('keyboard_arrow_down');
+      }
+    });
+  </script>
+<% end %>

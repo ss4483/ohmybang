@@ -1,0 +1,64 @@
+<div class="main_container">
+  <div class="container">
+    
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>새소식 <%= notice_subtitle(params[:type]) %></p>
+        <p style="font-size:14px; font-weight: 400;">오마방의 새로운 소식을 전해드립니다.</p>
+      </div>
+    </div>
+    <div class="row justify-content-center" style="margin-top:40px;">
+      
+    </div>
+    <div id="content" class="row justify-content-center" style="padding-top:0px;" >
+      <div class="col-12 col-sm-10 col-lg-8 px-0">
+        <a class="notice_tab <%= "active" if params[:type].nil? %>" href="/notices">전체</a><!--
+        --><a class="notice_tab <%= "active" if params[:type] == "notice" %>" href="/notices?type=notice">공지</a><!--
+        --><a class="notice_tab <%= "active" if params[:type] == "event" %>" href="/notices?type=event">이벤트</a>
+      </div>
+      <%= render partial: "notices/notice", collection: @notices %>
+    </div>
+    <div class="row">
+      <div id="view-more-box" class="col-12 text-center">
+        <% if !@notices.blank? && (@notices.current_page != @notices.total_pages || @notices.total_pages != 1) %>
+          <p id="view-more" style="margin-top: 20px;">
+            <a data-remote="true" href="<%=url_for({page: @notices.current_page + 1, type: params[:type]})%>">
+              <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+              <span>불러오는 중</span>
+            </a>
+          </p>
+        <% end %>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<%= content_for 'javascript_content' do %>
+  <%= javascript_include_tag "infinite-scroll" %>
+  <script>
+    $(function () {
+      // text Counter END
+      if (window.location.hash) {
+        $(window.location.hash).addClass('select');
+        $(window.location.hash).parent('.notice').children(".content").removeClass('box_none');
+        $('html,body').animate({ scrollTop: $(window.location.hash).offset().top - 112 }, 500);
+      }
+
+      $(document).on('click','.title',function(e){
+        var $content = $("#" + this.getAttribute('data-value'));
+        var $icon = $(this).children(".material-icons");
+        if ($content.hasClass('box_none')) {  
+          $content.removeClass('box_none');
+          $(this).addClass('select');
+        } else {
+          $content.addClass('box_none');
+          $(this).removeClass('select');
+        }
+      });
+    });
+  </script>
+<% end %>

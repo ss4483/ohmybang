@@ -1,0 +1,28 @@
+<div id="scroll" style="display:none;">
+  <a id="top_scroll" class="scroll" title="Go to Top" href="#" >
+    <div><i class="material-icons">keyboard_arrow_up</i></div>
+  </a><!--
+  --><a id="bottom_scroll" class="scroll" title="Go to Top" href="#" >
+    <div><i class="material-icons">keyboard_arrow_down</i></div>
+  </a>
+</div>
+
+<script>
+  $('#top_scroll').on('click', function(event){     
+    event.preventDefault();
+    $('html,body').animate({scrollTop: 0}, 700);
+  })
+  $('#bottom_scroll').on('click', function(event){     
+    event.preventDefault();
+    $('html,body').animate({scrollTop: $(document).height()}, 700);
+  })
+  $(document).scroll(function() {
+    var winH = $(window).height();
+    var y = $(this).scrollTop() + winH - 100;
+    if (y > winH) {
+      $('#scroll').fadeIn();
+    } else {
+      $('#scroll').fadeOut();
+    }
+  });
+</script>

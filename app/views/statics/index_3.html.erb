@@ -1,0 +1,150 @@
+<div class="main_section_1">
+  <div class="empty"></div>
+  <div class="bg">
+    <div class="content_box">
+      <img class="title" src="<%= image_url("main/section_1_title.png")%>" /> 
+      <p class="content_1">
+        이제 집도 리뷰를 읽고 고르자
+      </p>
+      <p class="content_2">
+        <span class="content_bg">살아본 사람들의</span> '집'에 대한 리뷰
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<div class="main_section_search">
+  <% if @req_comment.present? %>
+    <div class="req_review_box">
+      <a class="req_review" href="/reqReviews#comment_<%=@req_comment.id%>">
+        <p class="address"><%= @req_comment.req_address.si_nm %> <%= @req_comment.req_address.sgg_nm %> <%= @req_comment.req_address.emd_nm %></p>
+        <p class="content"><%= truncate(@req_comment.content, length: 20) %></p>
+      </a>
+      <a class="req_review_btn d-none d-sm-inline-block" href="/reqReviews#comment_<%=@req_comment.id%>">
+        <span>→</span> 
+        리뷰요청하기
+      </a>
+    </div>
+  <% end %>
+</div>
+
+<div class="main_section_2">
+
+  <p class="title"><span>전세</span> 살아봤다면?</p>
+  <p class="title"><span>월세</span> 살아봤다면?</p>
+  <!--<img class="content_img" src="<%= image_url("main/section_2.png")%>"/>  %>-->
+  <div class="content_box">
+    <div class="content" style="text-align: right">
+      <img src="<%= image_url("main/section_2_1.png")%>" style="border-right: 1px solid #3BA0A2"/> 
+      <p class="title">리뷰 써서 돈벌고</p>
+      <p>하우스 리뷰를 남겨주세요!</p>
+      <p>리뷰 구매 수익을</p>
+      <p>받아보실 수 있습니다.</p>
+    </div>
+    <div class="content">
+      <img src="<%= image_url("main/section_2_2.png")%>" /> 
+      <p class="title">리뷰 읽고 고르자</p>
+      <p>이제 집도 리뷰를 보고 계약하세요!</p>
+      <p>살아봐야만 알 수 있는 것들이</p>
+      <p>모두 담겨있습니다.</p>
+    </div>
+  </div>
+</div>
+
+<div class="main_section_3">
+  <p class="title">오늘의 하우스 리뷰</p>
+  <hr class="short_hr">
+  <div class="content_container">
+    <% @reviews.each_with_index do |review, i| %>
+      <a class="content_box <%= "odd" if i%2 == 0 %>" href="/reviews/<%=review.id%>">
+        <img class="content_img" src="<%= review.main_img.blank?? image_url(room_img(review.room)) : "/images/reviews/#{review.main_img_name}" %>" alt="" />
+
+        <div class="content" >
+          <p class="address">
+            <%= truncate("#{review.address} #{review.extra_address} #{review.detail_address}", length: 15) %>
+            <img class="recommend" src="<%= image_url("#{is_recommend_img(review.is_recommend)}")%>" alt=""/>
+          </p>
+
+          <hr style="margin: 5px 0;">
+           
+          <div class="d-flex justify-content-between etc_box">
+            <div class="option">
+              <img src="<%= image_url("ic/message.png")%>" /><span><%= ReviewItem.where(review_id: review.id).select(:comment).map(&:comment).compact.join.length + review.long_comment.to_s.length %><span class="option_unit">자</span></span>
+            </div>
+            <div class="option">
+              <img src="<%= image_url("ic/camera.png")%>" /><span><%= ReviewImg.where(review_id: review.id).count %><span class="option_unit">개</span></span>
+            </div>
+            <div class="option">
+              <img class="video" src="<%= image_url("ic/video.png")%>" /><span><%= ReviewVideo.where(review_id: review.id).count %><span class="option_unit">개</span></span>
+            </div>
+          </div>
+        </div>
+      </a>
+      <% if i%2 == 1 %> 
+        <div class="w-100 d-sm-none"></div>
+      <% end %>
+      <% if i == 2 %>
+        <div class="w-100 d-none d-sm-block"></div>
+      <% end %>
+    <% end %>
+    <div class="w-100"></div>
+    <a class="btn_review" href="/reviewLists">
+      <span>→</span> 
+      더 보러가기
+    </a>
+  </div>
+
+</div>
+
+
+
+<div class="main_section_4">
+  <img class="phone_img" src="<%= image_url("main/section_4_phone.png")%>"/> 
+  <div class="content_box">
+    <p class="sub_title">살아본 사람들의 하우스 리뷰</p>
+    <p class="title">OH! MY BANG</p>
+    <a href="/reviews" class="btn">리뷰 찾기</a>
+    <a href="/reviews/new" class="btn">리뷰 쓰기</a>
+  </div>
+</div>
+
+<div class="main_section_5">
+  <p class="title">SNS</p>
+  <div class="content_box">
+    <a href="https://www.instagram.com/ohmybang_official" target="_blank" class="sns">
+      <img class="sns_ic" src="<%= image_url("main/instagram.png")%>"/> 
+    </a>
+    <a href="https://www.facebook.com/ohmybang1" target="_blank" class="sns">
+      <img class="sns_ic" src="<%= image_url("main/facebook.png")%>"/> 
+    </a>
+    <a href="https://blog.naver.com/oh_mybang" target="_blank" class="sns">
+      <img class="sns_ic" src="<%= image_url("main/naverblog.png")%>"/> 
+    </a>
+    <a href="http://pf.kakao.com/_taFhxb/chat" target="_blank" class="sns">
+      <img class="sns_ic" src="<%= image_url("main/kakaotalk.png")%>"/> 
+    </a>
+  </div>
+</div>
+
+<div class="main_section_6">
+  <p class="title">공지사항</p>
+  <% @notices.each do |notice| %>
+    <a class="notice_box" href="/notices#title_<%=notice.id%>">
+      <p class="notice_title">
+        <span style="color:#8c8c8c">[<%=notice.post_type%>]</span> <%= truncate(notice.title, length: 16) %>
+      </p>
+      <hr>
+      <p class="content">
+        <%= truncate((notice.content).gsub(/\n/, '<br/>').html_safe, length: 70, omission: "",  escape: false) %>...
+      </p>
+    </a>
+  <% end %>
+  
+  <div>
+    <a class="btn_notices" href="/notices">
+      <span>→</span> 
+      더 보러가기
+    </a>
+  </div>
+</div>

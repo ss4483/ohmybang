@@ -1,0 +1,137 @@
+
+<% provide :title, "이용권 구매하기" %>
+
+<div class="main_container" style="padding-bottom:0px; min-height:750px;">
+  <div class="container">
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>구매하기</p>
+      </div>
+    </div>
+
+  
+    <div class="row d-flex justify-content-center item_buy_container" style="margin-top: 35px; margin-bottom:50px">
+      <div class="col-12 col-md-3 col-lg-2 col-xl-3 mb-3">
+        <img class="d-block w-100" src="<%= image_url(@item.kind == "first" ? "first.png" : "sec.png")%>" alt="" style="margin:auto; max-width:200px;"/>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+        <p class="viewer_title"><%=@item.kind == "first" ? "하우스 리뷰 이용권" : "전/월세 계약금 이용권"%></p>
+        <div style="width:40%; display: inline-block; text-align: center;">
+          <p class="mt-2 mb-3">구매 수량</p> 
+          <p class="mt-2 mb-3">총 이용권 개수</p>
+          <p class="mt-2 mb-3">상품 가격</p>
+        </div><!--
+        --><div style="width:60%; display: inline-block; text-align: center;">
+          <input type="hidden" class="item_kind" value="<%=@item.kind%>" />
+          <p class="item_price d-none"><%=@item.price%></p>
+          <p class="current_user d-none"><%=current_user.id%></p>
+          <p class="mt-2 mb-3">
+            <span class="item_name"><%=@item.kind == "first" ? "리뷰" : "전/월세금"%></span> 이용권 <b class="item_type" style="color: #1e7770;"><%=@item.amount%></b>개 X <input class="item_count" min="1" type="number" name="count" style="border-bottom-color: rgba(224, 224, 224);background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px;width:50px; text-align: center; margin-left:5px; margin-right:5px;" value="1" autofocus>
+          </p> 
+          <p class="mt-2 mb-3"><span class="viewer_count"><%=@item.amount%></span> 개</p>
+          <p class="mt-2 mb-3"><span class="viewer_price"><%=number_with_delimiter(@item.price)%></span> 원</p>
+        </div>
+      </div>
+      <!--
+      <div class="col-6 col-sm-3 col-lg-2 col-xl-2 text-center d-flex flex-column justify-content-center" style="font-size:12px;">
+        <p class="my-2">구매 수량</p> 
+        <p class="my-2">총 이용권 개수</p>
+        <p class="my-2">상품 가격</p>
+      </div>
+      <div class="col-6 col-sm-3 col-lg-2 col-xl-2 text-center d-flex flex-column justify-content-center p-0" style="font-size:12px;">
+        <input type="hidden" class="item_kind" value="<%=@item.kind%>" />
+        <p class="item_price d-none"><%=@item.price%></p>
+        <p class="current_user d-none"><%=current_user.id%></p>
+        <p class="my-2">
+          <span class="item_name"><%=@item.kind == "first" ? "리뷰" : "전/월세금"%></span> 이용권 <b class="item_type" style="color: #1e7770;"><%=@item.amount%></b>개 X <input class="item_count" min="1" type="number" name="count" style="border-bottom-color: rgba(224, 224, 224);background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px;width:30px; text-align: center; margin-left:5px; margin-right:5px;" value="1" autofocus>개
+        </p> 
+        <p class="my-2"><span class="viewer_count"><%=@item.amount%></span> 개</p>
+        <p class="my-2"><span class="viewer_price"><%=number_with_delimiter(@item.price)%></span> 원</p>
+      </div>
+      -->
+    </div>
+
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>결제 정보</p>
+      </div>
+    </div>
+  
+    <div class="row d-flex justify-content-center" style="margin-top: 35px; ">
+      <div class="col-12 col-sm-10 col-lg-8 mb-3">
+        <div class="row justify-content-center">
+          <%# <div class="col-12" style="font-size: 18px; margin: 15px 0;"><p>구매자 정보</p></div> %>
+          <div class="col-12 col-sm-6 mb-3">
+            <label for="buyer_phone" style="padding-left: 10px">이메일</label>
+            <input type="text" id="buyer_email" name="buyer_phone" value="<%=current_user.email%>" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px;"/>
+          </div>
+          <div class="col-12 col-sm-6 mt-3 mb-3 mt-sm-0">
+            <label for="buyer_phone" style="padding-left: 10px">휴대폰</label>
+            <input value="" type="text" id="buyer_phone" name="buyer_phone" placeholder="숫자만 입력 해주세요" onKeyup="inputPhoneNumber(this)" maxlength="13" style="width: 100%;background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px;"/>
+          </div>
+
+          <div class="col-12 text-right">
+            <p>구매 금액 : <span class="viewer_price" style="font-size: 18px; color:#1e7770"><%=number_with_delimiter(@item.price)%></span> 원</p>
+          </div>
+
+          <!--
+          <div class="col-12 mt-5">
+            <section class="box_agree">
+              <div class="sec_header">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="true" id="policy1">
+                  <label class="form-check-label" for="policy1">
+                    (필수) 결제약관
+                  </label>
+                </div>
+              </div>
+              <div class="box_policy">
+                <%#= render partial: "policies/policy_1" %>
+              </div>
+            </section>
+          </div>
+          -->
+
+        </div>
+      </div>
+    </div>
+
+<!--
+    <div class="row justify-content-center">
+
+      <div class="col-12">
+        <div style="text-align: center;">
+          <input type="hidden" name="count" value="10" />
+          <%# <input type="hidden" name="referer" value="<%= URI((request.referer.nil?? "/mypage/viewers" : request.referer)).path"> %>
+          <input class="btn_trans_round" type="submit" value="결제하기" onclick="payment()" style="padding: 16px 30px; font-size: 17px;" />
+        </div>
+      </div>
+    </div>
+-->
+
+  </div>
+</div>
+
+<div>
+  <input class="btn btn-green btn-lg btn-block" type="submit" value="결제하기" onclick="payment()" style="padding: 15px;" />
+</div>
+
+
+
+<script src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js" type="text/javascript"></script>
+<script>
+  IMP.init('imp29122012');
+</script>
+<%= javascript_include_tag "iamport" %>
+<script>
+$(document).ready(function(){  
+  $(".item_count").change(function() {
+    item_count = Number($(this).val());
+    item_price = Number($(".item_price").text());
+    item_type = Number($(".item_type").text());
+
+    $(".viewer_count").text((item_type * item_count));
+    $(".viewer_price").text((item_count * item_price).toLocaleString());
+  });
+});
+</script>

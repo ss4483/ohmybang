@@ -1,0 +1,209 @@
+
+<div class="main_container">
+  <div class="container p-0">
+    
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px; margin-left:0px; margin-right:0px"> 
+      <div class="col-12 col-sm-10 col-lg-9" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>하우스 리뷰 증빙 확인 - <%=@review.review_imp_imgs.pluck(:tag).first %></p>
+      </div>
+    </div>
+
+    <%= form_for @review, url: {action: "reviews_update"}, html: {class: "row m-0 d-flex justify-content-center",  multipart: true }  do |f| %>
+      <div class="col-12 col-sm-9">
+        <div class="img-gallery">
+          <% @review.review_imp_imgs.each do |img| %>
+            <a href="/imp_images/review/<%=img.name%>" >
+              <img src="/imp_images/review/<%=img.name%>" alt="" style="max-width: 100%; max-height: 300px; width: auto"/>
+            </a>
+          <% end %>
+        </div> 
+      </div>
+      <div class="col-12 col-sm-9" style="margin: 30px 0 20px; border-bottom: 1px solid black;">
+        <div class="item_box" style="margin-bottom:10px;">
+          <div class="item_title"><span>확인</span></div>
+          <div class="item_content">
+            <label for="confirm_t" class="item_radio_label"><input id="confirm_t" class="item_radio radio_dot" type="radio" name="confirm" value="t" checked required>완료</label>
+            <label for="confirm_f" class="item_radio_label"><input id="confirm_f" class="item_radio radio_dot" type="radio" name="confirm" value="f">반려</label>
+          </div>
+        </div>
+      </div>
+      <% if check_imp_type(@review, "계약서") %>
+        <div id="confirm_t_content" class="col-12 col-sm-9">
+          <div class="item_box">
+            <div class="item_title"><span>주소</span></div>
+            <div class="item_content">
+              <%= f.text_field :address, id: "review_address", class: "item_text text-left", placeholder: "주소", style: "width: 100%;",  readonly: true %>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>상세주소</span></div>
+            <div class="item_content">
+              <%= f.text_field :detail_address, id: "review_detail_address", class: "item_text text-left", placeholder: "상세주소" %>
+              <%= f.text_field :extra_address, id: "review_extra_address", class: "item_text text-left", placeholder: "참고항목", readonly: true%>
+              <input type="button" class="btn_trans_round" onclick="execDaumPostcode()" style="padding:5px 30px" value="주소 찾기">
+            </div>
+          </div>
+          <div id="wrap" style="">
+            <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+          </div>
+
+          <%= f.hidden_field :bd_nm, id: "review_bd_nm", readonly: true %>
+          <%= f.hidden_field :si_nm, id: "review_si_nm", readonly: true %>
+          <%= f.hidden_field :sgg_nm, id: "review_sgg_nm", readonly: true %>
+          <%= f.hidden_field :emd_nm, id: "review_emd_nm", readonly: true %>
+
+
+          <div class="item_box">
+            <div class="item_title"><span>유형</span></div>
+            <div class="item_content">
+              <label for="room_01" class="item_radio_label"><input id="room_01" class="item_radio radio_dot" type="radio" name="review[room]" value="원룸" <%="checked" if (@review.room == "원룸" || @review.room.blank?)%> required>원룸</label>
+              <label for="room_02" class="item_radio_label"><input id="room_02" class="item_radio radio_dot" type="radio" name="review[room]" value="투/쓰리룸" <%= "checked" if (@review.room == "투/쓰리룸")%>>투/쓰리룸</label>
+              <label for="room_03" class="item_radio_label"><input id="room_03" class="item_radio radio_dot" type="radio" name="review[room]" value="오피스텔" <%= "checked" if @review.room == "오피스텔"%>>오피스텔</label>
+              <label for="room_04" class="item_radio_label"><input id="room_04" class="item_radio radio_dot" type="radio" name="review[room]" value="아파트" <%= "checked" if @review.room == "아파트"%>>아파트</label>
+
+            </div>
+          </div>
+          
+          <div class="item_box">
+            <div class="item_title"><span>종류</span></div>
+            <div class="item_content">
+              <label for="contract_type_d" class="item_radio_label"><input id="contract_type_d" class="item_radio radio_dot" type="radio" name="contract_type" value="전세"  <%= "checked" if (@review.contract_type == "전세" || @review.room.blank?)%> required>전세</label>
+              <label for="contract_type_m" class="item_radio_label"><input id="contract_type_m" class="item_radio radio_dot" type="radio" name="contract_type" value="월세"  <%= "checked" if @review.contract_type == "월세"%>>월세</label>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>보증금</span></div>
+            <div class="item_content">
+              <input class="item_text" type="number" name="deposit"  placeholder="00" value="<%=@review.deposit %>" ><span>만원</span>
+            </div>
+          </div>
+          <div class="item_box">
+            <div class="item_title"><span>월세</span></div>
+            <div class="item_content">
+              <input class="item_text" type="number" name="monthly"  placeholder="00" value="<%= @review.monthly %>"><span>만원</span>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>면적</span></div>
+            <div class="item_content">
+              <input class="item_text" type="number" name="area_pyeong"  placeholder="00" step="0.01" value="<%=@review.area_pyeong %>" ><span>m²</span>
+              <input class="item_text" type="number" name="area_square"  placeholder="00" step="0.01" value="<%=@review.area_square %>" ><span>평</span>
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>구조</span></div>
+            <div class="item_content">
+              <input class="item_text" type="text" name="structure"  placeholder="ex) 철근콘크리트" value="<%=@review.structure %>">
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>용도</span></div>
+            <div class="item_content">
+              <input class="item_text" type="text" name="usage"  placeholder="ex) 가정집" value="<%=@review.usage %>">
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>층수</span></div>
+            <div class="item_content">
+              <input class="item_text" type="number" name="floor_detail"  placeholder="0" value="<%=@review.floor_detail %>"> 층
+            </div>
+          </div>
+
+
+          <div class="item_box">
+            <div class="item_title"><span>입주기간</span></div>
+            <div class="item_content">
+              <input name="start_date" type="text" class="datepicker item_text" value="<%=@review.start_date%>" placeholder="날짜를 선택해주세요">    
+              -
+              <input name="end_date" type="text" class="datepicker item_text" value="<%=@review.end_date%>" placeholder="날짜를 선택해주세요">    
+            </div>
+          </div>
+
+          <div class="item_box">
+            <div class="item_title"><span>계약일</span></div>
+            <div class="item_content">
+              <input name="contract_date" type="text" class="datepicker item_text" value="<%=@review.contract_date%>" placeholder="날짜를 선택해주세요">    
+            </div>
+          </div>
+        
+        </div>
+      <% end %>
+
+      <div id="confirm_f_content" class="col-12 col-sm-9" style="display:none">
+        <div class="item_box">
+          <div class="item_title"><span>메모</span></div>
+          <div class="item_content">
+            <textarea class="item_textarea" name="memo"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-9">
+        <div style="text-align: right; margin-top: 20px;">
+          <input type="submit" class="btn btn-outline-dark" value="확인하기" style="font-size: 16px;" required>
+        </div>
+      </div>
+
+    <% end %>
+  
+  </div>
+</div>
+
+
+<%= content_for 'javascript_content' do %>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <%= javascript_include_tag "mypage" %>
+  <script>
+
+    // 제출 타입 설정
+    $("input[name='confirm']").change(function(){
+      if ($(this).val() == "t"){
+        $("#confirm_f_content").hide();
+        $("#confirm_t_content").show();
+      } else {
+        $("#confirm_f_content").show();
+        $("#confirm_t_content").hide();
+      }
+    });
+
+
+    $('.img-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+          // + '<small>by Marsel Van Oosten</small>';
+        }
+      }
+    });
+
+    $.datepicker.setDefaults({
+        dateFormat: 'yymmdd',
+        prevText: '이전 달',
+        nextText: '다음 달',
+        monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+        showMonthAfterYear: true,
+        yearSuffix: '년'
+    });
+    $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd', showAnim: "blind" });
+  </script>
+<% end %>

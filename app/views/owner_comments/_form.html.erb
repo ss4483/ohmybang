@@ -1,0 +1,673 @@
+<%= form_for @owner_comment,  html: {class: "row m-0 d-flex justify-content-center", multipart: true }  do |f| %>
+  <!-- 설명 -->
+  <div class="col-sm-9">
+    <div class="d-none d-sm-flex justify-content-between review_explain_box"> 
+      <div class="review_explain_img_box">
+        <img class="review_explain_img" src="<%= image_url("img/new_review_01.png")%>" alt=""/>
+        <p style="margin-top: 14px;">주소 찾기</p>
+      </div>
+      <img class="review_explain_next" src="<%= image_url("img/next.png")%>" alt=""/>
+      <div class="review_explain_img_box">
+        <img class="review_explain_img" src="<%= image_url("img/new_review_05.png")%>" alt=""/>
+        <p style="margin-top: 14px;">증빙 서류 등록</p>
+      </div>
+      <img class="review_explain_next" src="<%= image_url("img/next.png")%>" alt=""/>
+      <div class="review_explain_img_box">
+        <img class="review_explain_img" src="<%= image_url("img/new_review_03.png")%>" alt=""/>
+        <p style="margin-top: 14px;">정직 리뷰 작성</p>
+      </div>
+      <img class="review_explain_next" src="<%= image_url("img/next.png")%>" alt=""/>
+      <div class="review_explain_img_box">
+        <img class="review_explain_img" src="<%= image_url("img/new_review_04.png")%>" alt=""/>
+        <p style="margin-top: 14px;">등록하기</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 p-0 col-sm-9" style=" box-shadow: 7px 13.2px 29.4px 2.6px rgba(7, 0, 2, 0.04);">
+    <div class="bg-white p-3 px-md-5 pt-md-5 d-sm-flex m-0">
+      <div class="address_box flex-sm-fill px-sm-5">
+        <%= f.text_field :address, placeholder: "주소",  readonly: true, required: true %>
+
+        <% if @imp_check %>
+          <select name="owner_comment[detail_address]" class="custom-select d-none" style="font-size: 12px; width:55%; margin-right: 5%; height:30px; margin-top:10px;"disabled >
+          </select><!--
+          --><%= f.text_field :detail_address, placeholder: "상세주소", style: "width: 55%; margin-right: 5%", required: true %><!--
+          --><%= f.text_field :extra_address, placeholder: "참고항목", style: "width: 40%;", readonly: true %>
+        <% else %>
+          <%= f.text_field :detail_address, placeholder: "상세주소", style: "width: 55%; margin-right: 5%", required: true, readonly: true  %><!--
+          --><%= f.text_field :extra_address, placeholder: "참고항목", style: "width: 40%;", readonly: true %>
+        <% end %>
+        <p class="address_description text-danger d-none" style="font-size:12px;">현재 작성된 리뷰가 없습니다. 직접 상세주소를 입력해주세요</p>
+
+        <%= f.hidden_field :bd_nm, readonly: true %>
+        <%= f.hidden_field :si_nm, readonly: true %>
+        <%= f.hidden_field :sgg_nm, readonly: true %>
+        <%= f.hidden_field :emd_nm, readonly: true %>
+
+        <% if @imp_check %>
+          <input type="button" class="btn_trans_round w-100" onclick="execDaumPostcode()" style="margin: 10px auto 5px;" value="주소 찾기">
+        <% end %>
+      </div>
+    </div>
+    
+    <div id="wrap" style="">
+      <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-9 bg-white pb-md-5 pb-3"  style=" box-shadow: 7px 13.2px 29.4px 2.6px rgba(7, 0, 2, 0.04);">
+    <div class="toggle_box" style="margin-top:8px; text-align: center;">
+      <%= f.label :room, '원룸', for: 'room_01', class: "toggle_radio_label label_round #{"checked" if (@owner_comment.room == "원룸" || @owner_comment.room.blank?)}" %>
+      <%= f.radio_button :room, '원룸', id: 'room_01', class: 'toggle_radio', checked: (@owner_comment.room == "원룸" || @owner_comment.room.blank?)  %> 
+      <%= f.label :room, '투/쓰리룸', for: 'room_02', class: "toggle_radio_label label_round #{"checked" if @owner_comment.room == "투/쓰리룸"}"  %>
+      <%= f.radio_button :room, '투/쓰리룸', id: 'room_02', class: 'toggle_radio', checked: (@owner_comment.room == "투/쓰리룸")  %> 
+      <%= f.label :room, '오피스텔', for: 'room_03', class: "toggle_radio_label label_round #{"checked" if @owner_comment.room == "오피스텔"}"  %>
+      <%= f.radio_button :room, '오피스텔', id: 'room_03', class: 'toggle_radio', checked: (@owner_comment.room == "오피스텔")  %> 
+      <%= f.label :room, '아파트', for: 'room_04', class: "toggle_radio_label label_round #{"checked" if @owner_comment.room == "아파트"}"  %>
+      <%= f.radio_button :room, '아파트', id: 'room_04', class: 'toggle_radio', checked: (@owner_comment.room == "아파트")  %> 
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-9">
+
+    <% if @imp_check %>
+      <p class="review_item_title">증빙서류 제출하기</p>
+      <section style="border: 1px solid #dfdfdf; border-bottom: 0px;">
+        <div style="font-size: 12px; overflow-y: auto; padding: 1rem 1rem 1rem 1rem;">
+          <p>주민등록 등본을 제출해주세요</p>
+          <p style="font-size:10px;color:#dc6a6a;">
+            본 증빙 서류가 인위적으로 조작되었거나 허위일 시, 이로 인한 피해가 청구되고 본 리뷰는 글쓴이의 동의 없이 삭제될 수 있음을 알립니다.
+            <br>
+            제출한 증빙 서류는 심사 후, 즉시 파기처리 됩니다.
+          </p>
+        </div>
+      </section>
+      <div class="custom-file-container" data-upload-id="imp_imgs_upload" style="margin-top: 0px !important;">
+        <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+        <label class="d-none custom-file-container__custom-file" >
+          <input type="file" name="imp_imgs[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+          <span class="custom-file-container__custom-file__custom-file-control"></span>
+        </label>
+        <div class="custom-file-container__image-preview" style="height: 150px !important; background-color: white !important;     background-size: 150px;"></div>
+      </div>
+    <% end %>
+
+    <p  class="review_item_title" >몰래카메라 검사</p>
+    <div>
+      <div class="toggle_box d-inline-block">
+        <%= f.label :hidden_camera, '예정', for: 'expected', class: "toggle_radio_label #{"checked" if (@owner_comment.hidden_camera == "예정" || @owner_comment.hidden_camera.blank?)}" %>
+        <%= f.radio_button :hidden_camera, '예정', id: 'expected', class: 'toggle_radio', checked: (@owner_comment.hidden_camera == "예정" || @owner_comment.hidden_camera.blank?), required: true %> 
+        <%= f.label :hidden_camera, '완료', for: 'complete', class: "toggle_radio_label #{"checked" if @owner_comment.hidden_camera == "완료"}" %>
+        <%= f.radio_button :hidden_camera, '완료', id: 'complete', class: 'toggle_radio', checked: (@owner_comment.hidden_camera == "완료")  %> 
+      </div>
+    </div>
+
+    <p  class="review_item_title" >선호하는 연락 시간대</p>
+    <div>
+      <select id="contact_time" class="custom-select" style="width:auto; height:38px;font-size: 12px;" required>
+        <% contact_times.each_with_index do |time, i|%>
+          <option value="<%=time%>" <%="selected" if @owner_comment.contact_time == time || (i == 0 && @owner_comment.new_record?) %>><%=time%></option>  
+        <% end %>
+        <option value="" <%="selected" if (!contact_times.include?(@owner_comment.contact_time) && !@owner_comment.new_record?) %>>직접입력</option>
+      </select>
+      <input name="owner_comment[contact_time]" class="<%="d-none" if (contact_times.include?(@owner_comment.contact_time) || @owner_comment.new_record?) %>" type="text" name="bank" value="<%=(@owner_comment.contact_time.nil?)? "오전 8시 - 오후 12시" : @owner_comment.contact_time%>" style="background-color: rgba(0,0,0,0); margin-left: 10px; border-top: 0px; border-left: 0px; border-right: 0px; padding: 9px;"/>
+    </div>
+
+    <p  class="review_item_title" >
+      선호하는 연락 방식
+      <span style="color: hsl(0, 0%, 45%);font-size: 12px;font-weight: 400;padding-left: 5px;">(복수 선택 가능)</span>
+    </p>
+    <div>
+      <input class="contact_method d-none" id="contact_method_01" type="checkbox" name="owner_comment[contact_method][]" value="문자" <%= "checked" if (@owner_comment.contact_method.include?("문자") || @owner_comment.contact_method.blank?)%>>
+      <input class="contact_method d-none" id="contact_method_02" type="checkbox" name="owner_comment[contact_method][]" value="카톡" <%= "checked" if (@owner_comment.contact_method.include?("카톡"))%> >
+      <input class="contact_method d-none" id="contact_method_03" type="checkbox" name="owner_comment[contact_method][]" value="전화" <%= "checked" if (@owner_comment.contact_method.include?("전화"))%>>
+      <input class="contact_method d-none" id="contact_method_04" type="checkbox" name="owner_comment[contact_method][]" value="방문" <%= "checked" if (@owner_comment.contact_method.include?("방문"))%>>
+      <div class="contact_method_label_container d-inline-block">
+        <div style="color:white;">
+          <label class="contact_method_label <%= "checked" if (@owner_comment.contact_method.include?("문자") || @owner_comment.contact_method.blank?)%>" for="contact_method_01">문자</label><%#
+        %>|<%#
+        %><label class="contact_method_label <%= "checked" if (@owner_comment.contact_method.include?("카톡"))%>" for="contact_method_02">카톡</label><%#
+        %>|<%#
+        %><label class="contact_method_label <%= "checked" if (@owner_comment.contact_method.include?("전화"))%>" for="contact_method_03">전화</label><%#
+        %>|<%#
+        %><label class="contact_method_label <%= "checked" if (@owner_comment.contact_method.include?("방문"))%>" for="contact_method_04">방문</label>
+        </div>
+      </div>
+    </div>
+    
+    <p class="review_item_title" style="margin-top:63px; ">리뷰 작성 시 도움이 되는 글!</p>
+    <section class="box_agree" style="margin-bottom: 30px">
+      <div class="box_policy" style="height: fit-content;">
+        <%#= render partial: "policies/policy_1" %>
+        <ul style="list-style:circle; padding-left:1rem;">
+          <li>
+            허위나 과장된 글은 지양해주세요!
+          </li>  
+        </ul>
+      </div>
+    </section>
+  
+    <p style="margin-bottom:12px; font-weight:bold; font-size:18px">
+      <span>소개 및 장점</span>
+      <span><img id="intro_imgs" class="camera_ic btn_ic" src="<%= image_url("ic/camera.png")%>" style="height: 25px; margin-bottom: 10px; margin-left: 10px; cursor: pointer;" /></span>
+    </p>
+    <div class="pl-0 pl-sm-4">
+      <div class="custom-file-container category_uploader" data-upload-id="intro_upload">
+        <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+        <label class="d-none custom-file-container__custom-file" >
+          <input type="file" name="intro_imgs[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+          <span class="custom-file-container__custom-file__custom-file-control"></span>
+        </label>
+        <div class="custom-file-container__image-preview"></div>
+      </div>          
+
+      <textarea class="d_textarea mt-0" name="owner_comment[intro_txt]" placeholder="항목 이외의 장점 또는 기타 소개를 적어주세요."><%=@owner_comment.intro_txt%></textarea>
+    </div>
+
+    <p style="margin-top:30px; margin-bottom:12px; font-weight:bold; font-size:18px">장기 계약 시 혜택 <span class="text-secondary" style="font-size:12px;">(선택)</span></p>
+    <div class="pl-0 pl-sm-4">
+      <textarea class="d_textarea mt-0" name="owner_comment[long_term_txt]" placeholder="'장기 계약 시 혜택'이 있다면 리뷰를 작성해주세요&#13;&#10;예) 2년 이상 계약 시 ~~~"><%=@owner_comment.long_term_txt%></textarea>
+    </div>
+
+    <div>
+      <p style="display:inline-block; margin-top:30px; margin-bottom:12px; font-weight:bold; font-size:18px">
+        리모델링 <span class="text-secondary" style="font-size:12px;">(선택)</span>
+      </p>
+    </div>
+
+    <div class="bg-white ml-0 ml-sm-4" style="margin-bottom: 20px; padding: 20px; box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.1);">
+      <div class="d-flex justify-content-around">
+        <div class="custom-file-container d-inline-block" data-upload-id="remodeling_before_upload" style="max-height: fit-content;">
+          <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+          <label class="d-none custom-file-container__custom-file" >
+            <input type="file" name="remodeling_before_imgs[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+            <span class="custom-file-container__custom-file__custom-file-control"></span>
+          </label>
+          <div class="custom-file-container__image-preview remodeling" style=""></div>
+          <p id="before_txt" class="text-center">Before</p>
+        </div>
+
+        <div class="custom-file-container d-inline-block" data-upload-id="remodeling_after_upload" style="max-height: fit-content;">
+          <label class="d-none"><a href="javascript:void(0)" class="custom-file-container__image-clear" title="Clear Image"></a></label>
+          <label class="d-none custom-file-container__custom-file" >
+            <input type="file" name="remodeling_after_imgs[]" class="custom-file-container__custom-file__custom-file-input" accept="image/gif, image/jpeg, image/jpg, image/png" multiple aria-label="Choose File">
+            <span class="custom-file-container__custom-file__custom-file-control"></span>
+          </label>
+          <div class="custom-file-container__image-preview remodeling"></div>
+          <p id="after_txt" class="text-center">After</p>
+        </div>
+      </div>
+    
+      <input value="<%=@owner_comment.remodeling_date%>" name="owner_comment[remodeling_date]" type="text" class="datepicker" size="30" placeholder="날짜를 선택해주세요" style="font-size:14px; max-width: 150px;border-top: 0; border-left: 0;border-right: 0; padding: 9px; background: rgba(0,0,0,0);">    
+      <p style="color: hsl(0, 0%, 45%);font-size: 12px;font-weight: 400;padding-left: 5px;">(마지막 시공 날짜를 입력해주세요.)</p>
+      <div class="custom-file-upload bg-white"><div id="remodeling-image"></div></div>
+      <textarea class="d_textarea mt-0" name="owner_comment[remodeling_txt]" placeholder="리모델링 상세 설명을 적어주세요." 
+        style="border-top: 0; border-left: 0; border-right: 0; padding: 9px; border-color: rgb(238, 238, 238); background: rgba(0,0,0,0);"required><%=@owner_comment.remodeling_txt%></textarea>
+    </div>
+    
+    
+
+
+    <div style="text-align: right;margin-top: 40px;">
+      <% if request.original_fullpath == new_owner_comment_path || @owner_comment.status == "임시저장" %>
+        <input type="button" class="btn_trans" onclick="_submit(this)" name="temporary" value="임시저장" style="font-size: 16px; margin: 0 20px 0 0;"
+          data-confirm="현재 상태를 임시저장 하시겠습니까?<br>(주소 입력은 필수입니다.)">
+        <input type="button" class="btn_trans" onclick="_submit(this)" value="등록신청" style="font-size: 16px; margin: 0 20px 0 0;"
+          data-confirm="등록신청 중에는 수정이 불가능합니다.<br>정말로 신청하시겠습니까?" >
+      <% elsif @owner_comment.status == "등록완료" %>
+        <input type="button" class="btn_trans" onclick="_submit(this)" value="수정하기" style="font-size: 16px; margin: 0 20px 0 0;"
+          data-confirm="수정 신청 하시겠습니까?<br>수정 신청 중에는 검색결과에서 제외됩니다." >
+      <% elsif @owner_comment.status.nil? %>
+        <input type="button" class="btn_trans" onclick="_submit(this)" value="수정하기" style="font-size: 16px; margin: 0 20px 0 0;"
+          data-confirm="수정신청 중에는 수정이 불가능합니다.<br>정말로 신청하시겠습니까?">
+      <% elsif @owner_comment.status == "등록반려" %>
+        <input type="button" class="btn_trans" onclick="_submit(this)" value="등록 재 신청" style="font-size: 16px; margin: 0 20px 0 0;"
+          data-confirm="등록신청 중에는 수정이 불가능합니다.<br>정말로 신청하시겠습니까?" >
+      <% end %>
+    </div>
+  </div>
+
+<% end %>
+
+
+
+<%= content_for 'javascript_content' do %>
+
+<script src="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.css">
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+<script src="https://unpkg.com/formdata-polyfill"></script>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+
+  $(document).ready(function(){
+    $("#contact_time").change(function(){
+      $("input[name='owner_comment[contact_time]']").val($(this).val());
+      if ($(this).val().length == 0){
+        $("input[name='owner_comment[contact_time]']").removeClass("d-none");
+        $("input[name='owner_comment[contact_time]']").focus();
+      } else {
+        $("input[name='owner_comment[contact_time]']").addClass("d-none");
+      }
+    });
+  });
+
+  <% if @imp_check %>
+    var imp_upload = new FileUploadWithPreview('imp_imgs_upload', {
+      showDeleteButtonOnImages: true,
+      presetFiles: [
+        <% @owner_comment.owner_comment_imp_imgs.each_with_index do |i, index| %>
+          "/imp_images/owner/<%= i.name %>"       
+          <%= "," if index != @owner_comment.owner_comment_imp_imgs.count - 1 %>
+        <% end %>
+      ],
+      images: {
+        baseImage: '<%= image_url("upload.png")%>',
+        backgroundImage: ''
+      }
+    })
+  <% end %>
+  var intro_upload = new FileUploadWithPreview('intro_upload', {
+    showDeleteButtonOnImages: true,
+    presetFiles: [
+      <% @owner_comment.owner_comment_imgs.where(tag: "소개 및 장점").each_with_index do |i, index| %>
+        "/images/owner/<%= i.name %>"       
+        <%= "," if index != @owner_comment.owner_comment_imgs.where(tag: "소개 및 장점").count - 1 %>
+      <% end %>
+    ],
+    images: {
+      baseImage: '',
+      backgroundImage: ''
+    }
+  })
+  var remodeling_before = new FileUploadWithPreview('remodeling_before_upload', {
+    showDeleteButtonOnImages: true,
+    presetFiles: [
+      <% @owner_comment.owner_comment_imgs.where(tag: "리모델링 전").each_with_index do |i, index| %>
+        "/images/owner/<%= i.name %>"       
+        <%= "," if index != @owner_comment.owner_comment_imgs.where(tag: "리모델링 전").count - 1 %>
+      <% end %>
+    ],
+    images: {
+      baseImage: '<%= image_url("remodeling_upload.png")%>',
+      backgroundImage: ''
+    }
+  })
+  var remodeling_after = new FileUploadWithPreview('remodeling_after_upload', {
+    showDeleteButtonOnImages: true,
+    presetFiles: [
+      <% @owner_comment.owner_comment_imgs.where(tag: "리모델링 후").each_with_index do |i, index| %>
+        "/images/owner/<%= i.name %>"       
+        <%= "," if index != @owner_comment.owner_comment_imgs.where(tag: "리모델링 후").count - 1 %>
+      <% end %>
+    ],
+    images: {
+      baseImage: '<%= image_url("remodeling_upload.png")%>',
+      backgroundImage: ''
+    }
+  })
+  $(".custom-file-container__image-preview").on('click', function (e) {
+    if ($(e.target).hasClass("custom-file-container__image-preview")){
+      $(this).prev().children("input").trigger('click');
+    }
+  });
+  $(".camera_ic").on('click', function (e) {
+    $("input[name='" + $(e.target).attr("id") + "[]']").trigger('click');
+  });
+
+  function _submit(btn){
+    event.preventDefault();
+
+    dataConfirmModal.confirm({
+      title: '임대인 코멘트 등록',
+      text: $(btn).data("confirm"),
+      commit: '등록',
+      cancel: '취소',
+      zIindex: 10099,
+      onConfirm: function() {  
+        var form_check = true;
+        var imp_img_check = true;
+        var $form = $(btn).closest("form")[0], 
+            formUrl = $(btn).closest("form").attr("action"),
+            formData = new FormData($form),
+            formDataEntries = formData.entries(), 
+            formDataEntry = formDataEntries.next(), pair,
+            imageMaxSize  = 3145728, videoMaxSize  = 31457280,
+            imageMaxSizeMb  = 3, videoMaxSizeMb  = 30;;
+        // EDIT
+
+        <% if @imp_check %>
+          formData.delete('imp_imgs[]');
+          for(var i = 0; i < imp_upload.cachedFileArray.length; i++){
+            // if (!(imp_upload.cachedFileArray[i] instanceof File)) {
+              formData.append('imp_imgs[]', imp_upload.cachedFileArray[i], imp_upload.cachedFileArray[i].name);
+            // }
+          }
+        <% end %>
+        formData.delete('intro_imgs[]');
+        for(var i = 0; i < intro_upload.cachedFileArray.length; i++){
+          // if (!(intro_upload.cachedFileArray[i] instanceof File)) {
+            formData.append('intro_imgs[]', intro_upload.cachedFileArray[i], intro_upload.cachedFileArray[i].name);
+          // }
+        }
+        formData.delete('remodeling_before_imgs[]');
+        for(var i = 0; i < remodeling_before.cachedFileArray.length; i++){
+          // if (!(remodeling_before.cachedFileArray[i] instanceof File)) {
+            formData.append('remodeling_before_imgs[]', remodeling_before.cachedFileArray[i], remodeling_before.cachedFileArray[i].name);
+          // }
+        }
+        formData.delete('remodeling_after_imgs[]');
+        for(var i = 0; i < remodeling_after.cachedFileArray.length; i++){
+          // if (!(remodeling_after.cachedFileArray[i] instanceof File)) {
+            formData.append('remodeling_after_imgs[]', remodeling_after.cachedFileArray[i], remodeling_after.cachedFileArray[i].name);
+          // }
+        }
+        // END
+
+        if ($(btn).attr("name") == "temporary") {
+          formData.append("temporary", "t");
+          if (formData.get("owner_comment[address]").length == 0) {
+            $('html,body').animate({scrollTop:$("input[name='owner_comment[address]']").offset().top - 120}, 500);
+            $("input[name='owner_comment[address]']").focus();
+            $("input[name='owner_comment[address]']").before("<p class='blank_alert text-danger' style='font-size:12px; bottom: -7px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+            window.setTimeout(function() {
+              $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+              });
+            }, 2000);
+            form_check = false;
+          } 
+        } else {
+
+          <% if @imp_check %>
+            for(var i = 0; i < formData.getAll('imp_imgs[]').length; i++){
+              if (formData.getAll('imp_imgs[]')[i].name.length != 0) {
+                imp_img_check = false;
+                if (!(formData.getAll('imp_imgs[]')[i].size < imageMaxSize)) { 
+                  $('html,body').animate({scrollTop:$("div[data-upload-id=imp_imgs_upload]").offset().top - 120}, 500);
+                  $("div[data-upload-id=imp_imgs_upload]").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+                  window.setTimeout(function() {
+                    $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                      $(this).remove(); 
+                    });
+                  }, 2000);
+                  form_check = false;
+                  break;
+                }
+              }
+            }
+          <% end %>
+          while (!formDataEntry.done) {
+            pair = formDataEntry.value;
+        
+            if (pair[0] == "owner_comment[address]" || pair[0] == "owner_comment[detail_address]") {
+              if (pair[1].length == 0) {
+                $('html,body').animate({scrollTop:$("input[name='" + pair[0] + "']").offset().top - 120}, 500);
+                $("input[name='" + pair[0] + "']").focus();
+                $("input[name='" + pair[0] + "']").before("<p class='blank_alert text-danger' style='font-size:12px; bottom: -7px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                window.setTimeout(function() {
+                  $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                  });
+                }, 2000);
+                form_check = false;
+                break;
+              } 
+            }
+
+            if (pair[0] == "owner_comment[room]" || pair[0] == "owner_comment[hidden_camera]" || pair[0] == "owner_comment[contact_time]") {
+              if (pair[1].length == 0) {
+                form_check = false;
+                alert("예기치 못한 오류가 발생했습니다. 다시 작성해주세요.");
+                location.reload();
+                break;
+              }
+            }
+
+            if (pair[0] == "owner_comment[remodeling_date]") {
+              if (pair[1].length != 0) {
+                if(formData.get("owner_comment[remodeling_txt]").length == 0) {
+                  $('html,body').animate({scrollTop:$("textarea[name='owner_comment[remodeling_txt]']").offset().top - 120}, 500);
+                  $("textarea[name='owner_comment[remodeling_txt]']").focus();
+                  $("textarea[name='owner_comment[remodeling_txt]']").before("<p class='blank_alert text-danger' style='font-size:12px; bottom: -7px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                  window.setTimeout(function() {
+                    $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                      $(this).remove(); 
+                    });
+                  }, 2000);
+                  form_check = false;
+                  break;
+                }
+              } 
+            }
+
+            if (pair[0] == "owner_comment[intro_txt]") {
+              if (pair[1].length == 0) {
+                $('html,body').animate({scrollTop:$("textarea[name='" + pair[0] + "']").offset().top - 120}, 500);
+                $("textarea[name='" + pair[0] + "']").focus();
+                $("textarea[name='" + pair[0] + "']").before("<p class='blank_alert text-danger' style='font-size:12px; bottom: -7px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>아래 입력란을 작성해주세요.</p>");
+                window.setTimeout(function() {
+                  $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                  });
+                }, 2000);
+                form_check = false;
+                break;
+              } 
+            }
+            
+            if (pair[0] == "remodeling_before_imgs[]" && pair[1].name.length != 0) {
+              // if (pair[1].type.includes("image") ) {
+              if (!(pair[1].size < imageMaxSize)) { 
+                $('html,body').animate({scrollTop:$("#before_txt").offset().top - 120}, 500);
+                $("#before_txt").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_upward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+                window.setTimeout(function() {
+                  $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                  });
+                }, 2000);
+                form_check = false;
+                break;
+              }
+              // } 
+            }
+            if (pair[0] == "remodeling_after_imgs[]" && pair[1].name.length != 0) {
+              // if (pair[1].type.includes("image") ) {
+              if (!(pair[1].size < imageMaxSize)) { 
+                $('html,body').animate({scrollTop:$("#after_txt").offset().top - 120}, 500);
+                $("#after_txt").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_upward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+                window.setTimeout(function() {
+                  $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                  });
+                }, 2000);
+                form_check = false;
+                break;
+              }
+              // } 
+            }
+            if (pair[0] == "intro_imgs[]" && pair[1].name.length != 0) {
+              if (!(pair[1].size < imageMaxSize)) { 
+                $('html,body').animate({scrollTop:$("div[data-upload-id=intro_upload]").offset().top - 120}, 500);
+                $("div[data-upload-id=intro_upload]").before("<p class='blank_alert text-danger' style='font-size:12px;position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i> 이미지 크기는 " + imageMaxSizeMb + " MB 이하 파일을 업로드 해주세요.</p>");
+                window.setTimeout(function() {
+                  $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                  });
+                }, 2000);
+                form_check = false;
+                break;
+              }
+            }
+
+            formDataEntry = formDataEntries.next();
+          }
+
+          <% if @imp_check %>
+            if (imp_img_check) {
+              $('html,body').animate({scrollTop:$("div[data-upload-id=imp_imgs_upload]").offset().top - 120}, 500);
+              $("div[data-upload-id=imp_imgs_upload]").before("<p class='blank_alert text-danger' style='font-size:12px; position: relative;'><i class='material-icons' style='font-size: 12px;vertical-align: middle; '>arrow_downward</i>증빙 서류를 첨부해주세요.</p>");
+              window.setTimeout(function() {
+                $(".blank_alert").fadeTo(500, 0).slideUp(500, function(){
+                  $(this).remove(); 
+                });
+              }, 2000);
+              form_check = false;
+            }
+          <% end %>
+        }
+
+        if (form_check) {
+          $.ajax({
+            type : "POST",
+            enctype: 'multipart/form-data',
+            url : formUrl,
+            processData: false,
+            contentType: false,
+            dataType : "json",
+            cache : false,
+            data: formData,
+            beforeSend: function () {
+              $('#Progress_Loading').show();
+            },
+            error : function() {
+              alert("예기치 못한 오류가 발생했습니다. 다시 작성해주세요.");
+              location.reload();
+            },
+            success : function(data){
+              location.replace(data.redirect_to);
+            }
+          });
+        }
+
+      },
+      onCancel:  function() {
+      } 
+        
+    });
+  }
+
+
+  var element_wrap = document.getElementById('wrap');
+  function foldDaumPostcode() {
+    element_wrap.style.display = 'none';
+  }
+  function execDaumPostcode() {
+    var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+    new daum.Postcode({
+      oncomplete: function(data) {
+        var addr = ''; 
+        var extraAddr = ''; 
+        
+        addr = data.roadAddress;
+
+        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+          extraAddr += data.bname;
+        }
+        if(data.buildingName !== '' && data.apartment === 'Y'){
+          extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+        }
+        if(extraAddr !== ''){
+          extraAddr = ' (' + extraAddr + ')';
+        }
+        document.getElementById("owner_comment_extra_address").value = extraAddr;
+        $('#owner_comment_bd_nm').val(data.buildingName);
+        $('#owner_comment_si_nm').val(data.sido);
+        $('#owner_comment_sgg_nm').val(data.sigungu);
+        $('#owner_comment_emd_nm').val(data.bname);
+    
+        document.getElementById("owner_comment_address").value = addr;
+        var authen_token = $("meta[name='csrf-token']").attr('content');
+        jQuery.ajax({
+              url: "/check_address", 
+              type: 'POST',
+              dataType: 'json',
+              data: {
+                authenticity_token: authen_token,
+                address: addr
+              }
+            }).done(function(data) {
+              if (data.length > 0) {
+                $("input[name='owner_comment[detail_address]']").addClass("d-none");
+                $("input[name='owner_comment[detail_address]']").removeAttr('required');
+                $("input[name='owner_comment[detail_address]']").prop('disabled',true);
+                $("select[name='owner_comment[detail_address]']").removeClass("d-none");
+                $("select[name='owner_comment[detail_address]']").prop('required',true);
+                $("select[name='owner_comment[detail_address]']").prop('disabled',false);
+                $("select[name='owner_comment[detail_address]']").empty();
+                $.each(data,function(index, item){
+                  $("select[name='owner_comment[detail_address]']").append("<option value='" + item + "'>" + item + "</option>");
+                })
+                $("select[name='owner_comment[detail_address]']").append("<option id='address_directly' value=''>직접입력</option>");
+                $(".address_description").addClass("d-none");
+              } else {
+                $("input[name='owner_comment[detail_address]']").removeClass("d-none");
+                $("input[name='owner_comment[detail_address]']").prop('required',true);
+                $("input[name='owner_comment[detail_address]']").prop('disabled',false);
+                $("select[name='owner_comment[detail_address]']").addClass("d-none");
+                $("select[name='owner_comment[detail_address]']").removeAttr('required');
+                $("select[name='owner_comment[detail_address]']").prop('disabled',true);
+                $(".address_description").removeClass("d-none");
+              }
+            });
+        element_wrap.style.display = 'none';
+        document.body.scrollTop = currentScroll;
+      },
+      onresize : function(size) {
+        element_wrap.style.height = size.height+'px';
+      },
+      width : '100%',
+      height : '100%',
+      shorthand: false
+    }).embed(element_wrap);
+
+    element_wrap.style.display = 'block';
+  }
+  $("select[name='owner_comment[detail_address]']").change(function(){
+    var id = $(this).find("option:selected").attr("id");
+    if (id == "address_directly") {
+      $("input[name='owner_comment[detail_address]']").removeClass("d-none");
+      $("input[name='owner_comment[detail_address]']").prop('disabled',false);
+      $("input[name='owner_comment[detail_address]']").prop('required',true);
+
+      $("select[name='owner_comment[detail_address]']").addClass("d-none");
+      $("select[name='owner_comment[detail_address]']").prop('disabled',true);
+      $("select[name='owner_comment[detail_address]']").prop('required',true);
+    }
+  });
+  $(".contact_method").change(function(){
+    var id = $(this).attr("id");
+    if($(this).is(":checked")){
+      $('label[for="' + id + '"]').addClass('checked');
+    }else{
+      $('label[for="' + id + '"]').removeClass('checked');
+      if ($(".contact_method:checked").length <= 0) {
+        alert("연락방식을 1개 이상 선택해야됩니다.");
+        $(".contact_method[value='문자']").prop("checked", true);
+        $("label[for='contact_method_01']").addClass('checked');
+      }
+    }
+  });
+  $.datepicker.setDefaults({
+      dateFormat: 'yymmdd',
+      prevText: '이전 달',
+      nextText: '다음 달',
+      monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+      monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+      dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+      dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+      dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+      showMonthAfterYear: true,
+      yearSuffix: '년'
+  });
+  $( function() {
+    $( ".datepicker" ).datepicker({
+      dateFormat: 'yy-mm-dd',
+      showAnim: "blind"
+    });
+  });
+</script>
+
+<% end %>

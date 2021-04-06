@@ -1,0 +1,163 @@
+<header id="main" >
+  <div class="container">
+    <div class="row align-items-center">
+      <div id="logo_container" class="col-md-12 col-lg-6 p-0">
+        <div id="menu-mobile-btn" class="navbar-toggler d-md-block d-lg-none" style="z-index: 99; position: absolute; bottom: 15px; left:15px; cursor:pointer;">
+          <i class="material-icons" style="display: inline-block; vertical-align: middle; font-size: 28px;">menu</i>
+        </div>
+        <a href="/" style="display: inline-block;">
+          <img class="logo" src="<%= image_url("logo.png")%>">
+        </a>
+      </div>
+      <div class="col-6 p-0">
+        <nav class="d-none d-sm-none d-md-none d-lg-block">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/">홈</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= "active" if request.path == "/intro" %>" href="/intro">소개</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= "active" if request.path == "/reviews" %>" href="/reviews">방찾기</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= "active" if request.path == "/sample" || request.path == "/reviews/new" || request.path == "/reqReviews"%>" href="#">리뷰등록</a>
+              <ul class="dropdown">
+                <li>
+                  <a class="nav-dropdown-link <%= "active" if request.path == "/sample" %>" href="/sample">리뷰예시</a>
+                </li>
+                <li>
+                  <a class="nav-dropdown-link <%= "active" if request.path == write_reviews %>" href="<%= write_reviews %>">리뷰등록</a>
+                </li>
+                <li>
+                  <a class="nav-dropdown-link <%= "active" if request.path == "/reqReviews" %>" href="/reqReviews">리뷰요청</a>
+                </li>
+              </ul>
+            </li>
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <a class="nav-link <%= "active" if request.path.include?("mypage") %>" href="#">마이페이지</a>
+                <ul class="dropdown">
+                  <li class="email">
+                    <p><%= current_user.email.split("@")[0] %> 님</p>
+                    <p style="font-size: 12px;">리뷰 이용권 <%= current_user_viewer %> 개</p>  
+                    <p style="font-size: 12px;">전/월세금 이용권 <%= current_user_sec_viewer %> 개</p>  
+                  </li>
+                  <li style="border-top: 1px solid #42817A; border-bottom: 1px solid #42817A;">
+                    <a class="nav-dropdown-link <%= "active" if request.path == "/viewers" || request.path == "/viewers/new"%>" href="/viewers" style="font-weight: bold;">이용권 구매하기</a>
+                  </li>
+                  <li>
+                    <a class="nav-dropdown-link <%= "active" if request.path == "/mypage/reviews" %>" href="/mypage/reviews">리뷰내역</a>
+                  </li>
+                  <% if !current_user.owner_comments.blank? %>
+                    <li>
+                      <a class="nav-dropdown-link <%= "active" if request.path == "/mypage/owner_comments" %>" href="/mypage/owner_comments">임대인 코멘트 내역</a>
+                    </li>
+                  <% end %>
+                  <li>
+                    <a class="nav-dropdown-link <%= "active" if request.path == "/mypage/viewers" %>" href="/mypage/viewers">이용권내역</a>
+                  </li>
+                  <li>
+                    <a class="nav-dropdown-link <%= "active" if request.path == "/users/edit" %>" href="/users/edit">정보수정</a>
+                  </li>
+                  <li>
+                    <a class="nav-dropdown-link <%= "active" if request.path == "/users/sign_out" %>" href="/users/sign_out" data-method="delete">로그아웃</a>
+                  </li>
+                  <% if current_user.role == "manager"%>
+                    <li style="border-top: 1px solid black;">
+                      <a class="nav-dropdown-link <%= "active" if request.path == "/managers/reviews" %>" href="/managers/reviews">리뷰 관리</a>
+                    </li>
+                    <li>
+                      <a class="nav-dropdown-link <%= "active" if request.path == "/managers/owner_comments" %>" href="/managers/owner_comments">임대인 관리</a>
+                    </li>
+                    <li>
+                      <a class="nav-dropdown-link <%= "active" if request.path == "/managers/exchanges" %>" href="/managers/exchanges">환전 관리</a>
+                    </li>
+                  <% end %>
+                </ul>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <a class="nav-link <%= "active" if request.path == "/users/sign_in" %>" href="/users/sign_in">로그인</a>
+              </li>
+            <% end %>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="menu mobile" style="">
+  <ul class="nav mobile">
+    <% if user_signed_in? %>
+      <li class="nav-item mobile">
+        <div class="nav-link mobile" style="margin-top: 21px;">
+          <p><%= current_user.email.split("@")[0] %> 님</p>
+          <p style="font-size: 12px;">리뷰 이용권 <%= current_user_viewer %> 개</p>  
+          <p style="font-size: 12px;">전/월세금 이용권 <%= current_user_sec_viewer %> 개</p>  
+        </div>
+      </li>
+    <% end %>
+    <li class="nav-item mobile">
+      <a class="nav-link mobile <%= "active" if request.path == "/" %>" href="/">홈</a>
+    </li>
+    <li class="nav-item mobile">
+      <a class="nav-link mobile <%= "active" if request.path == "/intro" %>" href="/intro">소개</a>
+    </li>
+    <li class="nav-item mobile">
+      <a class="nav-link mobile <%= "active" if request.path == "/reviews" %>" href="/reviews">방찾기</a>
+    </li>
+    <li class="nav-item mobile">
+      <a class="nav-link mobile <%= "active" if request.path == "/sample" %>" href="/sample">리뷰예시</a>
+    </li>
+    <%# 리뷰등록 %>
+    <li class="nav-item mobile">
+      <a class="nav-link mobile <%= "active" if request.path == write_reviews %>" href="<%= write_reviews %>">리뷰등록</a>
+    </li>
+    <li class="nav-item mobile">
+      <a class="nav-link mobile <%= "active" if request.path == "/reqReviews" %>" href="/reqReviews">리뷰요청</a>
+    </li>
+    <% if user_signed_in? %>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/viewers" || request.path == "/viewers/new"%>" href="/viewers" style="font-weight: bold;">이용권 구매하기</a>
+      </li>
+      <% if !current_user.owner_comments.blank? %>
+        <li class="nav-item mobile">
+          <a class="nav-link mobile <%= "active" if request.path == "/mypage/owner_comments" %>" href="/mypage/owner_comments">임대인 코멘트 내역</a>
+        </li>
+      <% end %>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/mypage/reviews" %>" href="/mypage/reviews">리뷰내역</a>
+      </li>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/mypage/viewers" %>" href="/mypage/viewers">이용권내역</a>
+      </li>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/users/edit" %>" href="/users/edit">정보수정</a>
+      </li>
+      <% if current_user.role == "manager"%>
+        <li class="nav-item mobile" >
+          <a class="nav-link mobile <%= "active" if request.path == "/managers/reviews" %>" href="/managers/reviews" style="border-top: 1px solid black;">리뷰 관리</a>
+        </li>
+        <li class="nav-item mobile">
+          <a class="nav-link mobile <%= "active" if request.path == "/managers/owner_comments" %>" href="/managers/owner_comments">임대인 관리</a>
+        </li>
+        <li class="nav-item mobile">
+          <a class="nav-link mobile <%= "active" if request.path == "/managers/exchanges" %>" href="/managers/exchanges">환전 관리</a>
+        </li>
+      <% end %>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/users/sign_out" %>" href="/users/sign_out" data-method="delete">로그아웃</a>
+      </li>
+    <% else %>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/users/sign_in" %>" href="/users/sign_in">로그인</a>
+      </li>
+      <li class="nav-item mobile">
+        <a class="nav-link mobile <%= "active" if request.path == "/users/sign_up_before_policy" %>" href="/users/sign_up_before_policy">회원가입</a>
+      </li>
+    <% end %>
+  </ul>
+</nav>

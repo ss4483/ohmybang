@@ -1,0 +1,31 @@
+<div class="row no-gutters d-flex justify-content-center" style="margin-top:20px;">
+  <div class="<%= col %>">
+    <div style="overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+      <% if reviews.blank? %>
+        <p style="margin: 70px 0; text-align: center; color: hsl(0, 0%, 70%);"><%= blank_txt %></p>
+      <% else %>
+        <% reviews.each do |h| %><!--
+          --><a href="/reviews/<%=h.id%>" class="last_review">
+            <div class="" style="max-width:170px;">
+              <img class="d-block" src="<%= image_url(room_img(h.room))%>" alt="" style="width:150px; height: 150px; margin:auto; "/>
+
+              <div class="d-flex flex-column align-items-start"style="">
+                <p style="font-weight: 600; line-height: 15px; font-size:12px; padding-top:10px">
+                  <span style=""><%=h.bd_nm%> <span style="font-size:10px;">(<%=h.detail_address%>)</span></span>
+                  <hr style="margin: 2px 0;width: 100%;">
+                  <span style="font-weight: 400;font-size:12px; white-space: initial;text-align: left;"> <%= truncate("#{h.address} #{h.detail_address} #{h.extra_address}", length: 40) %></span>
+                </p>
+              </div>
+            </div>
+            <span class="" style="font-size:12px; font-weight:bold">#<%= h.room %></span>
+            <span class="" style="font-size:12px;font-weight:bold">#<%= h.floor %></span>
+            <% if !h.pet.blank? %>
+              <span class="" style="font-size:12px;font-weight:bold">#<%= h.pet %></span>
+            <% end %>
+          </a><!--
+        --><% end %>
+
+      <% end %>
+    </div>
+  </div>
+</div>

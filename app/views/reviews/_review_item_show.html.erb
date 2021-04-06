@@ -1,0 +1,79 @@
+<% if i.score == 5 %>
+  <% score = ["review_good", "좋아요"] %>
+<% elsif i.score == 3 %>
+  <% score = ["review_fair", "보통이에요"] %>
+<% elsif i.score == 1 %>
+  <% score = ["review_poor", "별로에요"] %>
+<% end %>
+<div id="review_<%=review_tags[:"#{i.tag}"]%>" style="margin: 0 12px; padding: 20px 12px; <%= "border-bottom: 1px solid #bfbfbf;" if index_check %>">
+  <div class="d-flex justify-content-between" >
+    <div style="display: flex; min-width:110px; flex-direction: row;">
+      <p style="flex-grow: 1; text-align: left;"><%=i.tag%></p> 
+      <div>(<img src="<%= image_url("ic/#{review_tags[:"#{i.tag}"]}.png")%>" alt="" width="15px" style="margin:0 5px;"/>)</div>
+    </div>
+    <% if @check %>
+      <div style="display: flex; width:110px; flex-direction: row;">
+        <div><img src="<%= image_url("ic/#{score[0]}.png")%>" alt="" style="margin-right: 6px;" /></div>
+        <p style="flex-grow: 1; text-align: center;"><%=score[1]%></p>
+      </div>
+    <% else %>
+      <span class="blur">뭘까요</span>
+    <% end %>
+  </div>
+
+  <div class="pl-0 pl-sm-4" style="color: black;">
+    <% if !i.comment.blank? || !i.review_imgs.blank? || !i.review_videos.blank? %>
+      <div class="comment_box_triangle" style="margin-top: 10px;"></div>
+      <% if !i.review_videos.empty? %>
+        <% if @check %>
+          <div style="background-color: #f7f5f5; padding: 20px 20px 0; width:100%;margin-right:2%; overflow-x:auto; white-space: nowrap;"><!--
+          --><% i.review_videos.each_with_index do |video, i| %><!--
+            --><section class="text-center background-white d-inline-block" style="margin-left: 10px; margin-right:10px">
+                <video class="video" width="100%" controlsList="nodownload" controls="true" playsinline >
+                  <source src="/videos/review/<%=video.name%>" type="<%=video.content_type%>">
+                </video>
+              </section><!--
+          --><% end %><!--
+        --></div>
+        <% else %>
+          <div style="background-color: #f7f5f5; padding: 20px 20px 0; width:100%;margin-right:2%; overflow-x:auto; white-space: nowrap;">
+            <% i.review_videos.each_with_index do |video, i| %>
+              <section class="text-center background-white d-inline-block" style="padding-left:10px; padding-right:10px;">
+                <img src='<%= image_url("sample_video.jpg")%>' width="50%" >
+              </section>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+
+      <% if !i.comment.nil? %>
+        <div class="comment_box">
+          <% if @check %>
+            <p  style="white-space: pre-line;"><%= i.comment %></p>
+          <% else %>
+            <p  class="blur" style="white-space: pre-line; "><%= i.comment.gsub(/[^\s+]/, "?") if !i.comment.nil? %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+
+
+      <div class="<%=review_tags[:"#{i.tag}"]%>-gallery" style="background-color: #f7f5f5;padding: 10px 20px; width:100%; overflow-x:auto; white-space: nowrap;">
+        <% i.review_imgs.each_with_index do |img, index| %>
+          <% if @check %>
+            <a href="/images/review/<%=img.name%>" title="<%=img.tag%>-<%=index+1%>">
+              <img class="gallery_image" src='/images/review/<%=img.name%>'  >
+            </a>
+          <% else %>
+            <a href="<%= image_url("sample.jpg")%>" title="<%=img.tag%>-<%=index+1%>">
+              <img class="gallery_image" src='<%= image_url("sample.jpg")%>'  >
+            </a>
+          <% end %>
+        <% end %>
+      </div>
+
+      
+    <% end %>
+  </div>
+</div>

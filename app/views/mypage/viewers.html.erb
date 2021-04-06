@@ -1,0 +1,193 @@
+<% provide :title, "마이페이지/이용권내역" %>
+
+<div class="main_container">
+  <div class="container p-0">
+    
+    <div class="row justify-content-center" style="text-align: left;margin: 30px 0 20px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>최근 본 리뷰</p>
+      </div>
+    </div>
+
+    <%= render partial: "shared/review_list", locals: {reviews: @review_histories, blank_txt: "최근에 본 리뷰가 없습니다.", col: "col-12 col-sm-10 col-lg-8"} %>
+  
+
+    <%# 뷰어 내역 %>
+    <div class="row justify-content-center" style="text-align: left; margin: 50px 0 20px;"> 
+      <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>이용권 구매/사용 내역</p>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center mx-0" style="margin-top: 45px; ">
+      <div class="col-12 col-sm-10 col-lg-8 ">
+        <div class="row">
+          <div class="col-12 mb-2">
+            <p class="text-right" style="font-size:12px;">보유 하우스 리뷰 이용권: <%=current_user_viewer %> 개</p>
+            <p class="text-right" style="font-size:12px;">보유 전/월세금 이용권: <%=current_user_sec_viewer %> 개</p>
+          </div>
+          <div class="table_title col">종류</div>
+          <div class="table_title col">남은 이용권 / 전체 이용권</div>
+          <div class="table_title col d-none d-sm-block">가격</div>
+          <div class="table_title col d-none d-sm-block">유효기간</div>
+          <div class="table_title col">영수증</div>
+        </div>
+      </div>
+    </div>
+    <% if @viewers.empty? %>
+      <div class="row  justify-content-center mx-0">
+        <div class="col-12 col-sm-10 col-lg-8" style="border-bottom: solid 0.3px #313131; padding: 100px 15px;">
+          <p class="text-center" style="color: hsl(0, 0%, 70%);">내역이 없습니다.</p>
+        </div>
+      </div>
+    <% else %>
+      <div class="row d-flex justify-content-center mx-0" style="margin-top: 30px;">
+        <div class="col-12 col-sm-10 col-lg-8" style="min-height: 300px;">
+          <% @viewers.each do |v| %>
+            
+            <div class="row table_col" style="background-color: white">
+              <div class="col table_content d-flex" style="flex-direction: column;">
+                <p><%= v.class == Viewer ? "리뷰 이용권" : "전/월세금 이용권" %></p>
+                <p><%= v.viewer_type %></p>
+              </div>
+              <div class="col table_content d-flex" style="color: #2e4f7c">
+                <%= v.count %> / <%= v.item_type * v.item_count %>개
+              </div>
+              <div class="col table_content d-none d-sm-flex">
+                <% if v.price.nil? %>
+                  무료
+                <% else %>
+                  <%= v.price %> 원
+                <% end %>
+              </div>
+              <div class="col table_content d-none d-sm-flex">
+                <%= v.exp_date%>
+              </div>
+              <div class="col table_content d-flex" style="flex-direction: column;">
+                <% unless v.price.nil? %>
+                  <a href="<%= v.receipt_url %>" target="_balnk">보기</a>
+                  <% if check_cancel(v) %>
+                    <% if v.class == Viewer %>
+                      <button class="btn btn-sm btn-outline-secondary" onclick="cancelPay('<%=v.id%>')" style="padding: 1px 7px;">환불하기</button>
+                    <% else %>
+                      <button class="btn btn-sm btn-outline-secondary" onclick="secCancelPay('<%=v.id%>')" style="padding: 1px 7px;">환불하기</button>
+                    <% end %>
+                  <% end %>
+                <% end %>
+
+              </div>
+
+              
+              <% if v.class == Viewer %>
+                <% if !v.viewer_histories.blank? %>
+                  <div class="col-12 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                    <div id="viewer_history_box_<%=v.id%>" class="review_confirm_box box_none row justify-content-center mx-0">
+                      <div class="col-12 text-left p-0" style="margin-bottom: 10px; margin-top: 7px;">
+                        (이용권 사용 내역)
+                      </div>
+                      <div class="col-12" style="height: 100px; overflow-y: auto;">
+                        <% v.viewer_histories.each do |h|%>
+                          <div class="row" style=" margin-bottom: 10px;">
+                            <div class="col  d-flex justify-content-center align-items-center">
+                              <%= h.memo %>
+                            </div>
+                            <!--
+                            <div class="col d-flex justify-content-center align-items-center" style="color: <%= (h.memo == "구매")? "#2e4f7c" : "#8d1b1b" %>;">
+                              <p><%= h.viewer_count %>개</p>
+                            </div>
+                            -->
+                            <% if h.review.present? %>
+                              <a href="/reviews/<%=h.review.id%>" class="col-8 d-flex justify-content-center align-items-center" target="_blank">
+                                <p><%= h.review.address %> <%= h.review.extra_address %> <%= h.review.detail_address %></p>  
+                              </a>
+                            <% else %>
+                              <div class="col-8 d-flex justify-content-center align-items-center">
+                                <p><%=h.viewer_count%> 개의 이용권을 환불하였습니다.</p>
+                              </div>
+                            <% end %>
+                            <div class="col  d-none d-sm-flex justify-content-center align-items-center">
+                              <%= raw(h.date_of_use.strftime("%Y.%m.%d <br> %H:%M")) if !h.date_of_use.blank? %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div class="down_arrow" data-value="viewer_history_box_<%=v.id%>">
+                      <i class="material-icons mt-2">keyboard_arrow_down</i>
+                    </div>
+                  </div>
+                <% end %>
+              <% elsif v.class == SecViewer %>
+                <% if !v.sec_viewer_histories.blank? %>
+                  <div class="col-12 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                    <div id="viewer_history_box_<%=v.id%>" class="review_confirm_box box_none row justify-content-center mx-0">
+                      <div class="col-12 text-left p-0" style="margin-bottom: 10px; margin-top: 7px;">
+                        (이용권 사용 내역)
+                      </div>
+                      <div class="col-12" style="height: 100px; overflow-y: auto;">
+                        <% v.sec_viewer_histories.each do |h|%>
+                          <div class="row" style=" margin-bottom: 10px;">
+                            <div class="col  d-flex justify-content-center align-items-center">
+                              <%= h.memo %>
+                            </div>
+                            <!--
+                            <div class="col d-flex justify-content-center align-items-center" style="color: <%= (h.memo == "구매")? "#2e4f7c" : "#8d1b1b" %>;">
+                              <p><%= h.viewer_count %>개</p>
+                            </div>
+                            -->
+                            <% if h.review.present? %>
+                              <a href="/reviews/<%=h.review.id%>" class="col-8 d-flex justify-content-center align-items-center" target="_blank">
+                                <p><%= h.review.address %> <%= h.review.extra_address %> <%= h.review.detail_address %></p>  
+                              </a>
+                            <% else %>
+                              <div class="col-8 d-flex justify-content-center align-items-center">
+                                <p><%=h.viewer_count%> 개의 이용권을 환불하였습니다.</p>
+                              </div>
+                            <% end %>
+                            <div class="col  d-none d-sm-flex justify-content-center align-items-center">
+                              <%= raw(h.date_of_use.strftime("%Y.%m.%d <br> %H:%M")) if !h.date_of_use.blank? %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div class="down_arrow" data-value="viewer_history_box_<%=v.id%>">
+                      <i class="material-icons mt-2">keyboard_arrow_down</i>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+
+              
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <div class="row mx-0" style="margin-top: 15px;">
+      <div class="col-12 d-flex align-items-center justify-content-center">
+        <%= paginate @viewers %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js" type="text/javascript"></script>
+<%= javascript_include_tag "iamport" %>
+<script>
+  IMP.init('imp29122012');
+$(document).ready(function() {
+  $('.down_arrow').on("click",function(e){
+    var $confirm_box = $("#" + this.getAttribute('data-value'));
+    var $icon = $(this).children(".material-icons");
+    if ($confirm_box.hasClass('box_none')) {  
+      $confirm_box.removeClass('box_none');
+      $icon.text('keyboard_arrow_up');
+    } else {
+      $confirm_box.addClass('box_none');
+      $icon.text('keyboard_arrow_down');
+    }
+  });
+});
+</script>

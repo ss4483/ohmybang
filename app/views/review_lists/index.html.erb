@@ -1,0 +1,66 @@
+<% provide :title, "리뷰 검색" %>
+
+<div class="main_container">
+  <div class="container" style="position: relative;">
+    <div class="row d-flex justify-content-center"  style="margin-top:90px;">
+      
+      <div class="col-sm-4 col-md-2 col-lg-2 list_item_title d-flex align-items-center">
+        <p>지역</p>
+      </div>
+      <div class="col-sm-8 col-md-8 col-lg-8 review_list_items" >
+        <a href="/reviewLists<%=loc_href("all")%>" class="review_list_item <%= 'active' if params[:loc].nil? %>">모두 보기</a>
+        <% @locations.each do |k, v| %>
+          <a href="/reviewLists<%=loc_href(k)%>" class="review_list_item <%= 'active' if  include_loc(k) %>"><%=k%><!--(<%=v%>)--></a>
+        <% end %>
+      </div>
+      <div class="w-100"></div>
+      <div class="col-sm-4 col-md-2 col-lg-2 list_item_title d-flex align-items-center">
+        <p>방 종류</p>
+      </div>
+      <div class="col-sm-8 col-md-8 col-lg-8 review_list_items" >
+        <a href="/reviewLists<%=room_href("all")%>" class="review_list_item <%= 'active' if params[:room].nil? %>">모두 보기</a>
+        <% @rooms.each do |k, v| %>
+          <a href="/reviewLists<%=room_href(k)%>" class="review_list_item  <%= 'active' if  include_room(k) %>"><%=k%><!--(<%=v%>)--></a>
+        <% end %>
+      </div>
+      <div class="w-100"></div>
+      <div class="col-sm-4 col-md-2 col-lg-2 list_item_title d-flex align-items-center">
+        <p>리뷰옵션</p>
+      </div>
+      <div class="col-sm-8 col-md-8 col-lg-8 review_list_items" >
+        <a href="/reviewLists<%=opt_href("img")%>" class="review_list_item <%='active' if include_opt("img")%>">이미지 리뷰</a>
+        <a href="/reviewLists<%=opt_href("video")%>" class="review_list_item <%='active' if include_opt("video")%>">영상 리뷰</a>
+        <br>
+        <a href="/reviewLists<%=txt_href("500")%>" class="review_list_item <%= "active" if include_txt("500") %>">500자 이상</a>
+        <a href="/reviewLists<%=txt_href("1000")%>" class="review_list_item <%= "active" if include_txt("1000") %>">1000자 이상</a>
+        <a href="/reviewLists<%=txt_href("1500")%>" class="review_list_item <%= "active" if include_txt("1500") %>">1500자 이상</a>
+      </div>
+      
+      <div class="col-12 text-center" style="margin-top:40px;">
+        <p style="font-weight: 600; font-size: 20px;color: #4a4a4a;"><%=@review_count%>개의 리뷰가 검색되었습니다.</p>
+      </div>
+
+      <div id="content" class="col-12 row px-0">
+        <%= render partial: "review_lists/review", collection: @reviews %>
+      </div>
+
+      
+      <div id="view-more-box" class="col-12 text-center">
+        <% if !@reviews.blank? && (@reviews.current_page != @reviews.total_pages || @reviews.total_pages != 1) %>
+          <p id="view-more" style="margin-top: 20px;">
+            <a data-remote="true" href="<%=url_for(get_params().merge({page: @reviews.current_page + 1}))%>">
+              <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+              <span>불러오는 중</span>
+            </a>
+          </p>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<%= content_for 'javascript_content' do %>
+  <%= javascript_include_tag "infinite-scroll" %>
+<% end %>

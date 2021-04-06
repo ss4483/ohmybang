@@ -1,0 +1,476 @@
+<div class="container">  
+  <div class="row d-flex justify-content-center" style="margin-top: 18px;">
+    
+    <% unless @review.contract_type.blank? %>
+      <% if @check_sec %>
+        <div class="col-12 col-lg-9 contract_container">
+          <div class="contract_header" style="border: 0; background: transparent;">
+            <p class="contract_date_title" style="margin: 20px 0; color: black; font-family: s-core-dream-bold, sans-serif; font-size: 28px;">실제 거주 정보</p>
+          </div>
+          <div class="contract_body" style="border: 0;">
+            <div class="row">
+              <div class="col-12 col-md-7 contract_body_1">
+                <div class="contract_box">
+                  <p class="contract_title">거주기간</p><!--
+                  --><p class="contract_content"><%= @review.start_date.strftime("%Y. %m") unless @review.start_date.nil? %> ~ <%= @review.end_date.strftime("%Y. %m") unless @review.start_date.nil? %></p>
+                </div>
+                <div class="contract_box">
+                  <p class="contract_title">해당층</p><!--
+                  --><p class="contract_content"><%=@review.floor_detail%>층</p>
+                </div>
+                <div class="contract_box">
+                  <p class="contract_title">공급전용면적</p><!--
+                  --><p class="contract_content"><%=@review.area_pyeong%>평 / <%=@review.area_square%>m²</p>
+                </div>
+                <div class="contract_box" style="color: #1e9497;">
+                  <p class="contract_title">월세</p><!--
+                  --><p class="contract_content"><%= @review.deposit %><%= " / #{@review.monthly}" if @review.monthly > 0 %>만원</p>
+                </div>
+                <div class="contract_box" style="display: flex; color: #1e9497;">
+                  <p class="contract_title" style="display: flex; ">관리비</p><!--
+                  --><p class="contract_content">
+                    <%= @review.management_fee %>만원 
+                    <br>
+                    <span style="font-size:12px;"><%= "(#{@review.management_type.join(',')})" unless @review.management_type.blank? %></span>
+                  </p>
+                </div>
+                <div class="contract_box" style="color: #1e9497;">
+                  <p class="contract_title">주차비</p><!--
+                  --><p class="contract_content"><%= @review.parking == -1 ? "불가능" : @review.parking == 0 ? "무료" : "#{@review.parking}만원" %></p>
+                </div>
+              </div>
+              <div class="col-12 d-md-none"><hr style="border-top: 2px solid #DCDCDC; margin: 4px 0;"></div>
+              <div class="col-12 col-md-5 contract_body_2" style="color: #1e9497; justify-content: center;">
+                <div>
+                  <p class="total_price_title" style="font-weight: 600; font-size: 30px;">한달비용</p>
+                  <p class="total_price" style="height: fit-content; display: block; margin-bottom: 0;"><span style="font-size:20px; margin-right: 12px;">약</span><%= @review.monthly + @review.management_fee + ((@review.parking.to_i.abs + @review.parking.to_i) / 2) %>만원</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="col-12 col-lg-9 contract_container">
+          <div class="contract_header">
+            <p class="contract_date_title">거주기간</p>
+            <p class="contract_date blur_white_text">????.?? ~ ????.??</p>
+          </div>
+          <div class="contract_body">
+            <div class="row">
+              <div class="col-12 col-md-7 contract_body_1">
+                <div class="contract_box">
+                  <p class="contract_title">월세</p><!--
+                  --><p class="contract_content blur_black_text">?? / ?? 만원</p>
+                </div>
+                <div class="contract_box">
+                  <p class="contract_title">관리비</p><!--
+                  --><p class="contract_content blur_black_text">?? 만원 (??, ??)</p>
+                </div>
+                <div class="contract_box">
+                  <p class="contract_title">주차비</p><!--
+                  --><p class="contract_content blur_black_text">??</p>
+                </div>
+              </div>
+              <div class="col-12 d-md-none"><hr style="border-top: 2px solid #DCDCDC; margin: 4px 0;"></div>
+              <div class="col-12 col-md-5 contract_body_2">
+                <p class="total_price_title">한달비용</p><!--
+                  --><p class="total_price blur_black_text">??만원</p>
+              </div>
+            </div>
+          </div>
+          <div class="blur_box d-flex align-items-center justify-content-center">  
+            
+            <div class="text-center">
+              <% if current_user_sec_viewer > 0  %>
+                <a id="review_view" href="/sec_viewers/<%=@review.id%>" data-method="post" class="btn" 
+                  data-confirm="<b><%= @review.address %> <%= @review.extra_address %> <%=@review.detail_address%></b><br>이용권을 사용하여 해당 리뷰를 보시겠습니까?<br>이용시 취소 및 환불은 불가능합니다."
+                  data-title='실제 거래 계약금 조회'
+                  data-commit='전/월세금 이용권 사용'
+                  data-cancel='아니오'
+                  data-backdrop="static"
+                  style="font-size: 14px;">실제 거래 계약금 보기</a>
+                <% else %>
+                  <a id="review_view" href="/viewers" class="btn" 
+                    data-confirm="전/월세금 이용권이 부족합니다.<br>전/월세금 이용권을 구매해주세요"
+                    data-title='리뷰 조회'
+                    data-commit='구매하러가기'
+                    data-cancel='취소'
+                    data-backdrop="static"
+                    style="font-size: 14px;">실제 거래 계약금 보기</a>
+                <% end %>
+            </div>
+
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+
+    <!-- 공공임대 차트 -->
+    <% unless @review.suply_prvuse_ar.blank? %>
+    <div class="col-12 col-lg-9">
+      <div class="d-block d-md-flex" style=" margin-top: 50px; justify-content: space-between; align-items: center;">
+        <p><%= @review.bd_nm.blank? ? "#{@review.sgg_nm} #{@review.emd_nm}" : @review.bd_nm %> <b>기본 금액 정보</b> <span style="font-size: 10px">(단위: 만원)</span></p>
+        <div style="display: flex; justify-content: flex-end;">
+          <div style="display: flex; align-items: center; color: #686868; margin: 10px 30px 10px 0;">
+            <div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 18px; background-color: rgba(30, 148, 151, 1);"></div>
+            <span style="vertical-align: text-bottom;">기본 보증금</span>
+          </div>
+          <div style="display: flex; align-items: center; color: #686868; margin: 10px 0;">
+            <div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 18px; background-color: rgba(249, 195, 65, 1);"></div>
+            <span style="vertical-align: text-bottom;">기본 월세</span>
+          </div>
+        </div>
+      </div>
+      <div class="pt-3 pb-5 px-md-5 bar-cahrt" >  
+        <canvas id="rentalHouse" width="250" height="250"></canvas>
+      </div>
+    </div>
+    <script>
+      var chartRentalHouse = new Chart(document.getElementById('rentalHouse'), {
+          type: 'bar',
+          data:   {
+            labels: [ 
+              <% @review.suply_prvuse_ar.each_with_index do |r, i| %>
+                "<%= r %>㎡\n<%= @review.suply_cmnuse_ar[i] %>㎡",
+              <% end %>
+            ],
+            datasets: [
+              {
+                label: "기본 보증금",
+                yAxisID: 'A',
+                backgroundColor: [
+                  <% @review.suply_prvuse_ar.each_with_index do |r, i| %>
+                    'rgba(30, 148, 151, <%= r == @review.area_pyeong ? '1' : '0.5' %>)',
+                  <% end %>
+                ],
+                // backgroundColor: Array.apply(null, Array(6)).map(_ => 'rgba(30, 148, 151, 1)'),
+                data: [ 
+                  <% @review.bass_rent_gtn.each_with_index do |r| %>
+                    '<%= r / 10000.0 %>',
+                  <% end %>
+                ],
+                otherData: [
+                  <% @review.bass_cnvrs_gtn_lmt.each_with_index do |r| %>
+                    '<%= r / 10000 %>',
+                  <% end %>
+                ]
+              },
+              { 
+                label: "기본 월세",
+                yAxisID: 'B',
+                backgroundColor: [
+                  <% @review.suply_prvuse_ar.each_with_index do |r, i| %>
+                    'rgba(249, 195, 65, <%= r == @review.area_pyeong ? '1' : '0.5' %>)',
+                  <% end %>
+                ],
+                data: [
+                  <% @review.bass_mt_rntchrg.each_with_index do |r| %>
+                    '<%= r / 10000.0 %>',
+                  <% end %>
+                ]
+              }
+            ],
+            borderWidth: 0
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+              display: false,
+            },
+            scales: {
+              xAxes: [{
+                display: true,
+                maxBarThickness: 50, // number (pixels)
+              }],
+              yAxes: [{
+                id: 'A',
+                type: 'linear',
+                position: 'left'
+              }, {
+                id: 'B',
+                type: 'linear',
+                position: 'right',
+                ticks: {
+                  beginAtZero: true,
+                  min: 0,
+                  suggestedMin: 0,
+                  suggestedMax: 35
+                }
+              }]
+            },
+            tooltips: {
+              callbacks: {
+                label: function (t, d) {
+                  if (t.datasetIndex === 0) {
+                    return d.datasets[t.datasetIndex].label +' ' + t.yLabel.toLocaleString() + '만원';
+                  } else if (t.datasetIndex === 1) {
+                    return d.datasets[t.datasetIndex].label +' ' + t.yLabel.toLocaleString() + '만원';
+                  }
+                },
+                footer: function (t, d) {
+                  console.log(t)
+                  return ['기본 전환보증금 ' + '(' + d.datasets[0].otherData[t[0].index] +  '만원)'];
+                }
+              },
+            },
+          } ,
+          plugins: [{
+            beforeInit: function (chart) {
+              chart.data.labels.forEach(function (e, i, a) {
+                if (/\n/.test(e)) {
+                  a[i] = e.split(/\n/)
+                }
+              })
+            }
+          }]
+          
+      });
+    </script>
+    <% end %>
+
+    <!-- 최근 실거래가 차트 -->
+    <% unless @review.recently_contracts.blank? %>
+    <div class="col-12 col-lg-9">
+      <div class="d-block d-md-flex" style=" margin-top: 50px; justify-content: space-between; align-items: center;">
+        <p><%= @review.bd_nm.blank? ? "#{@review.sgg_nm} #{@review.emd_nm}" : @review.bd_nm %> <b>전월세 실거래가 정보</b> <span style="font-size: 10px">(단위: 만원)</span></p>
+        <div style="display: flex; justify-content: flex-end;">
+          <div style="display: flex; align-items: center; color: #686868; margin: 10px 30px 10px 0;">
+            <div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 18px; background-color: rgba(30, 148, 151, 1);"></div>
+            <span style="vertical-align: text-bottom;">보증금</span>
+          </div>
+          <div style="display: flex; align-items: center; color: #686868; margin: 10px 0;">
+            <div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 18px; background-color: rgba(249, 195, 65, 1);"></div>
+            <span style="vertical-align: text-bottom;">월세</span>
+          </div>
+        </div>
+      </div>
+      <div class="pt-3 pb-5 px-md-5 bar-cahrt" >  
+        <canvas id="recentlyContract" width="250" height="250"></canvas>
+      </div>
+    </div>
+    <script>
+      var chartRecentlyContract = new Chart(document.getElementById('recentlyContract'), {
+        type: 'bar',
+        data:   {
+          labels: [
+            <% @review.recently_contracts.each do |rc| %>
+              "<%= rc.compet_de.strftime("%Y.%m.%d") %>\n<%= rc.suply_prvuse_ar %>m² <%= "#{rc.floor}층" if rc.floor %>",
+            <% end %>
+          ],
+          datasets: [
+            {
+              label: "보증금",
+              yAxisID: 'A',
+              backgroundColor: [
+                <% @review.recently_contracts.each_with_index do |r, i| %>
+                  'rgba(30, 148, 151, <%= r.suply_prvuse_ar == @review.area_pyeong ? '1' : '0.5' %>)',
+                <% end %>
+              ],
+              data: [
+                <% @review.recently_contracts.each do |rc| %>
+                  "<%= rc.rent_gtn %>",
+                <% end %>
+              ]
+            },
+            {
+              label: "월세",
+              yAxisID: 'B',
+              backgroundColor: [
+                <% @review.recently_contracts.each_with_index do |r, i| %>
+                  'rgba(249, 195, 65, <%= r.suply_prvuse_ar == @review.area_pyeong ? '1' : '0.5' %>)',
+                <% end %>
+              ],
+              data: [
+                <% @review.recently_contracts.each do |rc| %>
+                  "<%= rc.mt_rntchrg %>",
+                <% end %>  
+              ]
+            }
+          ],
+          borderWidth: 0
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: false,
+          },
+          scales: {
+            xAxes: [{
+              display: true,
+              maxBarThickness: 50, // number (pixels)
+            }],
+            yAxes: [{
+              id: 'A',
+              type: 'linear',
+              position: 'left',
+            }, {
+              id: 'B',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                // beginAtZero: true,
+                // min: 0,
+                // maxTicksLimit: 8,
+                suggestedMin: 0,
+                suggestedMax: 35
+              }
+            }]
+          },
+          tooltips: {
+            callbacks: {
+              label: function (t, d) {
+                if (t.datasetIndex === 0) {
+                  return d.datasets[t.datasetIndex].label +' ' + t.yLabel.toLocaleString() + '만원';
+                } else if (t.datasetIndex === 1) {
+                  return d.datasets[t.datasetIndex].label +' ' + t.yLabel.toLocaleString() + '만원';
+                }
+              }
+            },
+          },
+        },
+        plugins: [{
+          beforeInit: function (chart) {
+            chart.data.labels.forEach(function (e, i, a) {
+              if (/\n/.test(e)) {
+                a[i] = e.split(/\n/)
+              }
+            })
+          }
+        }]
+      });
+    </script>
+    <% end %>
+
+    <!-- 종합 차트 -->
+    <div class="col-12 col-lg-9">
+      <div class="d-block d-md-flex" style=" margin-top: 50px; justify-content: space-between; align-items: center;">
+        <p><%= @review.bd_nm.blank? ? "#{@review.sgg_nm} #{@review.emd_nm}" : @review.bd_nm %> <b>전월세 실거래가 정보</b> <span style="font-size: 10px">(단위: 만원)</span></p>
+        <div style="display: flex; justify-content: flex-end;">
+          <div style="display: flex; align-items: center; color: #686868; margin: 10px 30px 10px 0;">
+            <div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 18px; background-color: rgba(30, 148, 151, 1);"></div>
+            <span style="vertical-align: text-bottom;">보증금</span>
+          </div>
+          <div style="display: flex; align-items: center; color: #686868; margin: 10px 0;">
+            <div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 18px; background-color: rgba(249, 195, 65, 1);"></div>
+            <span style="vertical-align: text-bottom;">월세</span>
+          </div>
+        </div>
+      </div>
+      <div class="pt-3 pb-5 px-md-5 bar-cahrt" >  
+        <canvas id="totalContract" width="250" height="250"></canvas>
+      </div>
+    </div>
+
+
+
+    
+  </div>
+</div>
+
+<%= content_for 'javascript_content' do %>
+  <script>
+    var chartDefaultContract = new Chart(document.getElementById('totalContract'), {
+        type: 'bar',
+        data:   {
+          labels: [
+            <% unless @recently_contract.blank? %>
+              "국토부 실거래가 정보\n<%= @recently_contract.compet_de.strftime("%Y.%m.%d") %>\n<%= @recently_contract.suply_prvuse_ar %>m² <%= "#{@recently_contract.floor}층" if @recently_contract.floor %>", 
+            <% end %>
+            <% unless @review.suply_prvuse_ar.blank? %>
+              "공공임대 기본 가격", 
+            <% end %>
+            "실제 거래 가격"
+          ],
+          datasets: [
+            {
+              label: "보증금",
+              yAxisID: 'A',
+              backgroundColor: ['rgba(30, 148, 151, 0.5)', 'rgba(30, 148, 151, 0.5)', 'rgba(30, 148, 151, 1)'],
+              data: [
+                <% unless @recently_contract.blank? %>
+                  "<%= @recently_contract.rent_gtn %>",
+                <% end %>
+                <% unless @review.suply_prvuse_ar.blank? %>
+                  "<%= @review.bass_rent_gtn[@review.suply_prvuse_ar.find_index(@review.area_pyeong)] / 10000.0%>",
+                <% end %>
+                "<%= @review.deposit %>"
+              ]
+            },
+            {
+              label: "월세",
+              yAxisID: 'B',
+              backgroundColor: ['rgba(249, 195, 65, 0.5)', 'rgba(249, 195, 65, 0.5)', 'rgba(249, 195, 65, 1)'],
+              data: [
+                <% unless @recently_contract.blank? %>
+                  "<%= @recently_contract.mt_rntchrg %>",
+                <% end %>
+                <% unless @review.suply_prvuse_ar.blank? %>
+                  "<%= @review.bass_mt_rntchrg[@review.suply_prvuse_ar.find_index(@review.area_pyeong)] / 10000.0%>",
+                <% end %>
+                "<%= @review.monthly %>"
+              ]
+            }
+          ],
+          borderWidth: 0
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: false,
+          },
+          tooltips: {
+            callbacks: {
+              label: function(tooltipItems, data) {
+                return data.datasets[tooltipItems.datasetIndex].label +' ' + tooltipItems.yLabel.toLocaleString() + '만원';
+              }
+            },
+          },
+          scales: {
+            xAxes: [{
+              display: true,
+              maxBarThickness: 50, // number (pixels)
+            }],
+            yAxes: [{
+              id: 'A',
+              type: 'linear',
+              position: 'left',
+              // ticks: {
+              //   min: 300,
+              //   // maxTicksLimit: 8,
+              //   stepSize: 150,
+              //   suggestedMin: 0,
+              //   // suggestedMax: 100
+              // }
+            }, {
+              id: 'B',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                // min: 20,
+                // maxTicksLimit: 8,
+                // stepSize: 10,
+                suggestedMin: 0,
+                suggestedMax: 30
+              }
+            }]
+          },
+        },
+        
+        plugins: [{
+          beforeInit: function (chart) {
+            chart.data.labels.forEach(function (e, i, a) {
+              if (/\n/.test(e)) {
+                a[i] = e.split(/\n/)
+              }
+            })
+          }
+        }]
+    });
+
+
+  </script>
+<% end %>

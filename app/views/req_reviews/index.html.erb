@@ -1,0 +1,117 @@
+<div class="main_container">
+  <div class="container">
+    <div class="row justify-content-center" style="text-align: left;"> 
+      <div class="col-12 col-sm-11 col-lg-8 req_reviews_title">
+        <p style="font-size: 28px; font-weight: bold;">리뷰요청</p>
+        <p style="font-size:14px;">로그인이 필요없는 익명 게시판입니다.</p>
+        <p style="font-size:14px;">궁금한 지역의 주소를 검색하고 글을남겨주세요.</p>
+        
+      </div>
+    </div>
+    <div class="row justify-content-center" style="margin-top:40px;">
+      <div class="col-12 col-sm-11 col-lg-8 p-0">
+        <div class="request_box">
+          <div class="title_box">
+            <p class="title">게시물 남기기</p>
+          </div>
+          <%= form_tag("/reqReviews", class:"request_form") do %>
+            <%# <input type="email" autocomplete="username" class="d-none"> %>
+            <div class="req_address_box">
+              <%= render partial: "region_select" %>
+            </div>
+            <div id="wrap">
+              <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+            </div>
+            <div class="textarea_box">
+              <textarea id="req_content" name="content" placeholder="인사말과 요청을 남겨주세요" maxlength="300" style="-webkit-appearance: none; -webkit-border-radius: 0;" required></textarea>
+              <span id="txt_counter">###</span>
+            </div>
+            <input type="password" minlength="6" maxlength="6" name="password" placeholder="비밀번호(숫자 & 영어 6자리)" autocomplete="one-time-code" required>
+            <p class="explanation">비밀번호 분실 시 게시물 삭제가 불가능합니다.</p>
+            <div class="text-right">
+              <input type="submit" class="btn_trans_round" value="글 남기기">
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-11 col-lg-8 p-0">
+        <form class="req_search_box" method="get" action="/reqReviews">
+          <input type="text" name="search" placeholder="검색어를 입력해주세요."  minlength="2" style=""><!-- 
+          --><button type="submit"><i class="material-icons">search</i></button>
+        </form>
+      </div>
+      <div id="content" class="col-12 col-sm-11 col-lg-8 row">
+        <%= render partial: "req_reviews/req_address", collection: @req_addresses %>
+      </div>
+      <div id="view-more-box" class="col-12 text-center">
+        <% if !@req_addresses.blank? && (@req_addresses.current_page != @req_addresses.total_pages || @req_addresses.total_pages != 1) %>
+          <p id="view-more" style="margin-top: 20px;">
+            <a data-remote="true" href="<%=url_for(page: @req_addresses.current_page + 1, search: "#{params[:search]}")%>">
+              <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+              <span>불러오는 중</span>
+            </a>
+          </p>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+<%= content_for 'javascript_content' do %>
+  <%= javascript_include_tag "infinite-scroll" %>
+  
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+      // $(".readonly").on('paste keypress', function(e){ return false });
+     
+      // text Counter
+      $('#req_content').keyup(function (e){
+          var content = $(this).val();
+          $('#txt_counter').html(content.length + '/300');
+      });
+      $('#req_content').keyup();
+      // text Counter END
+      if (window.location.hash) {
+        $(window.location.hash).parent('.req_comments').removeClass('box_none');
+        $(window.location.hash).parent('.req_comments').prev('.address_title').children(".material-icons").text('keyboard_arrow_up');
+        $('html,body').animate({ scrollTop: $(window.location.hash).offset().top - 111 }, 500);
+      }
+
+      $(document).on('click','.address_title',function(e){
+        var $req_comments = $("#" + this.getAttribute('data-value'));
+        var $icon = $(this).children(".material-icons");
+        if ($req_comments.hasClass('box_none')) {  
+          $req_comments.removeClass('box_none');
+          $icon.text('keyboard_arrow_up');
+        } else {
+          $req_comments.addClass('box_none');
+          $icon.text('keyboard_arrow_down');
+        }
+      });
+      $(document).on('click','.reviews_title',function(e){
+        var $req_comments = $("#" + this.getAttribute('data-value'));
+        var $icon = $(this).children(".material-icons");
+        if ($req_comments.hasClass('box_none')) {  
+          $req_comments.removeClass('box_none');
+          $icon.text('keyboard_arrow_up');
+        } else {
+          $req_comments.addClass('box_none');
+          $icon.text('keyboard_arrow_down');
+        }
+      });
+    })
+   
+  </script>
+
+
+<% end %>

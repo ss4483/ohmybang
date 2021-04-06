@@ -1,0 +1,123 @@
+.viewer_box {
+  display: flex;
+  margin: 5px 0;
+  .viewer_price {
+    width: 100%;
+    padding: 10px 20px;
+    margin: 0;
+    font-size: 14px;
+    display: flex; 
+    justify-content: space-between!important;
+    background-color: #F4F2F2;
+    border-radius: 20px;
+    font-weight: 700;
+    .price {
+      .sale_per { 
+        color: #1D8385;
+        margin-right: 0;
+      }
+      del {
+        padding-right: 5px;
+        font-weight: 300;
+        font-size: 12px;
+        color: #b3b3b3;
+        &.add_p {
+          padding-right: 17px;
+        }
+      }
+    }
+  }
+  .viewer_btn {
+    display: none;
+    text-align: center;
+    width: 120px;
+    padding: 10px 20px;
+    background-color: #F4F2F2;
+    border-radius: 20px;
+    margin: 0 0 0 10px;
+    font-size: 14px;
+  }
+  &:hover {
+    .viewer_price {
+      background-color: #1D8385;
+      color: #F4F2F2;
+      .price {
+        .sale_per { 
+          color: #F4F2F2;
+        }
+      }
+    }
+    .viewer_btn { 
+      background-color: #1D8385;
+      color: #F4F2F2;
+    }
+  }
+}
+
+
+
+@media (min-width: 576px) {
+  .viewer_box {
+    margin: 10px 0;
+    .viewer_price {
+      padding: 10px 30px;
+      margin: 0 10px 0 0;
+      border-radius: 20px;
+      font-size: 14px;
+      .price {
+        .sale_per { 
+          margin-right: 0;
+        }
+        del {
+          padding-right: 5px;
+          &.add_p {
+            padding-right: 17px;
+          }
+        }
+      }
+    }
+    .viewer_btn {
+      display: block;
+      width: 120px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      margin: 0 0 0 10px;
+      font-size: 14px;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .viewer_box {
+    margin: 10px 0;
+    .viewer_price {
+      padding: 10px 50px;
+      margin: 0 10px 0 20px;
+      border-radius: 20px;
+      .price {
+        .sale_per { 
+          margin-right: 20px;
+        }
+        del {
+          padding-right: 10px;
+          &.add_p {
+            padding-right: 22px;
+          }
+        }
+      }
+    }
+    .viewer_btn {
+      width: 150px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      margin: 0 20px 0 10px;
+    }
+  } 
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1200px) { 
+
+}

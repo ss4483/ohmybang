@@ -1,0 +1,230 @@
+<div class="index_2-main">
+  <div class="carousel_box">
+    <div class="empty"></div>
+    <div id="carouselMain" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselMain" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselMain" data-slide-to="1"></li>
+        <li data-target="#carouselMain" data-slide-to="2"></li>
+        <li data-target="#carouselMain" data-slide-to="3"></li>
+        
+      </ol>
+      <div class="carousel-inner h-100">
+      <!--
+        <a href="/notices#title_2" class="carousel-item active h-100" style="background-color:#EFBF59">
+          <div class="container h-100" style="position: relative;">
+            <div class="center_box row d-flex justify-content-center ">
+              <div class="d-sm-none col-9 text-center event_moblie">
+                <img class=""src="<%= image_url("event/0201-event-mobile.png")%>"/>
+              </div>
+              <div class="d-sm-block d-none col-sm-9 col-md-7 col-lg-6 text-center" style="position: relative;">
+                <img class=""src="<%= image_url("event/0201-event.png")%>" style="width: 100%;"/>
+              </div>
+            </div>
+          </div>
+        </a>
+      -->
+        <div class="carousel-item active h-100" style="background-color:#42817A">
+          <div class="container h-100" style="position: relative;">
+            <div class="center_box row d-flex justify-content-center">
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+                <img class="text_img" src="<%= image_url("index_2/main_01_text.png")%>"/>
+                <div class="d-none d-sm-block text-right p-sm-3 mt-3 pt-3 m-sm-3 p-md-5 m-md-4">
+                  <a href="<%= write_reviews %>" class="btn btn-outline-green btn-lg" style="padding: 7px 25px !important; font-weight: 500;">리뷰쓰기</a>
+                  <div class="w-100"></div>
+                </div>
+              </div>
+              <div class="main_carousel_img_box col-12 col-sm-6 col-md-5 col-lg-5 text-center text-sm-left" style="">
+                <img class="phone_img" src="<%= image_url("index_2/main_02_phone.png")%>"/>
+                <a href="/sample" class="sample_btn"></a>
+                <a href="/sample" class="sample_btn_mobile"></a>
+              </div>
+              <div class="col-12 text-center d-sm-none" style="height: 150px; background-color: #428179; padding-top:30px">
+                <a href="<%= write_reviews %>" class="btn btn-outline-green btn-lg" style="padding: 7px 25px !important; font-weight: 500;">리뷰쓰기</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item h-100" style="background-color:#42817A">
+          <div class="container h-100" style="position: relative;">
+            <div class="center_box row d-flex justify-content-center ">
+              <div class="col-10 col-sm-9 col-md-7 col-lg-6 text-center">
+                <img class=""src="<%= image_url("index_2/main_02.png")%>" style="width: 100%;"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item h-100" style="background-color:#42817A">
+          <div class="container h-100" style="position: relative;">
+            <div class="center_box row d-flex justify-content-center ">
+              <div class="col-10 col-sm-9 col-md-7 col-lg-5 text-center">
+                <img class=""src="<%= image_url("index_2/main_03.png")%>" style="width: 100%"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item h-100" style="background-color:#42817A">
+          <div class="container h-100" style="position: relative;">
+            <div class="center_box row d-flex justify-content-center ">
+              <div class="col-10 col-sm-8 col-md-6 col-lg-5 text-center">
+                <img class=""src="<%= image_url("index_2/main_04_img.png")%>" style="width: 85%"/>
+                <img class=""src="<%= image_url("index_2/main_04_text.png")%>" style="width: 85%; margin-top: 25px; margin-bottom: 20px;"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#carouselMain" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselMain" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div style="background-color: #f6f5f5; padding-bottom: 90px;">
+  <div style="background-color: white;">
+  <div class="container main_post_box">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-6 col-lg-5 p-0">
+        <a class="post_title" href="/notices">
+          <p>공지사항<span>오마방의 새로운 소식을 전해드립니다.</span></p>
+        </a>
+        <div class="req_reviews">
+          <% @notices.each do |notice| %>
+            <a class="req_review" href="/notices#title_<%=notice.id%>">
+              <p class="content" style="position: relative; padding: 5px 10px;">
+                <span style="color:#8c8c8c">[<%=notice.post_type%>]</span> <%= truncate(notice.title, length: 16) %>
+                <% if notice.created_at + 7.days >= Time.now %>
+                  <span class="badge" style="color: #39706a;padding-bottom: 4px; font-size: 8px; margin-left: 5px; vertical-align: text-top;">new</span>
+                <% end %>
+                <span class="date" style="color: #8E8E8E; position: absolute; bottom: 5px; right:10px; font-size:10px;"><%= notice.created_at.strftime("%Y.%m.%d %H:%M") %> </span>
+              </p>
+            </a>
+          <% end %>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-5 p-0">
+        <div class="post_title">
+          <p>SNS</p>
+        </div>
+        <div class="sns_box">
+          <a href="https://www.instagram.com/ohmybang_official" target="_blank" class="sns" style="border-bottom: 1px solid #E1E1E1; border-right: 1px solid #E1E1E1">
+            <img class="sns_img" src="<%= image_url("index_2/sns_insta.png")%>">
+            <p>
+              인스타그램
+              <span class="badge" style="color: #39706a;padding: 0; font-size: 8px; margin-left: 5px; vertical-align: text-top;">new</span>
+            </p>
+          </a><!--
+          --><a href="https://www.facebook.com/ohmybang1" target="_blank" class="sns" style="border-bottom: 1px solid #E1E1E1;" >
+            <img class="sns_img" src="<%= image_url("index_2/sns_facebook.png")%>">
+            <p>
+              페이스북
+              <span class="badge" style="color: #39706a;padding: 0; font-size: 8px; margin-left: 5px; vertical-align: text-top;">new</span>
+            </p>
+          </a><!--
+          --><a href="https://blog.naver.com/oh_mybang" target="_blank" class="sns" style="border-right: 1px solid #E1E1E1">
+            <img class="sns_img" src="<%= image_url("index_2/sns_blog.png")%>">
+            <p>
+              블로그
+              <span class="badge" style="color: #39706a;padding: 0; font-size: 8px; margin-left: 5px; vertical-align: text-top;">new</span>
+            </p>
+          </a><!--
+          --><a href="http://pf.kakao.com/_taFhxb/chat" target="_blank" class="sns">
+            <img class="sns_img" src="<%= image_url("index_2/sns_kakao.png")%>">
+            <p>오픈카톡</p>
+          </a>
+        </div>
+      </div> 
+      <div class="col-md-12 col-lg-10 p-0">
+        <a class="post_title" href="/reqReviews" style="margin-top:0;">
+          <p>리뷰요청<span>리뷰가 궁금한 지역과 인사말을 남겨보세요!</span></p>
+        </a>
+        <div class="req_reviews">
+          <% @req_comments.each do |comment| %>
+            <a class="req_review" href="/reqReviews#comment_<%=comment.id%>">
+              <p class="content">
+                <%= comment.content %>
+                <% if comment.created_at + 7.days >= Time.now %>
+                  <span class="badge" style="color: #39706a;padding-bottom: 4px; font-size: 8px; margin-left: 5px; vertical-align: text-top;">new</span>
+                <% end %>
+              </p>
+              <p class="remarks">
+                <span class="address"><%= comment.req_address.si_nm %> <%= comment.req_address.sgg_nm %> <%= comment.req_address.emd_nm %></span>
+                <span class="date"><%= comment.created_at.strftime("%Y.%m.%d %H:%M") %> </span>
+              </p>
+            </a>
+          <% end %>
+        </div>
+      </div>
+     
+    </div>
+  </div>
+  </div>
+
+  <div class="container today_reviews">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-12 col-lg-10 p-0">
+        <p class="title">오늘의 리뷰<a href="/reviewLists" class="more">더 보기</a></p>
+      </div>
+      <div class="w-100"></div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-10">
+        <div class="row d-flex justify-content-around">
+          <% @reviews.each_with_index do |review, i|%>
+            <div class="today_review_box col-sm-4 col-md-4 col-lg-4 p-0 <%= "d-none d-sm-block" if i == 7%>">
+              <a href="/reviews/<%=review.id%>" class="today_review">
+                <div class="short_comment_box">
+                  <p class="short_comment"><%=truncate(review.short_comment, length: 32)%></p>
+                </div>
+                <div class="etc_box">
+                  <div class="address_box">
+                    <p class="address"><%= truncate(review.address, length: 16) %></p>
+                  </div>
+                  <div class="recommend_box">
+                    <img src="<%= image_url(is_recommend_img(review.is_recommend))%>" style="vertical-align: middle;" />
+                    <% if review.is_recommend == "t"%>
+                      <span style="color: #18716b">추천</span>  
+                    <% else %>
+                      <span style="color: #fa4c47">비추천</span>
+                    <% end %>
+                  </div>
+                  <div class="options">
+                    <div class="option">
+                      <img src="<%= image_url("ic/message.png")%>" /><span><%= ReviewItem.where(review_id: review.id).select(:comment).map(&:comment).compact.join.length + review.long_comment.to_s.length %><span class="option_unit">자</span></span>
+                    </div>
+                    <div class="option">
+                      <img src="<%= image_url("ic/camera.png")%>" /><span><%= ReviewImg.where(review_id: review.id).count %><span class="option_unit">개</span></span>
+                    </div>
+                    <div class="option">
+                      <img class="video" src="<%= image_url("ic/video.png")%>" /><span><%= ReviewVideo.where(review_id: review.id).count %><span class="option_unit">개</span></span>
+                    </div>
+                  </div>
+                </div>
+              </a>  
+            </div>
+          <% end %>
+          <div class="today_review_box d-none"></div>
+          <div class="today_review_box col-sm-4 col-md-4 col-lg-4 p-0">
+            <a href="/reviewLists" class="today_review add d-flex align-items-center justify-content-center">
+              <p>더 보기...</p>
+            </a>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= content_for 'javascript_content' do %>
+  <script>
+    $(document).ready(function(){
+      $('#carouselMain').carousel({
+        interval: 2000
+      })
+    })
+  </script>
+<% end %>

@@ -1,0 +1,10 @@
+User-agent: *
+
+Allow: /
+
+Disallow: /reviews/*
+Disallow: /admin/*
+Disallow: /admin
+Disallow: /managers/*
+Disallow: /mypage/*
+Disallow: /users/*

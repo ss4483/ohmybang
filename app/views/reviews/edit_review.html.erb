@@ -1,0 +1,28 @@
+<div class="main_container">
+  <div class="container p-0">
+    <div class="row m-0 d-flex justify-content-center">
+      <!-- 설명 -->
+      <div class="col-12 col-md-10">
+        <div class="d-flex justify-content-between review_explain_box"> 
+          <img class="review_explain_img" src="<%= image_url("how_review_2.png")%>" alt="" style="width:100%;height:100%"/>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center" style="text-align: left; margin-bottom:20px; margin-top: 30px; margin-left:0px; margin-right:0px"> 
+      <div class="col-12 col-md-10" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); padding-bottom: 12px; font-size: 20px; font-weight: bold;">
+        <p>하우스 리뷰 작성</p>
+        <a href="/sample" class="btn btn-green radius" style="padding: 5px 10px; font-size: 12px; position: absolute; font-size: 12px; bottom: 0; right: 5px;">샘플 리뷰 보기</a>
+      </div>
+    </div>
+
+    <% if @review.status == "등록완료" %> <%# 등록완료 후 수정 %>
+      <%= render partial: "reviews/form_edit_retouch" %>
+    <% else %> <%# 기본 %>
+      <%= render partial: "reviews/form_edit" %>
+    <% end %>
+
+  
+  </div>
+</div>
+
+

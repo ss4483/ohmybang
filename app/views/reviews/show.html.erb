@@ -1,0 +1,245 @@
+<style>
+.badge-custom {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 0 10px;
+  line-height: 20px;
+  border-radius: 10px;
+  color: #737373;
+  font-size: 12px;
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+</style>
+
+<%# @imp_status = ["심사 중", "반려", "완료"]
+@status = ["미작성", "임시저장", "등록신청", "등록반려", "등록완료", "수정신청", "수정반려"] %>
+<%# X : @imp_status[0] @imp_status[1] @status[0] @status[1]
+- : @status[2] @status[3]
+O : @imp_status[2] @status[4] %>
+     
+<div class="main_container">
+  <!-- 기본 정보 -->
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 col-lg-9 mt-5 mb-3">
+        <span class="badge badge-pill badge-custom"><%=@review.room%></span>
+        <% if @check %>
+          <% if @review.loan_1 == "t" %>
+            <span class="badge badge-pill badge-custom" data-toggle="tooltip" data-placement="top" title="중소기업청년 전세자금대출이력이 있는 집입니다.">중소기업청년 전세자금대출</span>
+          <% end %>
+          <% if @review.elevator == "t" %>
+            <span class="badge badge-pill badge-custom" data-toggle="tooltip" data-placement="top" title="엘리베이터가 있는 집입니다.">엘리베이터</span>
+          <% end %>
+          <% unless @review.pet.blank? %>
+            <span class="badge badge-pill badge-custom" data-toggle="tooltip" data-placement="top" title="<%=@review.pet%>를 키웠던 집입니다."><%=@review.pet%></span>
+          <% end %>
+          <% if @review.balcony == "t" %>
+            <span class="badge badge-pill badge-custom" data-toggle="tooltip" data-placement="top" title="베란다/발코니가 있는 집입니다.">베란다/발코니</span>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="col-12 col-lg-9 info_container">
+        <img class="room_img" src="<%= @review.main_img.blank?? image_url(room_img(@review.room)) : "/images/reviews/#{@review.main_img_name}" %>" alt="" />
+        <div class="info_box">
+          <% if @check_review %>
+            <img class="score_img" src="<%= image_url("stars/#{@average}.png")%>" alt="" />
+            <span class="score"><%= @average == "none" ? "?" : @average %> 점</span>
+          <% end %>
+          <p class="bd_nm"><%= @review.bd_nm.blank? ? "#{@review.sgg_nm} #{@review.emd_nm}" : @review.bd_nm %></p>
+          <p class="bd_address"><%= "#{@review.address} #{@review.extra_address} #{@review.detail_address}" %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%# 
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 col-lg-9" style="margin: 60px 0 40px;">
+        <div class="d-flex" style="position: absolute; width: 100%; bottom: 0;">
+          <p style="width: calc(100%/3); text-align: center; border-bottom: 2px solid;">기본정보</p>
+          <p style="width: calc(100%/3); text-align: center;">전/월세금</p>
+          <p style="width: calc(100%/3); text-align: center;">하우스 리뷰</p>
+        </div>
+        <hr style="border-top: 2px solid #DCDCDC; margin: 0;">
+      </div>
+    </div>
+  </div> 
+  %>
+
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 col-lg-9" style="margin: 60px 0 0;">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist" style="display:flex">
+            <a class="nav-item nav-link text-center active" id="nav-default-tab" data-toggle="tab" href="#nav-default" role="tab" aria-controls="nav-default" aria-selected="true" style="flex-grow: 1;" >기본정보</a>
+            <% unless @review.contract_type.blank? %>
+              <a class="nav-item nav-link text-center" id="nav-contract-tab" data-toggle="tab" href="#nav-contract" role="tab" aria-controls="nav-contract" aria-selected="false" style="flex-grow: 1;" >전/월세금</a>
+            <% end %>
+            <a class="nav-item nav-link text-center" id="nav-house-review-tab" data-toggle="tab" href="#nav-house-review" role="tab" aria-controls="nav-house-review" aria-selected="false" style="flex-grow: 1;" >하우스 리뷰</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-default" role="tabpanel" aria-labelledby="nav-default-tab">
+      <%= render partial: "reviews/review/default" %>
+    </div>
+    <% unless @review.contract_type.blank? %>
+      <div class="tab-pane fade" id="nav-contract" role="tabpanel" aria-labelledby="nav-contract-tab">
+        <%= render partial: "reviews/review/contract" %>
+      </div>
+    <% end %>
+    <div class="tab-pane fade" id="nav-house-review" role="tabpanel" aria-labelledby="nav-house-review-tab">
+      <%= render partial: "reviews/review/house_review" %>
+    </div>
+  </div>
+
+
+
+
+  <div class="container">
+  
+    <div class="row d-flex justify-content-center">
+
+      <% if @review.status == "sample" %>
+        <% provide :title, "샘플 리뷰" %>
+        <div class="col-12 col-sm-9 mt-4" style=" text-align:center;">
+          <div class="py-3" style="border:2px solid #DCDCDC;">
+            <p>sample 리뷰 입니다.</p>
+          </div>
+        </div>
+      <% end %>
+      
+    </div>
+
+
+
+    <%# 관련 리뷰 %>
+
+    <div class="row no-gutters d-flex justify-content-center" style="margin-top:100px;">
+      <div class="col-12">
+        <p style="font-size: 20px; margin: 10px 25px">주변 리뷰 목록</p>
+      </div>
+    </div>
+    <%= render partial: "shared/review_list", locals: {reviews: @reviews, blank_txt: "주변 리뷰가 없습니다.", col: "col-12"} %>
+
+  </div>
+</div>
+
+
+
+<script>
+  $(".category_ic_title").on('click', function(event){     
+    $(".category_ic_title").removeClass("select");
+    $(this).addClass("select");
+    $(".category_ic_body").addClass("none");
+    $("#" + $(this).attr('id') + "_container" ).removeClass("none");
+  });
+
+  $('a.category_ic[href*=\\#]').on('click', function(event){     
+    event.preventDefault();
+    var text = 	$.trim($(this).text());
+    if (text == "보증금") 
+      text = "보증금 반환 만족도"
+    let move = $(this.hash);
+    if (includes([ "채광", "환기/냄새", "벌레", "파손", "방음", "누수", "외풍", "곰팡이", "수압", "수온", "배수" ], text)) {
+      $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+    } else if (includes([ "치안상태", "분리수거", "주차장" ], text)) {
+      $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+    } else if (includes([ "응대", "수리 및 보완", "혜택", "보증금 반환 만족도" ], text)) {
+      $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+    }
+  });
+  
+  $(document).ready(function(){
+     <% review_tags.each do |k,v| %>
+      $('.<%=v%>-gallery').magnificPopup({
+        delegate: 'a',
+        type: 'image',
+        tLoading: 'Loading image #%curr%...',
+        mainClass: 'mfp-img-mobile',
+        gallery: {
+          enabled: true,
+          navigateByImgClick: true,
+          preload: [0, 1]
+        },
+        image: {
+          tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+          titleSrc: function(item) {
+            return item.el.attr('title');
+          }
+        }
+      });
+    <% end %>
+    $('.intro-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+
+    $('.remodeling-before-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+    $('.remodeling-after-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+  });
+  dataConfirmModal.setDefaults({
+    title: 'Confirm your action',
+    commit: 'Continue',
+    commitClass: 'btn-danger',
+    cancel: 'Cancel',
+    cancelClass: 'btn-default'
+  });
+
+</script>
+
+<%# 
+시군구	              번지 본번	  부번    단지명	            전월세구분  전용면적(㎡) 계약년월	계약일 보증금(만원) 	월세(만원)	층	건축년도	도로명
+경기도 성남분당구 구미동	112	0112	0000	하얀마을(6단지)(공공임대)	월세	37.67	202007	1	         1,397	            25	3	1996	미금일로 57
+경기도 성남분당구 구미동	112	0112	0000	하얀마을(6단지)(공공임대)	월세	39.99	202007	6	         1,413	            25	1	1996	미금일로 57
+경기도 성남분당구 구미동	112	0112	0000	하얀마을(6단지)(공공임대)	월세	39.99	202007	8	         3,513	            11	3	1996	미금일로 57
+경기도 성남분당구 구미동	112	0112	0000	하얀마을(6단지)(공공임대)	월세	37.67	202007	15	       2,997	            14	15	1996	미금일로 57 
+%>

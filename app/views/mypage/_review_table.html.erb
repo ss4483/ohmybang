@@ -1,0 +1,196 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-sm-10 col-lg-8" >
+    <div style="font-size: 12px; border: 1px solid rgba(0, 0, 0, 0.5); padding: 18px; margin: 0 15px;">
+      <p><span style="color:<%=review_status_color("임시저장")%>; font-weight: bold;">임시저장</span>  아직 리뷰 작성이 미완된 상태입니다. </p>
+      <p><span style="color:<%=review_status_color("등록신청")%>; font-weight: bold;">등록신청</span>  리뷰 작성 완료 후 증빙 서류 심사 대기 중 입니다.</p>
+      <p><span style="color:<%=review_status_color("등록반려")%>; font-weight: bold;">등록반려</span>  증빙 서류 또는 리뷰 내용이 미비되어 보완 후 다시 신청해야 합니다.</p>
+      <p><span style="color:<%=review_status_color("등록완료")%>; font-weight: bold;">등록완료</span>  리뷰가 완료되어 검색 결과에 정상적으로 노출 되는 상태입니다.</p>
+      <p><span style="color:<%=review_status_color("수정신청")%>; font-weight: bold;">수정신청</span>  등록 완료 후 리뷰 수정 신청을 한 상태입니다. (* 검색 결과에 노출되지 않는 상태입니다.)</p>
+      <p><span style="color:<%=review_status_color("수정신청")%>; font-weight: bold;">수정반려</span>  등록 완료 후 수정 신청에 적절하지 않은 내용이 포함되어 반려된 상태입니다. 다시 수정신청이 필요합니다.  (* 검색 결과에 노출되지 않는 상태입니다.)</p>
+    </div>
+  </div>
+</div>
+
+<%# TABLE HEADER %>
+<div class="row d-flex justify-content-center mx-0" style="margin-top: 45px;margin-bottom: 32px;">
+  <div class="col-12 col-sm-10 col-lg-8">
+    <div class="row">
+      <div class="col-10">
+        <div class="row">
+          <div class="table_title col col-sm">주소</div>
+          <div class="table_title col d-none d-sm-block">마지막 수정 날짜</div>
+          <div class="table_title col col-sm">등록 상태</div>
+          <% if (reviews.take.class == Review) %>
+            <div class="table_title col d-none d-sm-block">포인트</div>
+          <% end %>
+        </div>
+      </div>
+      <div class="table_title col-2 col-sm"></div>
+    </div>
+  </div>
+</div>
+<%# TABLE HEADER END %>
+
+<%# TABLE BODY %>
+<% if reviews.empty? %>
+  <div class="row  justify-content-center" style="text-align:center; ">
+    <div class="col-12 col-sm-10 col-lg-8" style="padding: 100px 15px;">
+      <p style="color: hsl(0, 0%, 70%);">내역이 없습니다.</p>
+    </div>
+  </div>
+<% else %>
+  <% reviews.each_with_index do |r, index| %>
+    <div class="row d-flex justify-content-center " style="margin-top: 7px; ">
+      <div class="col-12 col-sm-10 col-lg-8">
+        <div class="row table_col">
+          <a href="/<%=r.model_name.plural%>/<%=r.id%>" class="col-10">
+            <div class="row">
+              <div class="col table_content d-flex" style="font-size: 10px;">
+                <%= r.address %> <%= r.extra_address %> <%= r.detail_address %>
+              </div>
+              <div class="col table_content d-sm-flex d-none">
+                <%= raw r.updated_at.strftime("%Y.%m.%d <br> %H:%M") %>
+              </div>
+              <div class="col table_content d-flex" style="color: <%=review_status_color(r.status)%>; font-weight: bold;">
+                <%= r.status %>
+              </div>
+              <% if (r.class == Review) %>
+                <div class="col table_content d-flex d-sm-flex d-none">
+                  <%= r.point_histories.map(&:pt).inject(0, :+)  %>
+                </div>  
+              <% end %>
+            </div>
+          </a>
+          <% if r.status == "임시저장" || r.status == "등록반려" || r.status == "등록완료" %>
+            <% if (r.class == OwnerComment) %>
+              <a href="/<%=r.model_name.plural%>/<%=r.id%>/edit" class="edit_review col-2 d-flex table_content" style="font-weight:bold">
+                <p>수정하기</p>
+              </a>
+            <% else %>
+              <% if r.editable == "t" %>
+                <a href="/<%=r.model_name.plural%>/<%=r.id%>/edit" class="edit_review col-2 d-flex table_content" style="font-weight:bold">
+                  <p>수정하기</p>
+                </a>
+              <% end %>
+            <% end %>
+          <% elsif r.status == "수정신청" %>
+            <a href="/<%=r.model_name.plural%>/<%=r.id%>/edit_content" class="edit_review col-2 d-flex table_content" style="font-weight:bold" target="_blank">
+              <p>수정 확인하기</p>
+            </a>
+          <% elsif r.status == "수정반려" %>
+            <% if (r.class == OwnerComment) %>
+              <a href="/<%=r.model_name.plural%>/<%= r.edit_owner_comment.id %>/edit" class="edit_review col-2 d-flex table_content" style="font-weight:bold">
+                <p>수정하기</p>
+              </a>
+            <% else %>
+              <a href="/<%=r.model_name.plural%>/<%= r.edit_review.id %>/edit" class="edit_review col-2 d-flex table_content" style="font-weight:bold">
+                <p>수정하기</p>
+              </a>
+            <% end %>
+          <% else %>
+            <div class="col-2 d-flex table_content">
+              <p>등록 대기 중</p>
+            </div>
+          <% end %>
+          
+          <% if (r.class == OwnerComment) %>
+            <% if !Review.where(status: "등록완료",address: r.address, detail_address: r.detail_address).blank? %>
+              <div class="col-12">
+                <p>(관련 리뷰)</p>
+                <% Review.where(status: "등록완료",address: r.address, detail_address: r.detail_address).each do |review|%>
+                  <a href="/reviews/<%=review.id%>" class="d-block" style="border-top: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px; padding-left:15px;">
+                    <p class="text-left" style="position:relative; font-size:14px; padding:10px">
+                      <span><%= review.id %>. <%= review.short_comment %></span>
+                    </p>
+                  </a>
+                <% end %>
+              </div>
+            <% end %>
+
+            <% if !r.owner_comment_confirms.blank? %>
+              <div class="col-12 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                <div id="owner_comment_confirm_box_<%=r.id%>" class="review_confirm_box box_none row justify-content-center mx-0 ">
+                  <div class="col-12 text-left p-0" style="margin-bottom: 14px; margin-top: 7px;">
+                    (등록 신청 내역)
+                  </div>
+                  <div class="col-12" style="height: 100px; overflow-y: auto;">
+                    <% r.owner_comment_confirms.order(created_at: "DESC").each do |confirm|%>
+                      <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-bottom: 8px; padding-bottom: 5px;">
+                        <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                          <%= confirm.status %>
+                          <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                        </p>
+                        <% unless confirm.memo.nil? %>
+                          <p class="text-left p-2"><%= confirm.memo %></p>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="down_arrow" data-value="owner_comment_confirm_box_<%=r.id%>">
+                  <i class="material-icons mt-2">
+                    keyboard_arrow_down
+                  </i>
+                </div>
+                
+              </div>
+            <% end %>
+          <% end %>
+
+          <% if (r.class == Review) && !r.review_confirms.blank? %>
+            <div class="col-12 p-0 text-center" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+              <div id="review_confirm_box_<%=r.id%>" class="review_confirm_box box_none row justify-content-center mx-0">
+                <div class="col-12 text-left p-0" style="margin-bottom: 10px; margin-top: 7px;">
+                  (등록 신청 내역)
+                </div>
+                <div class="col-12" style="height: 100px; overflow-y: auto;">
+                  <% r.review_confirms.order(created_at: "DESC").each do |confirm|%>
+                    <div style="border-bottom: 1px solid rgba(0, 0, 0, 0.1); margin-top: 8px; padding-bottom: 5px;">
+                      <p class="text-left" style="position:relative; font-size:14px; font-weight:bold; color: <%=review_status_color(confirm.status)%>">
+                        <%= confirm.status %>
+                        <span style="position: absolute; top:0; right:0; font-size:10px; color: rgba(0, 0, 0, 0.5);"><%= confirm.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+                      </p>
+                      <% unless confirm.memo.nil? %>
+                        <p class="text-left p-2"><%= confirm.memo %></p>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+              <div class="down_arrow" data-value="review_confirm_box_<%=r.id%>">
+                <i class="material-icons mt-2">keyboard_arrow_down</i>
+              </div>
+            </div>
+          <% end %>
+
+        </div>  
+      </div>  
+    </div>
+  <% end %>
+<% end %>
+
+<%# TABLE BODY END %>
+<%# paginate %>
+<div class="row justify-content-center " style="margin-top: 32px; margin-bottom: 32px;">
+  <div class="col-12 col-sm-10 col-lg-8 d-flex align-items-center justify-content-center" style="padding: 20px 0px;">
+    <%= paginate reviews %>
+  </div>
+</div>
+<%# paginate END %>
+
+<%= content_for 'javascript_content' do %>
+
+  <script>
+    $('.down_arrow').on("click",function(e){
+      var $confirm_box = $("#" + this.getAttribute('data-value'));
+      var $icon = $(this).children(".material-icons");
+      if ($confirm_box.hasClass('box_none')) {  
+        $confirm_box.removeClass('box_none');
+        $icon.text('keyboard_arrow_up');
+      } else {
+        $confirm_box.addClass('box_none');
+        $icon.text('keyboard_arrow_down');
+      }
+    });
+  </script>
+<% end %>

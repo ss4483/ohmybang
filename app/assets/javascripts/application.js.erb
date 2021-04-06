@@ -1,0 +1,322 @@
+// This is a manifest file that'll be compiled into application.js, which will include all the files
+// listed below.
+//
+// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, or any plugin's
+// vendor/assets/javascripts directory can be referenced here using a relative path.
+//
+// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
+// compiled file. JavaScript code in this file should be added after the last require_* statement.
+//
+// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
+// about supported directives.
+//
+//= require jquery3
+//= require jquery-ui
+//= require jquery-ui/i18n/datepicker-pt-BR
+//= require jquery-ui/effect.all
+//= require popper
+//= require bootstrap-sprockets
+//= require rails-ujs
+//= require activestorage
+//= require magnific-popup
+//= require data-confirm-modal
+//= require reviews
+//= require chartkick
+//= require Chart.bundle
+//= require Chart.min
+
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+function includes(container, value) {
+  var returnValue = false;
+  var pos = container.indexOf(value);
+  if (pos >= 0) {
+    returnValue = true;
+  }
+  return returnValue;
+}
+/** 검색 **/
+function selectSerchItem(e) {
+  $("#search_bar").val($(e).children(".roadAddrPart1Title").children(".roadAddrPart1").text()); 
+  $("#search_si_nm").val($(e).children(".siNm").text()); 
+  $("#search_box").addClass("d-none");
+}
+function openSearchBox() { $("#search_box").removeClass("d-none"); };
+
+
+
+$(document).ready(function(){  
+  $(".room_checkbox").change(function(){
+    var id = $(this).attr("id");
+    if($(this).is(":checked")){
+      $('label[for="' + id + '"]').addClass('checked');
+    }else{
+      $('label[for="' + id + '"]').removeClass('checked');
+    }
+  });
+  let search_bar = $("#search_bar");
+
+  search_bar.data('oldVal', search_bar.val());
+  search_bar.on("propertychange change keyup paste input", function() {
+    // If value has changed...
+    if (search_bar.data('oldVal') != search_bar.val()) {
+      // Updated stored value
+      search_bar.data('oldVal', search_bar.val());
+      // Do action
+      let error_codes = ["E0005", "E0006", "E0008", "E0009", "E0010", "E0011", "E0012", "E0015"];
+
+      if (chkStr(search_bar.val())) {
+        $.ajax({
+          type: "post",
+          url: "/search",
+          data: {
+            keyword: search_bar.val()
+          },
+          success: function(data) {
+            // Handle stuff after hitting the server here
+            if (data.results.common.errorCode == 0 && data.results.common.totalCount > 0) {
+              $("#error_box").addClass("d-none");
+              $("#search_list").removeClass("d-none");
+              $("#search_list").empty();
+
+              $.each(data.results.juso, function(index, item){
+                $("#search_list").append(createSearchItem(item.bdNm, item.roadAddrPart1, item.roadAddrPart2, item.jibunAddr, item.siNm));
+              })
+          
+            } else if (includes(error_codes, data.results.common.errorCode)) {
+              $("#error_box").removeClass("d-none");
+              $("#search_list").addClass("d-none");
+              $("#search_list").empty();
+              $('.error_message').text(data.results.common.errorMessage);
+            } else {
+              $("#error_box").removeClass("d-none");
+              $("#search_list").addClass("d-none");
+              $("#search_list").empty();
+              $('.error_message').text("검색어를 다시 확인해주세요.");
+            }
+            
+          },
+          error: function(data) {
+          }
+        });
+      }
+    }
+  });
+  $('#search_bar').keydown(function() {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      if ($('#search_list').children().length === 0) {
+        alert('주소 검색을 다시 확인해주세요.');
+      } else if ($("#search_bar").val() == $('#search_list .search_item:first-child').children(".roadAddrPart1").text()) {
+        $("#search_form").submit();
+      } else {
+        $("#search_bar").val($('#search_list .search_item:first-child').children(".roadAddrPart1").text()); 
+        $("#search_form").submit();
+      }
+    };
+  });
+
+  let createSearchItem = function (bdNmTxt, roadAddrPart1, roadAddrPart2, jibunAddr, siNm) {
+    // let $item = $('<div>', {class: 'search_item', onclick: "selectSerchItem(this)"}),
+    let $item = $('<div>', {class: 'search_item'}),
+      // Create the input type file and append it to the container
+      $bdNm = $('<p>', {
+        class: "bdNm",
+        text: bdNmTxt  
+      }).appendTo($item),
+      $jibunAddrTitle = $('<p>', {
+        class: "jibunAddrTitle",
+        text: "지번주소 : "
+      }).appendTo($item),
+      $jibunAddr = $('<span>', {
+        class: "jibunAddr",
+        text: jibunAddr,
+      }).appendTo($jibunAddrTitle),
+      $roadAddrPart1Title = $('<span>', {
+        class: "roadAddrPart1Title",
+        text: "도로명주소 : "
+      }).appendTo($item),
+      $roadAddrPart1 = $('<span>', {
+        class: "roadAddrPart1",
+        text: roadAddrPart1
+      }).appendTo($roadAddrPart1Title),
+      $roadAddrPart2 = $('<span>', {
+        class: "roadAddrPart2",
+        text: roadAddrPart2,
+        style: "float: right;"
+      }).appendTo($item),
+      $siNm = $('<span>', {
+        class: "siNm",
+        text: siNm,
+        style: "display: none;"
+      }).appendTo($item);
+
+    return $item;
+  }
+  $(document).bind( "mouseup touchend", function (e){
+    let $search_box = $("#search_box");
+        // $search_bar = $("#search_bar");
+
+    function isTouchDevice(){
+      return typeof window.ontouchstart !== 'undefined';
+    }
+    if (!isTouchDevice()) {
+      if (e.target.id != "search_box") {
+        $search_box.addClass("d-none");      
+      }
+    };
+
+    if (e.target.id != "menu-mobile") {
+      $(".menu.mobile").removeClass("active");
+    }
+  }); 
+
+  $('.detail_search').on("click",function(e){
+    e.preventDefault();
+    if ($("#detail_search_bar").hasClass("none")) {
+      $("#detail_search_bar").removeClass("none");
+      $("#detail_search_bar").val("");
+      $(".detail_search_txt").text("- 상세검색하기");
+    } else {
+      $("#detail_search_bar").addClass("none");
+      $("#detail_search_bar").val("");
+      $(".detail_search_txt").text("+ 상세검색하기");
+    }
+  });
+
+  $("#search_bar").click(function(){
+    openSearchBox();
+  });
+});
+/** 검색 END **/
+$(document).on('click','.search_item',function(){
+  selectSerchItem(this);
+  $("#search_form").submit();
+});
+
+/** 검색 END **/
+
+ $(document).ready(function(){  
+ 
+  $(".toggle_radio").change(function(){
+    var toggle_box = $(this).parents('div.toggle_box');
+    var toggle_box_mobile = toggle_box.parents().next();
+
+    var id = $(this).attr('id');
+    toggle_box_mobile.children('label.toggle_radio_label').each( function() {
+      $(this).removeClass('checked'); 
+    } );
+
+    toggle_box.children('label.toggle_radio_label').each( function() {
+      $(this).removeClass('checked'); 
+    } );
+    if ($(this).is(":checked")){
+      $('label[for="' + id + '"]').addClass('checked');
+    } else {
+      $('label[for="' + id + '"]').removeClass('checked');
+    }
+
+    if ($(this).val() == 1) {
+      $(this).parents('div').parents('div').next().children(".d_textarea").removeClass('d_none');
+      $(this).parents('div').parents('div').next().children(".d_textarea").attr('required', 'required');
+      $(this).parents('div').next().children(".message_ic").addClass("stop_toggle");
+    } else {
+      $(this).parents('div').next().children(".message_ic").removeClass("stop_toggle");
+      $(this).parents('div').parents('div').next().children(".d_textarea").removeAttr('required');
+      // $(this).parents('div').next().children(".message_ic").trigger('click');
+    }
+    if (id == "room_01") {
+      $('#room_main_img_default').attr("src", '<%= asset_path("room_01.jpg") %>');
+    } else if (id == "room_02") {
+      $('#room_main_img_default').attr("src", '<%= asset_path("room_02.jpg") %>');
+    } else if (id == "room_03") {
+      $('#room_main_img_default').attr("src", '<%= asset_path("room_03.jpg") %>');
+    } else if (id == "room_04") {
+      $('#room_main_img_default').attr("src", '<%= asset_path("room_04.jpg") %>');
+    } 
+
+
+  });
+
+  $(".toggle_radio[name='review[pet]']").change(function(){
+    if ($(this).val() == "t"){
+      $("input[name='review[pet_txt]']").show();
+      $("input[name='review[pet_txt]']").attr("required", "true");
+      $("input[name='review[pet_txt]']").focus();
+    } else {
+      $("input[name='review[pet_txt]']").hide();
+      $("input[name='review[pet_txt]']").val("");
+      $("input[name='review[pet_txt]']").removeAttr("required");
+    }
+  });
+
+  $(".message_ic").click(function() {
+    var message_txt = $("#" + $(this).attr('id') + "-txt");
+    if ($(this).hasClass("stop_toggle")) {
+      return false;
+    } else {
+      if (message_txt.hasClass("d_none")) {
+        message_txt.removeClass("d_none");
+        message_txt.focus();
+      } else {
+        message_txt.addClass("d_none");
+      }
+    }
+  });
+
+  $("ul#verticalfade li ul li a").click(function(e){  
+     // should cancel default action as well as event bubbling.
+  });
+});
+
+
+
+// static - main
+$(document).ready(function(){       
+  // nav
+  var scroll_start = 0;
+  var startchange = $('.logo');
+  var offset = startchange.offset();
+  if (startchange.length){
+    $(document).scroll(function() { 
+      scroll_start = $(this).scrollTop();
+      if(scroll_start > offset.top) {
+        $('header#main').addClass('shrink');
+        $("header#main .logo").addClass('shrink');
+        $('header#main ul.nav').addClass('shrink');
+        $('header#main li.nav-item').addClass('shrink');
+        $('header#main a.nav-link').addClass('shrink');
+      } else {
+        $('header#main').removeClass('shrink');
+        $("header#main .logo").removeClass('shrink');
+        $('header#main ul.nav').removeClass('shrink');
+        $('header#main li.nav-item').removeClass('shrink');
+        $('header#main a.nav-link').removeClass('shrink');
+      }
+    });
+  }
+  $( "#menu-mobile-btn" ).click(function() {
+    $(".menu.mobile").addClass("active");
+  });
+});
+
+function chkStr(str){
+
+	var val = str;
+
+	for(var i = 0; i < val.length; i++){
+		var chr = val.substr(i,1);
+    unicode_chr = "";
+    unicode_chr = ("0000" + chr.charCodeAt(0).toString(16)).slice(-4);
+    if (!(     (("ac00" <= unicode_chr) && (unicode_chr <= "d7a3"))
+          || (("0030" <= unicode_chr) && (unicode_chr <= "0039"))
+          || (("0041" <= unicode_chr) && (unicode_chr <= "005a"))
+          || (("0061" <= unicode_chr) && (unicode_chr <= "007a"))
+          || (includes(["0020", "002f", "002e", "002d", "002c", "0028", "0029"], unicode_chr)))) {
+	    return false;
+		}
+	}
+  return true;
+}

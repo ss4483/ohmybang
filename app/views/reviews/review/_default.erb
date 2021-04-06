@@ -1,0 +1,327 @@
+
+<div class="container">
+  <div class="row d-flex justify-content-center" style="margin-top: 18px;">
+    <!-- 지도 -->
+    <div class="col-12 col-lg-9">
+      <div class="d-inline-block" style="width:50%">
+        <div id="pano" style="height: 300px;"></div>
+      </div><!--
+      --><div class="d-inline-block" style="width:50%">
+        <div id="map" style="height: 300px;"></div>
+      </div>
+    </div>
+
+
+    <!-- 공공임대주택 단지 정보 -->
+    <% if @review.is_rental_house == "t" %>
+      <div class="col-12 col-lg-9 contract_container" style="margin-top: 50px;">
+        <div class="contract_header">
+          <p class="contract_date_title">공공임대주택 단지정보</p>
+        </div>
+        <div class="contract_body">
+          <div class="row">
+            <div class="col-12 col-md-7 contract_body_1">
+              <%# 'style_nm', %>
+              <% @review.attributes.slice(
+                'instt_nm','compet_de','hshld_co','suply_ty_nm',
+                'house_ty_nm','heat_mthd_detail_nm','buld_stle_nm','elvtr_instl_at_nm','parkng_co').each do |rh| %>
+                <% next if rh[1].blank? || rh[1] == 0 %>
+                <div class="contract_box">
+                  <p class="contract_title"><%= rentalHouseName[:"#{rh[0]}"]%></p><!--
+                  --><p class="contract_content">
+                    
+                    <% if rh[0] == "compet_de" %>
+                      <%= rh[1].strftime("%Y.%m.%d") %>
+                    <% else %>
+                      <%= rh[1].class == Integer ? number_with_delimiter(rh[1], :delimiter => ',') : rh[1] %>
+                    <% end %>
+                    <%= "원" if ["bass_rent_gtn", "bass_mt_rntchrg", "bass_cnvrs_gtn_lmt"].include?(rh[0]) %>
+                    <%= "㎡" if ["suply_prvuse_ar", "suply_cmnuse_ar"].include?(rh[0]) %>
+                  </p>
+                </div>
+              <% end %>
+                <%#= "원" %>
+                <%#= "㎡" %>
+
+              <% unless @review.suply_prvuse_ar.blank? %>
+                <div class="contract_box" style="justify-content: start;display: flex;">
+                  <p class="contract_title" style="line-height: 1.1;">공급전용면적<br><span style="font-size: 12px;">(공급공용면적)</span></p><!--
+                  --><div class="contract_content" style="align-items: flex-end;flex-direction: column; display: flex; justify-content: flex-end;">
+                    <% @review.suply_prvuse_ar.each_with_index do |r, i| %>
+                      <p style="margin:5px 0;"><%= r %>㎡<span style="font-size: 12px;">(<%= @review.suply_cmnuse_ar[i] %>㎡)</span></p>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <div class="col-12 d-md-none"><hr style="border-top: 2px solid #DCDCDC; margin: 4px 0;"></div>
+            <div class="col-12 col-md-5 contract_body_2">
+              <img src="<%= image_url("rental_house.png")%>" alt="" style="width: auto; margin: auto; max-height: 230px;" />
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 성비, 연령 차트 -->
+    <div class="col-12 col-lg-9">
+      <p style="margin-top: 50px;font-siez: 18px; padding-bottom: 1.5rem"><%= "#{@emd_row[:"시도명"]} #{@emd_row[:"시군구명"]} #{@emd_row[:"읍면동명"]}" %> <b>거주 성비</b></p>
+      <div class="d-flex row" style="justify-content: center;">
+        <div class="col-6 col-md-5 px-md-4">
+          <canvas id="emdSex" width="350" height="350"></canvas>
+          <div style="text-align: center; position: absolute; top: 50%; left: 50%; transform:translate(-50%, -50%); -webkit-transform:translate(-50%, -50%); ">
+            <p class="chart-address"><%= "#{@emd_row[:"시도명"]} #{@emd_row[:"시군구명"]} #{@emd_row[:"읍면동명"]}" %></p>
+            <p class="chart-title">성비</p>
+          </div>
+        </div>
+        <% unless @rental_population.nil?%>
+        <div class="col-6 col-md-5 px-md-4">
+          <canvas id="leaseSex" width="350" height="350"></canvas>
+          <script>
+            var chartLeaseSex = new Chart(document.getElementById('leaseSex'), {
+              type: 'doughnut',
+              data: {
+                labels: ['남자', '여자'],
+                datasets: [{
+                  data: [
+                    "<%=@rental_female.sum%>",
+                    "<%=@rental_male.sum%>",
+                  ],
+                  backgroundColor: [
+                    'rgba(30, 148, 151, 1)',
+                    'rgba(249, 195, 65, 1)'
+                  ],
+                  borderWidth: 0
+                }]
+              },
+              options: {
+                legend: {
+                  display: false,
+                },
+                cutoutPercentage: 90
+              }
+            });
+
+          </script>
+          <div style="text-align: center; position: absolute; top: 50%; left: 50%; transform:translate(-50%, -50%); -webkit-transform:translate(-50%, -50%); ">
+            <p class="chart-address"><%= @review.bd_nm.blank? ? "#{@review.sgg_nm} #{@review.emd_nm}" : @review.bd_nm %></p>
+            <p class="chart-title">성비</p>
+          </div>
+        </div>
+        <% end %>
+        <div id="legendSex" class="col-12 col-md-2 d-flex flex-row flex-md-column mt-3 mb-2 mt-md-0 mb-md-0 px-1" style="display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; "></div>
+      </div>
+      <script>
+        var chartEmdSex = new Chart(document.getElementById('emdSex'), {
+          type: 'doughnut',
+          data: {
+            labels: ['남자', '여자'],
+            datasets: [{
+              data: [
+                "<%=@population[:"남_인구수"].gsub(',', '')%>", "<%=@population[:"여_인구수"].gsub(',', '')%>"],
+              backgroundColor: [
+                'rgba(30, 148, 151, 1)',
+                'rgba(249, 195, 65, 1)'
+              ],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            legendCallback: function(chart) {
+              let html = '';
+              chart.data.datasets[0].backgroundColor.forEach((color, i) => {
+                html = `${html}<div class="px-3 px-md-0" style="width:115px; display: flex; align-items: center; color: #686868; margin: 10px 0;"><div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 12px; background-color: ${color};"></div><span style="vertical-align: text-bottom;">${chart.data.labels[i]}</span></div>`;
+              });
+              return html;
+            },
+            legend: {
+              display: false,
+            },
+            cutoutPercentage: 90
+          }
+        });
+        const legendSexContainer = document.getElementById('legendSex');
+        legendSexContainer.innerHTML = chartEmdSex.generateLegend();
+     </script>
+
+    
+      <p style="margin-top: 50px; font-siez: 18px; padding-bottom: 1.5rem"><%= "#{@emd_row[:"시도명"]} #{@emd_row[:"시군구명"]} #{@emd_row[:"읍면동명"]}" %> <b>거주 연령</b></p>
+      <div class="d-flex row" style="justify-content: center;">
+        <div class="col-6 col-md-5 px-md-4">
+          <canvas id="emdAge" width="350" height="350"></canvas>
+          <div style="text-align: center; position: absolute; top: 50%; left: 50%; transform:translate(-50%, -50%); -webkit-transform:translate(-50%, -50%); ">
+            <p class="chart-address"><%= "#{@emd_row[:"시도명"]} #{@emd_row[:"시군구명"]} #{@emd_row[:"읍면동명"]}" %></p>
+            <p class="chart-title">연령</p>
+          </div>
+        </div>
+        <% unless @rental_population.nil?%>
+        <div class="col-6 col-md-5 px-md-4">
+          <canvas id="leaseAge" width="350" height="350"></canvas>
+          <script>
+            var chartLeaseAge = new Chart(document.getElementById('leaseAge'), {
+                type: 'doughnut',
+                data: {
+                  labels: ['10대 미만', '10대', '20대', '30대', '40대', '50대', '60대', '70대 이상'],
+                  datasets: [{
+                    data: [
+                      "<%=@rental_female[0] + @rental_male[0]%>",
+                      "<%=@rental_female[1] + @rental_male[1]%>",
+                      "<%=@rental_female[2] + @rental_male[2]%>",
+                      "<%=@rental_female[3] + @rental_male[3]%>",
+                      "<%=@rental_female[4] + @rental_male[4]%>",
+                      "<%=@rental_female[5] + @rental_male[5]%>",
+                      "<%=@rental_female[6] + @rental_male[6]%>",
+                      "<%=@rental_female[7..].sum + @rental_male[7..].sum%>",
+                    ],
+                    backgroundColor: [
+                      'rgba(251, 219, 141, 1)',
+                      'rgba(249, 195, 65, 1)',
+                      'rgba(249, 176, 0, 1)',
+                      'rgba(249, 141, 0, 1)',
+                      'rgba(120, 191, 193, 1)',
+                      'rgba(30, 148, 151, 1)',
+                      'rgba(7, 73, 74, 1)',
+                      'rgba(7, 48, 51, 1)'
+                    ],
+                    borderWidth: 0
+                  }]
+                },
+                options: {
+                  legend: {
+                    display: false
+                  },
+                  cutoutPercentage: 90
+                }
+            });
+          </script>          
+          <div style="text-align: center; position: absolute; top: 50%; left: 50%; transform:translate(-50%, -50%); -webkit-transform:translate(-50%, -50%); ">
+            <p class="chart-address"><%= @review.bd_nm.blank? ? "#{@review.sgg_nm} #{@review.emd_nm}" : @review.bd_nm %></p>
+            <p class="chart-title">연령</p>
+          </div>
+        </div>
+        <% end %>
+        <div id="legendAge" class="flex-wrap col-12 col-md-2 d-flex flex-row flex-md-column mt-3 mb-2 mt-md-0 mb-md-0 px-1" style="display: flex; align-items: center; flex-direction: column; justify-content: center; font-size: 12px; "></div>
+      </div>
+      <script>
+        var chartEmdAge = new Chart(document.getElementById('emdAge'), {
+          type: 'doughnut',
+          data: {
+            labels: ['10대 미만', '10대', '20대', '30대', '40대', '50대', '60대', '70대 이상'],
+            datasets: [{
+              data: [
+                "<%=@population.to_a[4][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[5][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[6][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[7][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[8][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[9][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[10][1].to_s.gsub(',', '')%>",
+                "<%=@population.to_a[11..14].map { |a| a[1].to_s.gsub(',','').to_i }.sum%>",
+              ],
+              backgroundColor: [
+                'rgba(251, 219, 141, 1)',
+                'rgba(249, 195, 65, 1)',
+                'rgba(249, 176, 0, 1)',
+                'rgba(249, 141, 0, 1)',
+                'rgba(120, 191, 193, 1)',
+                'rgba(30, 148, 151, 1)',
+                'rgba(7, 73, 74, 1)',
+                'rgba(7, 48, 51, 1)'
+              ],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            legendCallback: function(chart) {
+              let html = '';
+              chart.data.datasets[0].backgroundColor.forEach((color, i) => {
+                html = `${html}<div class="mb-1 mb-md-3" style="width: 115px; display: flex; align-items: center; color: #686868;"><div class="d-inline-block" style="width: 30px; height: 12px; margin-right: 12px; background-color: ${color};"></div><span style="vertical-align: text-bottom;">${chart.data.labels[i]}</span></div>`;
+              });
+              return html;
+            },
+            legend: {
+              display: false,
+            },
+            cutoutPercentage: 90
+          }
+        });
+        const legendAgeContainer = document.getElementById('legendAge');
+        legendAgeContainer.innerHTML = chartEmdAge.generateLegend();
+      </script>
+    </div>
+
+  </div>
+</div>
+
+<%= content_for 'javascript_content' do %>
+  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=<%=ENV["NAVER_YOUR_CLIENT_ID"]%>&submodules=panorama"></script>
+  <script>
+    /** 지도 **/ 
+    var map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(<%=@review.lat%>, <%=@review.long%>),
+      zoom: 15
+    });
+    var marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(<%=@review.lat%>, <%=@review.long%>),
+        map: map
+    });
+    var pano = null;
+    naver.maps.onJSContentLoaded = function() {
+      pano = new naver.maps.Panorama("pano", {
+        position: new naver.maps.LatLng(<%=@review.lat%>, <%=@review.long%>),
+        pov: {
+          pan: -133,
+          tilt: 0,
+          fov: 70
+        },
+        aroundControl: true,
+        aroundControlOptions: {
+          position: naver.maps.Position.TOP_RIGHT
+        }
+      });
+
+      // 파노라마 위치가 갱신되었을 때 발생하는 이벤트를 받아 지도의 중심 위치를 갱신합니다.
+      naver.maps.Event.addListener(pano, 'pano_changed', function() {
+        var latlng = pano.getPosition();
+
+        if (!latlng.equals(map.getCenter())) {
+          map.setCenter(latlng);
+        }
+      });
+    };
+    // 거리뷰 레이어를 생성합니다.
+    var streetLayer = new naver.maps.StreetLayer();
+    naver.maps.Event.once(map, 'init_stylemap', function() {
+      streetLayer.setMap(map);
+    });
+    // 거리뷰 버튼에 이벤트를 바인딩합니다.
+    var btn = $('#street');
+    btn.on("click", function(e) {
+      e.preventDefault();
+      // 거리뷰 레이어가 지도 위에 있으면 거리뷰 레이어를 지도에서 제거하고,
+      // 거리뷰 레이어가 지도 위에 없으면 거리뷰 레이어를 지도에 추가합니다.
+      if (streetLayer.getMap()) {
+        streetLayer.setMap(null);
+      } else {
+        streetLayer.setMap(map);
+      }
+    });
+    // 거리뷰 레이어가 변경되면 발생하는 이벤트를 지도로부터 받아 버튼의 상태를 변경합니다.
+    naver.maps.Event.addListener(map, 'streetLayer_changed', function(streetLayer) {
+      if (streetLayer) {
+        btn.addClass('control-on');
+      } else {
+        btn.removeClass('control-on');
+      }
+    });
+    // 지도를 클릭했을 때 발생하는 이벤트를 받아 파노라마 위치를 갱신합니다. 이때 거리뷰 레이어가 있을 때만 갱신하도록 합니다.
+    naver.maps.Event.addListener(map, 'click', function(e) {
+      if (streetLayer.getMap()) {
+        var latlng = e.coord;
+        // 파노라마의 setPosition()은 해당 위치에서 가장 가까운 파노라마(검색 반경 300미터)를 자동으로 설정합니다.
+        pano.setPosition(latlng);
+      }
+    });
+  </script>
+
+<% end %>

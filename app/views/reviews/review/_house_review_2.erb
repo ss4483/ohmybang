@@ -1,0 +1,609 @@
+
+<div class="container">
+  <div class="row d-flex justify-content-center" style="margin-top: 18px;">
+
+    <% if @check_review %>
+
+      <% if (@review.status != "등록완료" &&  @review.status != "sample") %>
+        <% provide :title, "#{@review.bd_nm} #{@review.detail_address}" %>
+        <div class="col-12 col-sm-9 mb-4" style=" text-align:center;">
+          <div class="py-5" style="border:1px solid #CACACA;">
+            <p style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"><%=@review.status %></p>
+            <p>아직 [등록 완료]가 되지 않아 아래의 리뷰는</p><p>작성자 본인만 열람이 가능합니다.</p>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @check %>
+        <div class="col-12 col-lg-9">
+          <div class="d-flex">
+            <p class="short_comment_title" style="display: inline-block; border: 2px solid #DCDCDC; border-bottom: 0; padding: 5px 10px;">이 집은</p>
+            <div style="border-top: 2px solid #DCDCDC; flex-grow: 1;"></div>
+          </div>
+          <div class="short_comment_container">
+            <p class="short_comment" style="border-top: 0;"><%= @review.short_comment %></p>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-9">
+          <div class="category_ic_container">
+            <div class="category_ic_header">
+              <img class="category_ic_title select" id="category_good" src="<%= image_url("ic/good.png")%>" alt=""/>
+              <img class="category_ic_title" id="category_fair" src="<%= image_url("ic/fair.png")%>" alt=""/>
+              <img class="category_ic_title" id="category_poor" src="<%= image_url("ic/poor.png")%>" alt=""/>
+            </div>
+            <div class="category_ic_body" id="category_good_container">
+              <% @review.review_items.where(score: 5).each_with_index do |i, index| %>
+                <a class="category_ic" href="#review_<%=review_tags[:"#{i.tag}"]%>">
+                  <div style="text-align: center;">
+                    <img src="<%= image_url("ic/#{review_tags[:"#{i.tag}"]}.png")%>" alt="" />
+                    <p style="font-size: 13px; margin-top:13px;"><%= (i.tag == "보증금 반환 만족도")? "보증금": i.tag %></p>
+                  </div>
+                </a>
+              <% end %>
+            </div>
+            <div class="category_ic_body none" id="category_fair_container">
+              <% @review.review_items.where(score: 3).each_with_index do |i, index| %>
+                <a class="category_ic" href="#review_<%=review_tags[:"#{i.tag}"]%>">
+                  <div style="text-align: center;">
+                    <img src="<%= image_url("ic/#{review_tags[:"#{i.tag}"]}.png")%>" alt="" />
+                    <p style="font-size: 13px; margin-top:13px;"><%= (i.tag == "보증금 반환 만족도")? "보증금": i.tag %></p>
+                  </div>
+                </a>
+              <% end %>
+            </div>
+            <div class="category_ic_body none" id="category_poor_container">
+              <% @review.review_items.where(score: 1).each_with_index do |i, index| %>
+                <a class="category_ic" href="#review_<%=review_tags[:"#{i.tag}"]%>">  
+                  <div style="text-align: center;">
+                    <img src="<%= image_url("ic/#{review_tags[:"#{i.tag}"]}.png")%>" alt="" style="" />
+                    <p style="font-size: 13px; margin-top:13px;"><%= (i.tag == "보증금 반환 만족도")? "보증금": i.tag %></p>
+                  </div>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="col-12 col-lg-9" style="margin-bottom: 40px;">
+          <div class="short_comment_container">
+            <p class="short_comment_title">이 집은</p>
+            <p class="short_comment blur_black_text"><%= @review.short_comment.gsub(/[^\s+]/, "?") %></p>
+          </div>
+    
+          <div class="category_ic_container" style="margin-bottom: 0;">
+            <div class="category_ic_header">
+              <img class="category_ic_title select" id="category_good" src="<%= image_url("ic/good.png")%>" alt=""/>
+              <img class="category_ic_title" id="category_fair" src="<%= image_url("ic/fair.png")%>" alt=""/>
+              <img class="category_ic_title" id="category_poor" src="<%= image_url("ic/poor.png")%>" alt=""/>
+            </div>
+            <div class="category_ic_body blur_div" id="category_good_container">
+              <% review_tags.to_a.sample(9).each_with_index do |i, index| %>
+                <a class="category_ic" href="#">
+                  <div style="text-align: center;">
+                    <img src="<%= image_url("ic/#{i[1]}.png")%>" alt="" />
+                    <p class="blur" style="font-size: 13px; margin-top:13px;"><%= (i[0] == "보증금 반환 만족도")? "보증금": i[0] %></p>
+                  </div>
+                </a>
+              <% end %>
+            </div>
+            <div class="category_ic_body blur_div none" id="category_fair_container">
+              <% review_tags.to_a.sample(7).each_with_index do |i, index| %>
+                <a class="category_ic" href="#">
+                  <div style="text-align: center;">
+                    <img src="<%= image_url("ic/#{i[1]}.png")%>" alt="" />
+                    <p class="blur" style="font-size: 13px; margin-top:13px;"><%= (i[0] == "보증금 반환 만족도")? "보증금": i[0] %></p>
+                  </div>
+                </a>
+              <% end %>
+            </div>
+            <div class="category_ic_body blur_div none" id="category_poor_container">
+              <% review_tags.to_a.sample(10).each_with_index do |i, index| %>
+                <a class="category_ic" href="#">  
+                  <div style="text-align: center;">
+                    <img src="<%= image_url("ic/#{i[1]}.png")%>" alt="" style="" />
+                    <p class="blur" style="font-size: 13px; margin-top:13px;"><%= (i[0] == "보증금 반환 만족도")? "보증금": i[0] %></p>
+                  </div>
+                </a>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="blur_box d-flex align-items-center justify-content-center">  
+            <div class="text-center">
+
+              <%if current_user_viewer > 0 %> 
+                <a id="review_view" href="/viewers/<%=@review.id%>" data-method="post" class="btn" 
+                  data-confirm="<b><%= @review.address %> <%= @review.extra_address %> <%=@review.detail_address%></b><br>이용권을 사용하여 해당 리뷰를 보시겠습니까?<br>이용시 취소 및 환불은 불가능합니다."
+                  data-title='리뷰 조회'
+                  data-commit='리뷰 이용권 사용'
+                  data-cancel='아니오'
+                  data-backdrop="static"
+                  style="font-size: 14px;">리뷰 보기</a>
+              <% else %>
+                  <a id="review_view"  href="/viewers" class="btn" 
+                    data-confirm="리뷰 이용권이 부족합니다.<br>리뷰 이용권을 구매해주세요"
+                    data-title='리뷰 조회'
+                    data-commit='구매하러가기'
+                    data-cancel='취소'
+                    data-backdrop="static"
+                    style="font-size: 14px;">리뷰 보기</a>
+              <% end %>
+            </div>
+            
+          </div>
+        </div>
+      <% end %>
+      <div class="w-100"></div>
+      <%# 탭 %>
+      <div class="col-12 col-lg-2 pr-lg-0">
+        <div class="list-group list-group-flush" id="list-tab" role="tablist" style="overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+          <a class="list-group-item list-group-item-action active" id="list-inside-list" data-toggle="list" href="#list-inside" role="tab" aria-controls="inside">
+            <div class="review_show_title">
+              <p class="review_show_title_ko">방 내부</p>
+              <p class="review_show_title_en">INSIDE THE ROOM</p>
+              <!-- 
+              <img class="review_show_title_img" src="<%= image_url("ic/#{inside_score_img(@average_1)}")%>" alt=""/>
+              <p class="review_show_title_score" style="float:right"><span class="d-none d-md-inline-block">이 방의 내부 점수는 </span> <span><%=@average_1%>점</span></p>
+              -->
+            </div>
+          </a>
+          <a class="list-group-item list-group-item-action" id="list-outside-list" data-toggle="list" href="#list-outside" role="tab" aria-controls="outside">
+            <div class="review_show_title">
+              <p class="review_show_title_ko">방 외부</p>
+              <p class="review_show_title_en">OUTSIDE THE ROOM</p>
+              <!--
+              <img class="review_show_title_img" src="<%= image_url("ic/#{outside_score_img(@average_2)}")%>" alt=""  />
+              <p class="review_show_title_score" style="float:right"><span class="d-none d-md-inline-block">이 방의 외부 점수는 </span> <span><%=@average_2%>점</span></p>
+              -->
+            </div>
+          </a>
+          <a class="list-group-item list-group-item-action" id="list-owner-list" data-toggle="list" href="#list-owner" role="tab" aria-controls="owner">
+            <div class="review_show_title" >
+              <p class="review_show_title_ko">임대인</p>
+              <p class="review_show_title_en">HOUSE OWNER</p>
+              <!--
+              <img class="review_show_title_img" src="<%= image_url("ic/#{owner_score_img(@average_3)}")%>" alt="" style="width:28px; height:38px;" />
+              <p class="review_show_title_score" style="float:right"><span class="d-none d-md-inline-block">이 방의 임대인 점수는 </span> <span><%=@average_3%>점</span></p>
+              -->
+            </div>
+          </a>
+          <% if !@owner_comments.blank? %>
+            <a class="list-group-item list-group-item-action comment" id="list-comment-list" data-toggle="list" href="#list-comment" role="tab" aria-controls="comment">
+              <div class="review_show_title" >
+                <p class="review_show_title_ko">PR</p>
+                <p class="review_show_title_en">HOUSE OWNER PR</p>
+              </div>
+            </a>
+          <% end %>
+        </div>
+      </div>
+
+      <%# 탭 바디 %>
+      <div class="pane_body col-12 offset-xl-0 col-lg-7">
+        <div class="tab-content" id="nav-tabContent">
+          <%# 방 내부 %>
+          <div class="tab-pane fade show active" id="list-inside" role="tabpanel" aria-labelledby="list-inside-list">
+            <div>
+              <div class="d-flex align-items-center review_show_sub">
+                <p class="review_show_sub_title">
+                <img src="<%= image_url("ic/home.png")%>" alt="" />집 전체</p>
+              </div>
+              <% @review.review_items.where(tag: ["채광", "환기/냄새", "벌레", "파손"]).each_with_index do |i, index| %>
+                <%= render partial: "reviews/review_item_show", locals: { i: i, index_check: (index != 3) } %>
+              <% end %>
+
+              <div class="d-flex align-items-center review_show_sub">
+                <p class="review_show_sub_title">
+                <img src="<%= image_url("ic/wall.png")%>" alt="" />벽</p>
+              </div>
+
+              <% @review.review_items.where(tag: ["방음", "누수", "외풍", "곰팡이"]).each_with_index do |i, index| %>
+                <%= render partial: "reviews/review_item_show", locals: { i: i, index_check: (index != 3) } %>
+              <% end %>
+
+              <div class="d-flex align-items-center review_show_sub">
+                <p class="review_show_sub_title">
+                <img src="<%= image_url("ic/bath.png")%>" alt="" />주방/화장실</p>
+              </div>
+
+              <% @review.review_items.where(tag: ["수압", "수온", "배수"]).each_with_index do |i, index| %>
+                <%= render partial: "reviews/review_item_show", locals: { i: i, index_check: (index != 2) } %>
+              <% end %>
+            </div>
+          </div>
+          <%# 방 외부 %>
+          <div class="tab-pane fade" id="list-outside" role="tabpanel" aria-labelledby="list-outside-list">
+            <div>
+              <div class="d-flex align-items-center review_show_sub">
+                <p class="review_show_sub_title">
+                <img src="<%= image_url("ic/home.png")%>" alt="" />외부</p>
+              </div>
+              <% @review.review_items.where(tag: ["치안상태", "분리수거", "주차장"]).each_with_index do |i, index| %>
+                <%= render partial: "reviews/review_item_show", locals: { i: i, index_check: (index != 2) } %>
+              <% end %>
+
+              <%# 시간 및 계절 %>
+              <% if !@review.hourly_seasonal_txt.blank? %>
+                <div class="" style="margin-top: 30px">
+                  <div class="d-flex align-items-center review_show_sub" style="background-color: #1e9497; height: 33px; margin-bottom:11px;">
+                    <p class="review_show_sub_title">
+                    <img src="<%= image_url("ic/seasonal.png")%>" alt="" />시간 및 계절별 특이사항</p>
+                  </div>
+
+                  <div style="margin: 11px 12px 11px 30px;">
+                    <% if @check %>
+                      <div class="comment_box_triangle" style="margin-top: 10px;"></div>
+                      <div class="comment_box" style="max-height: 150px;">
+                        <p  style="white-space: pre-line;"><%=@review.hourly_seasonal_txt%></p>
+                      </div>
+                    <% else %>
+                      <div class="comment_box_triangle" style="margin-top: 10px;"></div>
+                      <div class="comment_box" style="max-height: 150px;f">
+                        <p class="blur" style="white-space: pre-line;"><%=@review.hourly_seasonal_txt.gsub(/[^\s+]/, "?")%></p>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+
+            </div>
+          </div>
+          <%# 임대인 %>
+          <div class="tab-pane fade" id="list-owner" role="tabpanel" aria-labelledby="list-owner-list">
+            <div>
+              <div class="d-flex align-items-center review_show_sub" style="background-color:#fac341">
+                <p class="review_show_sub_title" style="color: #6f5c2b; font-weight: 700;">
+                <img src="<%= image_url("ic/deposit.png")%>" alt="" />보증금</p>
+              </div>
+              <% @review.review_items.where(tag: ["보증금 반환 만족도"]).each_with_index do |i, index| %>
+                <%= render partial: "reviews/review_item_show", locals: { i: i, index_check: (index != 0) } %>
+              <% end %>
+              <div class="d-flex align-items-center review_show_sub">
+                <p class="review_show_sub_title">
+                <img src="<%= image_url("ic/owner.png")%>" alt="" />계약 기간 중</p>
+              </div>
+              <% @review.review_items.where(tag: ["응대", "수리 및 보완", "혜택"]).each_with_index do |i, index| %>
+                <%= render partial: "reviews/review_item_show", locals: { i: i, index_check: (index != 2) } %>
+              <% end %>
+            </div>
+          </div>
+          
+          <%# 집주인 코멘트 %>
+          <% if !@owner_comments.blank? %>
+            <div class="tab-pane fade" id="list-comment" role="tabpanel" aria-labelledby="list-comment-list">
+              <% @owner_comments.each do |c|%>
+                <% if c.user == current_user || @check %>
+                  <div style="background-color: #1ba1b8; margin-bottom: 15px; color: white;">
+                    <div class="p-2">
+                      <i class="material-icons" style="vertical-align: top;">perm_phone_msg</i>
+                      <span>임대인 연락</span>
+                      <p style="margin-left: 28px; font-size: 14px;">
+                        <%= c.contact_method.join(', ') %> (<%= c.contact_time %>)
+                      </p>
+                    </div>
+                    <% if c.hidden_camera == "완료" %>
+                      <div class="p-2">
+                        <i class="material-icons" style="vertical-align: top;">photo_camera</i>
+                        <span>몰래카메라 검사 </span><span style="font-weight:bold">완료 </span>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <% if !c.remodeling_date.blank? %>
+                    <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                      <p class="review_show_sub_title">
+                        리모델링 <span style="font-size:12px;">(<%=c.remodeling_date%>)</span>
+                      </p>
+                    </div>
+                    <div style="margin: 11px 12px 30px 30px;">
+                      <% unless c.owner_comment_imgs.where(tag: "리모델링 전").empty? && c.owner_comment_imgs.where(tag: "리모델링 후").empty? %>
+                        <div style="margin-bottom: 14px;">
+                          <div class="remodeling-before-gallery" style="padding: 10px 0 0; width:48%;margin-right:2%; display: inline-block; overflow-x:auto; white-space: nowrap;">
+                            <% c.owner_comment_imgs.where(tag: "리모델링 전").each_with_index do |img, i| %>
+                              <a href="/images/owner/<%=img.name%>" title="remodeling-before-<%=i+1%>">
+                                <img class="gallery_image" src='/images/owner/<%=img.name%>'  style="width:100%;height: auto;" >
+                              </a>
+                            <% end %>
+                          </div><%#
+                        %><div class="remodeling-after-gallery" style="padding: 10px 0 0; width:48%;margin-left:2%; display: inline-block; overflow-x:auto; white-space: nowrap;">
+                            <% c.owner_comment_imgs.where(tag: "리모델링 후").each_with_index do |img, i| %>
+                              <a href="/images/owner/<%=img.name%>" title="remodeling-after-<%=i+1%>">
+                                <img class="gallery_image" src='/images/owner/<%=img.name%>'  style="width:100%;height: auto;" >
+                              </a>
+                            <% end %>
+                          </div><%#
+                          %><% unless c.owner_comment_imgs.where(tag: "리모델링 전").empty?%><p class="text-center d-inline-block" style="width:50%">Before (<%= c.owner_comment_imgs.where(tag: "리모델링 전").count %>)</p><% end %><%#
+                          %><% unless c.owner_comment_imgs.where(tag: "리모델링 후").empty?%><p class="text-center d-inline-block" style="width:50%">After (<%= c.owner_comment_imgs.where(tag: "리모델링 후").count %>)</p><% end %>
+                        </div>
+                      <% end %>
+                      <div class="comment_box_triangle"></div>
+                      <div class="bg-white">
+                        <div class="comment_box" style="max-height: 150px;">
+                          <p style="white-space: pre-line;"><%=c.remodeling_txt%></p>
+                        </div>
+                      </div>
+                    </div>
+                  <%end%>
+
+                  <% if !c.long_term_txt.blank? %>
+                    <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                      <p class="review_show_sub_title">
+                        장기 계약 시 혜택
+                      </p>
+                    </div>
+                    <div style="margin: 11px 12px 30px 30px;">
+                      <div class="comment_box_triangle"></div>
+                      <div class="comment_box" style="max-height: 150px;">
+                        <p  style="white-space: pre-line;"><%=c.long_term_txt%></p>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                    <p class="review_show_sub_title">
+                      소개 및 장점
+                    </p>
+                  </div>
+                  <div style="margin: 11px 12px 30px 30px;">
+                    <div class="comment_box_triangle"></div>
+                    <div class="comment_box" style="max-height: 150px;">
+                      <p  style="white-space: pre-line;"><%=c.intro_txt%></p>
+                    </div>
+                    <div class="intro-gallery" style="backgrounnd-color: #f7f5f5; padding: 10px 20px; width:100%; overflow-x:auto; white-space: nowrap;">
+                      <% c.owner_comment_imgs.where(tag: "소개 및 장점").each_with_index do |img, i| %>
+                        <a href="/images/owner/<%=img.name%>" title="intro-<%=i+1%>">
+                          <img class="gallery_image" src='/images/owner/<%=img.name%>'  >
+                        </a>
+                      <% end %>
+                    </div>
+                  </div>
+                <% else %>
+                  <div style="background-color: #1ba1b8; margin-bottom: 15px; color: white;">
+                    <div class="p-2">
+                      <i class="material-icons" style="vertical-align: top;">perm_phone_msg</i>
+                      <span>임대인 연락</span>
+                      <p class="blur" style="margin-left: 28px; font-size: 14px; ">
+                        <%= c.contact_method.join(', ').gsub(/[^\s+]/, "?") %> (<%= c.contact_time.gsub(/[^\s+]/, "?") %>)
+                      </p>
+                    </div>
+                  </div>
+
+                  <% if !c.remodeling_date.blank? %>
+                    <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                      <p class="review_show_sub_title">
+                        리모델링 <span class="blur" style="font-size:12px;">(<%=c.remodeling_date.to_s.gsub(/[^\s+]/, "?")%>)</span>
+                      </p>
+                    </div>
+                    <div style="margin: 11px 12px 30px 30px;">
+                      <% unless c.owner_comment_imgs.where(tag: "리모델링 전").empty? && c.owner_comment_imgs.where(tag: "리모델링 후").empty? %>
+                        <div style="margin-bottom: 14px;">
+                          <div class="remodeling-before-gallery" style="padding: 10px 0 0; width:48%;margin-right:2%; display: inline-block; overflow-x:auto; white-space: nowrap;">
+                            <% c.owner_comment_imgs.where(tag: "리모델링 전").each_with_index do |img, i| %>
+                              <a href="/images/owner/<%=img.name%>" title="remodeling-before-<%=i+1%>">
+                                <img class="gallery_image" src='<%= image_url("sample.jpg")%>'  style="width:100%;height: auto;">
+                              </a>
+                            <% end %>
+                          </div><%#
+                        %><div class="remodeling-after-gallery" style="padding: 10px 0 0; width:48%;margin-left:2%; display: inline-block; overflow-x:auto; white-space: nowrap;">
+                            <% c.owner_comment_imgs.where(tag: "리모델링 후").each_with_index do |img, i| %>
+                              <a href="/images/owner/<%=img.name%>" title="remodeling-after-<%=i+1%>">
+                                <img class="gallery_image" src='<%= image_url("sample.jpg")%>'  style="width:100%;height: auto;">
+                              </a>
+                            <% end %>
+                          </div><%#
+                        %><% unless c.owner_comment_imgs.where(tag: "리모델링 전").empty?%><p class="text-center d-inline-block" style="width:50%">Before (<%= c.owner_comment_imgs.where(tag: "리모델링 전").count %>)</p><% end %><%#
+                        %><% unless c.owner_comment_imgs.where(tag: "리모델링 후").empty?%><p class="text-center d-inline-block" style="width:50%">After (<%= c.owner_comment_imgs.where(tag: "리모델링 후").count %>)</p><% end %>
+                        </div>
+                      <% end %>
+                      <div class="comment_box_triangle"></div>
+                      <div class="bg-white">
+                        <div class="comment_box" style="max-height: 150px;">
+                          <p class="blur"><%=c.remodeling_txt.gsub(/[^\s+]/, "?")%></p>
+                        </div>
+                      </div>
+                    </div>
+                  <%end%>
+
+
+                  <% if !c.long_term_txt.blank? %>
+                    <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                      <p class="review_show_sub_title">
+                        장기 계약 시 혜택
+                      </p>
+                    </div>
+                    <div style="margin: 11px 12px 11px 30px;">
+                      <div class="comment_box_triangle"></div>
+                      <div class="comment_box" style="max-height: 150px;">
+                        <p class="blur" ><%=c.long_term_txt.gsub(/[^\s+]/, "?")%></p>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <div class="d-flex align-items-center review_show_sub" style="background-color:#515050ad;">
+                    <p class="review_show_sub_title">
+                      소개 및 장점
+                    </p>
+                  </div>
+                  <div style="margin: 11px 12px 11px 30px;">
+                    <div class="comment_box_triangle"></div>
+                    <div class="comment_box" style="max-height: 150px;">
+                      <p class="blur" ><%=c.intro_txt.gsub(/[^\s+]/, "?")%></p>
+                    </div>
+                    <div class="intro-gallery" style="backgrounnd-color: #f7f5f5;padding: 10px 20px; width:100%; overflow-x:auto; white-space: nowrap;">
+                      <% c.owner_comment_imgs.where(tag: "소개 및 장점").each_with_index do |img, i| %>
+                        <a href="<%= image_url("sample.jpg")%>" title="intro-<%=i+1%>">
+                          <img class="gallery_image" src='<%= image_url("sample.jpg")%>'  >
+                        </a>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+          
+        </div>
+      </div>
+
+      <div class="w-100"></div>
+  
+      <% if !@review.long_comment.blank? %>
+        <div class="col-12 col-lg-9"style="margin-bottom:50px; margin-top: 30px;">
+          <div class="d-flex align-items-center" style="background-color: #1e9497; height: 33px; ">
+            <p style="font-size: 16px; color: #f6f5f5; padding-left:14px;">
+            <img src="<%= image_url("ic/more.png")%>" alt="" style="margin-right:9px;padding-bottom: 2px;" />더 하고싶은 말</p>
+          </div>
+          <div style="margin: 11px 12px 11px 30px;">
+            <% if @check %>
+              <div class="comment_box_triangle" style="margin-top: 10px;"></div>
+              <div class="comment_box" style="max-height: 150px;">
+                <p  style="white-space: pre-line;"><%=@review.long_comment%></p>
+              </div>
+            <% else %>
+              <div class="comment_box_triangle" style="margin-top: 10px;"></div>
+              <div class="comment_box" style="max-height: 150px;">
+                <p class="blur" style="white-space: pre-line;"><%=@review.long_comment.gsub(/[^\s+]/, "?")%></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="col-12 col-lg-9">
+        <p class="text-center" style="border-top: 1px solid #8c8c8c; border-bottom: 1px solid #8c8c8c; padding: 200px 0;">상세 리뷰가 아직 작성되지 않았습니다.</p>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+
+
+
+<script>
+  $(".category_ic_title").on('click', function(event){     
+    $(".category_ic_title").removeClass("select");
+    $(this).addClass("select");
+    $(".category_ic_body").addClass("none");
+    $("#" + $(this).attr('id') + "_container" ).removeClass("none");
+  });
+
+  $('a.category_ic[href*=\\#]').on('click', function(event){     
+    event.preventDefault();
+    var text = 	$.trim($(this).text());
+    if (text == "보증금") 
+      text = "보증금 반환 만족도"
+    let move = $(this.hash);
+    if (includes([ "채광", "환기/냄새", "벌레", "파손", "방음", "누수", "외풍", "곰팡이", "수압", "수온", "배수" ], text)) {
+      if ($('#list-inside-list').hasClass("active")) {
+        $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+      } else {
+        $('#list-inside-list').tab('show');
+        setTimeout( function(){ 
+          $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+        } , 200);
+      }
+    } else if (includes([ "치안상태", "분리수거", "주차장" ], text)) {
+      if ($('#list-outside-list').hasClass("active")) {
+        $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+      } else {
+        $('#list-outside-list').tab('show');
+        setTimeout( function(){ 
+          $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+        } , 200);
+      }
+    } else if (includes([ "응대", "수리 및 보완", "혜택", "보증금 반환 만족도" ], text)) {
+      if ($('#list-owner-list').hasClass("active")) {
+        $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+      } else {
+        $('#list-owner-list').tab('show');
+        setTimeout( function(){ 
+          $('html,body').animate({scrollTop:$(move).offset().top - 102}, 500);
+        } , 200);
+      }
+    }
+  });
+  
+  $(document).ready(function(){
+     <% review_tags.each do |k,v| %>
+      $('.<%=v%>-gallery').magnificPopup({
+        delegate: 'a',
+        type: 'image',
+        tLoading: 'Loading image #%curr%...',
+        mainClass: 'mfp-img-mobile',
+        gallery: {
+          enabled: true,
+          navigateByImgClick: true,
+          preload: [0, 1]
+        },
+        image: {
+          tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+          titleSrc: function(item) {
+            return item.el.attr('title');
+          }
+        }
+      });
+    <% end %>
+    $('.intro-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+
+    $('.remodeling-before-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+    $('.remodeling-after-gallery').magnificPopup({
+      delegate: 'a',
+      type: 'image',
+      tLoading: 'Loading image #%curr%...',
+      mainClass: 'mfp-img-mobile',
+      gallery: {
+        enabled: true,
+        navigateByImgClick: true,
+        preload: [0,1]
+      },
+      image: {
+        tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+        titleSrc: function(item) {
+          return item.el.attr('title');
+        }
+      }
+    });
+  });
+  dataConfirmModal.setDefaults({
+    title: 'Confirm your action',
+    commit: 'Continue',
+    commitClass: 'btn-danger',
+    cancel: 'Cancel',
+    cancelClass: 'btn-default'
+  });
+
+</script>
