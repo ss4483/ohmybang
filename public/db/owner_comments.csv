@@ -1,9 +1,0 @@
-id,status,lat,long,address,detail_address,extra_address,bd_nm,si_nm,sgg_nm,emd_nm,room,hidden_camera,contact_time,contact_method,long_term_txt,remodeling_date,remodeling_txt,intro_txt,user_id,original_id,created_at,updated_at
-1,임시저장,35.329821,129.004361,"경상남도 양산시 물금읍 동중2길 6-27",,,,,,,오피스텔,예정,"오전 8시 - 오후 12시","---
-- 문자
-",,NULL,,,35,NULL,"2019-12-31 01:50:24","2019-12-31 01:52:06"
-2,sample,NULL,NULL,"오마방시 오마방구 오마방길",101호,NULL,"오마방 원룸",오마방도,오마방시,오마방동,원룸,완료,"오후 12시 - 오후 6시","---
-- 문자
-- 카톡
-- 전화
-",NULL,NULL,NULL,"방에 문제가 있으면 카톡이나 문자로 남겨주시면 최대한 빠르게 다시 연락드립니다.",1,NULL,"2020-02-01 14:21:48","2020-02-01 14:29:38"
