@@ -4,12 +4,7 @@ class ReviewConfirmsController < ApplicationController
   before_action :authenticate_user!
   before_action :check_manager
 
-  # imp_status, :string, default: "완료"
-  # add_column :reviews, :deposit, :integer, default: 0
-  # add_column :reviews, :monthly, :integer, default: 0
-  # add_column :reviews, :contract_type, :string, default: ""
-  # @status = ["미작성", "임시저장", "등록신청", "등록반려", "등록완료", "수정신청", "수정반려"]
-
+  # 리뷰 반려
   def reject_create
     review = Review.find(params[:review_id])
 
@@ -25,6 +20,8 @@ class ReviewConfirmsController < ApplicationController
     flash[:info] = "정상적으로 \"반려\" 되었습니다."
     redirect_back(fallback_location: root_path)
   end
+  
+  # 리뷰 승인
   def confirm_create
     @review = Review.find(params[:review_id])
 
@@ -71,7 +68,7 @@ class ReviewConfirmsController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
-
+  
   def edit_reject_create
     @review = Review.find(params[:id])
 

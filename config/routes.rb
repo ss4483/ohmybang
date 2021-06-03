@@ -1,9 +1,7 @@
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   root "statics#index_3"
-  # root "statics#index_2"
-  # root "statics#index"
-  # get 'main', to: "statics#index_3"
+
   get '/intro', to: "statics#intro"
   
   # 이미지
@@ -104,13 +102,6 @@ Rails.application.routes.draw do
   get 'managers/exchanges', to: "managers#exchanges"
   post '/exchange_reject/:req_exc_id', to: "exchange_confirms#reject_create"
   post '/exchange_confirm/:req_exc_id', to: "exchange_confirms#confirm_create"
-
-  # devise_for :users, path_names: { sign_up: '' }
-  # devise_scope :user do
-  #   post "/users/sign_up", to: "devise/registrations#new"
-  # end
-  # get '/users/sign_up_before_policy', to: "policies#sign_up_before_policy"
-  # get '/users/sign_up', to: "policies#sign_up_before_policy"
   
   devise_for :users, path: 'users'
   devise_scope :user do

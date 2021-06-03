@@ -4,6 +4,7 @@ class ManagersController < ApplicationController
   before_action :authenticate_user!
   before_action :check_manager
 
+  # 리뷰 관리
   def reviews
     if !params[:type].present?
       @reviews = Review.where.not(imp_status: @imp_status[2]).order("updated_at DESC").page(params[:page])
@@ -46,6 +47,7 @@ class ManagersController < ApplicationController
     @count_6 = OwnerComment.where(status: "등록완료").count
   end
 
+  # 환전 관리
   def exchanges
     if params[:type].present? && params[:type] == "all"
       @exchanges = Exchange.all.order("updated_at DESC").page(params[:page])
@@ -99,7 +101,7 @@ class ManagersController < ApplicationController
       @review.update_columns(imp_status: @imp_status[1]) 
     end
 
-    # 계약서 && 현재 @review.imp_status == @imp_status[2] && review_confrim.where(confirm_type: "증빙"). @imp_status[2]이 한개 일때 
+    
     # 뷰어 증정
     if @review.review_imp_imgs.pluck(:tag).first == "계약서" && 
         @review.imp_status == @imp_status[2] &&

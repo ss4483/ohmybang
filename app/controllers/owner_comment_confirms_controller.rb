@@ -6,7 +6,6 @@ class OwnerCommentConfirmsController < ApplicationController
   def reject_create
     owner_comment = OwnerComment.find(params[:owner_comment_id])
 
-
     owner_comment.update_columns(status: "등록반려") 
 
 

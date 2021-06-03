@@ -10,7 +10,7 @@ class ReviewsController < ApplicationController
 
   # 리뷰 목록 
   def index
-    review = Review.where(imp_status: @imp_status[2], status: @status[4]).sample()
+    review = Review.where(imp_status: @imp_status[2], status: @status[4]).sample()  
     
     @default_address = (review.nil?)? "서울특별시 강서구 가양동" : review.address
     @default_long = (review.nil?)? 126.8494633 : review.long
@@ -67,155 +67,24 @@ class ReviewsController < ApplicationController
       matching_reviews_id = Review.where(room: @check).where("status LIKE ? AND address LIKE ? AND detail_address LIKE ?", @status[4], params[:address], "%#{@detail_address}%").map(&:id)
       matching_reviews_id << matching_reviews_imp_id
       @matching_reviews = Review.where(id: matching_reviews_id.uniq)
-      # @matching_reviews = Review.where(room: @check).where("imp_status LIKE ? AND address LIKE ? AND detail_address LIKE ?", @imp_status[2], params[:address], "%#{@detail_address}%").where.not(status: "sample") 
     end
 
-  # imp_status: @imp_status[2] && (status: @status[4] || contract_type: not nil || review.review_imp_imgs.pluck(:tag).first == "계약서" )
-  # Review.where(imp_status: @imp_status[2], address: params[:address]).where.not(contract_type: "")
-  
     # address만 일치하는 리뷰
     reviews_imp_id = Review.where(imp_status: @imp_status[2], address: params[:address], room: @check).where.not(status: "sample", contract_type: "", id: @matching_reviews.map(&:id)).map(&:id)
     reviews_id = Review.where(imp_status: @imp_status[2], status: @status[4], address: params[:address], room: @check).where.not(id: (@matching_reviews.map(&:id))).map(&:id)
     reviews_id << reviews_imp_id
     @reviews = Review.where(id: reviews_id.uniq).page(params[:page]) 
-    # @reviews = Review.where(imp_status: @imp_status[2], address: params[:address], room: @check).where.not(status: "sample", id: @matching_reviews.map(&:id)).page(params[:page]) # address만 일치하는 리뷰
 
-    # address 5km 이내의 리뷰
+    # address 1km 이내의 리뷰
     nearby_reviews_imp_id = Review.within(1, origin: [@lat, @long]).closest(origin: [@lat, @long]).where(imp_status: @imp_status[2], room: @check).where.not(status: "sample", address: params[:address], contract_type: "").map(&:id)
     nearby_reviews_id = Review.within(1, origin: [@lat, @long]).closest(origin: [@lat, @long]).where(imp_status: @imp_status[2], status: @status[4], room: @check).where.not(status: "sample", address: params[:address]).map(&:id)
     nearby_reviews_id << nearby_reviews_imp_id
     @nearby_reviews = Review.where(id: nearby_reviews_id.uniq).page(params[:nearby_page]).per(20)
-    # @nearby_reviews = Review.within(1, origin: [@lat, @long]).closest(origin: [@lat, @long]).where(imp_status: @imp_status[2], room: @check).where.not(status: "sample", address: params[:address]).page(params[:nearby_page]).per(20) # address 5km 이내의 리뷰
-    
 
     @viewer_histories = Array.new
     if user_signed_in?
       @viewer_histories = current_user.viewer_histories.map(&:review_id).compact
     end
-    
-
-
-    # # 전세지수 차트 만들기
-    # @house_1_1_row = csv_row(params[:si_nm], "house_1_1.csv")
-    # @house_1_2_row = csv_row(params[:si_nm], "house_1_2.csv")
-    # @house_1_3_row = csv_row(params[:si_nm], "house_1_3.csv")
-    # @house_1_4_row = csv_row(params[:si_nm], "house_1_4.csv")
-
-    # @house_1_1 = csv_chart(@house_1_1_row, "종합주택유형")
-    # @house_1_2 = csv_chart(@house_1_2_row, "아파트")
-    # @house_1_3 = csv_chart(@house_1_3_row, "연립/다세대")
-    # @house_1_4 = csv_chart(@house_1_4_row, "단독주택")
-
-    # @house_1_max = [
-    #   @house_1_1_row.drop(1).map {|v| v[1]}.max,
-    #   @house_1_2_row.drop(1).map {|v| v[1]}.max,
-    #   @house_1_3_row.drop(1).map {|v| v[1]}.max,
-    #   @house_1_4_row.drop(1).map {|v| v[1]}.max
-    # ].max
-    # @house_1_min = [
-    #   @house_1_1_row.drop(1).map {|v| v[1]}.min,
-    #   @house_1_2_row.drop(1).map {|v| v[1]}.min,
-    #   @house_1_3_row.drop(1).map {|v| v[1]}.min,
-    #   @house_1_4_row.drop(1).map {|v| v[1]}.min
-    # ].min
-    # # 월세지수 차트 만들기
-    # @house_2_1_row = csv_row(params[:si_nm], "house_2_1.csv")
-    # @house_2_2_row = csv_row(params[:si_nm], "house_2_2.csv")
-    # @house_2_3_row = csv_row(params[:si_nm], "house_2_3.csv")
-    # @house_2_4_row = csv_row(params[:si_nm], "house_2_4.csv")
-
-    # @house_2_1 = csv_chart(@house_2_1_row, "종합주택유형")
-    # @house_2_2 = csv_chart(@house_2_2_row, "아파트")
-    # @house_2_3 = csv_chart(@house_2_3_row, "연립/다세대")
-    # @house_2_4 = csv_chart(@house_2_4_row, "단독주택")
-
-    # @house_2_max = [
-    #   @house_2_1_row.drop(1).map {|v| v[1]}.max,
-    #   @house_2_2_row.drop(1).map {|v| v[1]}.max,
-    #   @house_2_3_row.drop(1).map {|v| v[1]}.max,
-    #   @house_2_4_row.drop(1).map {|v| v[1]}.max
-    # ].max
-    # @house_2_min = [
-    #   @house_2_1_row.drop(1).map {|v| v[1]}.min,
-    #   @house_2_2_row.drop(1).map {|v| v[1]}.min,
-    #   @house_2_3_row.drop(1).map {|v| v[1]}.min,
-    #   @house_2_4_row.drop(1).map {|v| v[1]}.min
-    # ].min
-
-    # # 평균전세가격 차트 만들기
-    # @house_3_1_row = csv_row(params[:si_nm], "house_3_1.csv")
-    # @house_3_2_row = csv_row(params[:si_nm], "house_3_2.csv")
-    # @house_3_3_row = csv_row(params[:si_nm], "house_3_3.csv")
-    # @house_3_4_row = csv_row(params[:si_nm], "house_3_4.csv")
-
-    # @house_3_1 = csv_chart(@house_3_1_row, "종합주택유형")
-    # @house_3_2 = csv_chart(@house_3_2_row, "아파트")
-    # @house_3_3 = csv_chart(@house_3_3_row, "연립/다세대")
-    # @house_3_4 = csv_chart(@house_3_4_row, "단독주택")
-
-    # @house_3_max = [
-    #   @house_3_1_row.drop(1).map {|v| v[1]}.max,
-    #   @house_3_2_row.drop(1).map {|v| v[1]}.max,
-    #   @house_3_3_row.drop(1).map {|v| v[1]}.max,
-    #   @house_3_4_row.drop(1).map {|v| v[1]}.max
-    # ].max
-    # @house_3_min = [
-    #   @house_3_1_row.drop(1).map {|v| v[1]}.min,
-    #   @house_3_2_row.drop(1).map {|v| v[1]}.min,
-    #   @house_3_3_row.drop(1).map {|v| v[1]}.min,
-    #   @house_3_4_row.drop(1).map {|v| v[1]}.min
-    # ].min
-    # @house_3_min = (@house_3_min/100000).floor * 100000
-
-    # # 평균월세가격 차트 만들기
-    # @house_4_1_row = csv_row(params[:si_nm], "house_4_1.csv")
-    # @house_4_2_row = csv_row(params[:si_nm], "house_4_2.csv")
-    # @house_4_3_row = csv_row(params[:si_nm], "house_4_3.csv")
-    # @house_4_4_row = csv_row(params[:si_nm], "house_4_4.csv")
-
-    # @house_4_1 = csv_chart(@house_4_1_row, "종합주택유형")
-    # @house_4_2 = csv_chart(@house_4_2_row, "아파트")
-    # @house_4_3 = csv_chart(@house_4_3_row, "연립/다세대")
-    # @house_4_4 = csv_chart(@house_4_4_row, "단독주택")
-
-    # @house_4_max = [
-    #   @house_4_1_row.drop(1).map {|v| v[1]}.max,
-    #   @house_4_2_row.drop(1).map {|v| v[1]}.max,
-    #   @house_4_3_row.drop(1).map {|v| v[1]}.max,
-    #   @house_4_4_row.drop(1).map {|v| v[1]}.max
-    # ].max
-    # @house_4_min = [
-    #   @house_4_1_row.drop(1).map {|v| v[1]}.min,
-    #   @house_4_2_row.drop(1).map {|v| v[1]}.min,
-    #   @house_4_3_row.drop(1).map {|v| v[1]}.min,
-    #   @house_4_4_row.drop(1).map {|v| v[1]}.min
-    # ].min
-    # @house_4_min = 0
-
-    # # 평균월세보증금 차트 만들기
-    # @house_5_1_row = csv_row(params[:si_nm], "house_5_1.csv")
-    # @house_5_2_row = csv_row(params[:si_nm], "house_5_2.csv")
-    # @house_5_3_row = csv_row(params[:si_nm], "house_5_3.csv")
-    # @house_5_4_row = csv_row(params[:si_nm], "house_5_4.csv")
-
-    # @house_5_1 = csv_chart(@house_5_1_row, "종합주택유형")
-    # @house_5_2 = csv_chart(@house_5_2_row, "아파트")
-    # @house_5_3 = csv_chart(@house_5_3_row, "연립/다세대")
-    # @house_5_4 = csv_chart(@house_5_4_row, "단독주택")
-
-    # @house_5_max = [
-    #   @house_5_1_row.drop(1).map {|v| v[1]}.max,
-    #   @house_5_2_row.drop(1).map {|v| v[1]}.max,
-    #   @house_5_3_row.drop(1).map {|v| v[1]}.max,
-    #   @house_5_4_row.drop(1).map {|v| v[1]}.max
-    # ].max
-    # @house_5_min = [
-    #   @house_5_1_row.drop(1).map {|v| v[1]}.min,
-    #   @house_5_2_row.drop(1).map {|v| v[1]}.min,
-    #   @house_5_3_row.drop(1).map {|v| v[1]}.min,
-    #   @house_5_4_row.drop(1).map {|v| v[1]}.min
-    # ].min
-    # @house_5_min = (@house_5_min/10000).floor * 10000
   end
 
   def new
@@ -492,12 +361,6 @@ class ReviewsController < ApplicationController
       flash[:danger] = '잘 못 된 리뷰입니다.'
       redirect_back(fallback_location: root_path)
     else
-      # (@review.status == "등록완료" || 
-      # (@review.status == "등록신청" && @review.user == current_user) || 
-      # (@review.status == "등록신청" && current_user.role == "manager"))
-      
-      
-      
       current_user.histories.insert(0,params[:id]).uniq!
       current_user.update_column(:histories, current_user.histories[0..4])
 
@@ -568,9 +431,9 @@ class ReviewsController < ApplicationController
       else 
         @average = nil  
       end
-    # else 
-    #   flash[:danger] = '아직 준비 중인 리뷰 입니다.'
-    #   redirect_back(fallback_location: root_path)
+      # else 
+      #   flash[:danger] = '아직 준비 중인 리뷰 입니다.'
+      #   redirect_back(fallback_location: root_path)
     end
   end
   def retouch_show
@@ -691,9 +554,6 @@ class ReviewsController < ApplicationController
         end
       end
     end
-    # 시군구,번지,본번,부번,건물명,전월세구분,전용면적(㎡),계약년월,계약일,보증금(만원),월세(만원),층,건축년도,도로명
-    # recently_contracts
-    # 전월세구분, 전용면적, 계약년월일, 보증금, 월세, 층수
     redirect_back(fallback_location: root_path)
   end
 

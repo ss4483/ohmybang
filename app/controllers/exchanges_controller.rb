@@ -2,7 +2,7 @@ class ExchangesController < ApplicationController
   before_action :authenticate_user!
   before_action :check_point
   def new
-    if current_user.merchant_uid.nil?
+    if current_user.merchant_uid.nil? # 본인인증 유무 확인
       render 'personal_check'
     end
 
@@ -45,8 +45,9 @@ class ExchangesController < ApplicationController
 
   def update
     @exchange = Exchange.find(params[:id])
-    if @exchange.user == current_user
-      if @exchange.status == "환전반려"
+    
+    if @exchange.user == current_user # 본인 확인
+      if @exchange.status == "환전반려" # 환전 반려인 경우만 수정 가능
         @exchange.status = "환전신청"
         @exchange.pt = params[:point]
         @exchange.actual_money = @exchange.pt - @fees
@@ -56,16 +57,8 @@ class ExchangesController < ApplicationController
         @exchange.account_number = params[:account_number]
         @exchange.save
         
-
-        params[:imp_imgs].each_with_index do |item, index|
-          ExchangeImpImg.create(tag: "user",
-            name: rand(36**20).to_s(36),
-            content_type: item.content_type,
-            file: item.read,
-            exchange: @exchange)
-        end
-
-        remove_imp_img_ids = @exchange.exchange_imp_imgs.map(&:id)
+        # 증빙이미지 삭제 및 생성
+        remove_imp_img_ids = @exchange.exchange_imp_imgs.map(&:id) # 원래 증빙이미지 ids
         if params[:"imp_imgs"].present?
           params[:"imp_imgs"].each_with_index do |item, index|
             imp_img = @exchange.exchange_imp_imgs.find_by(name: item.original_filename)
@@ -80,7 +73,7 @@ class ExchangesController < ApplicationController
             end
           end
         end 
-        ExchangeImpImg.where(id: remove_imp_img_ids).destroy_all if !remove_imp_img_ids.empty?
+        ExchangeImpImg.where(id: remove_imp_img_ids).destroy_all if !remove_imp_img_ids.empty? # 원래 증빙이미지 삭제
 
         ExchangeConfirm.create(status: "환전신청", exchange: @exchange)
 
@@ -97,6 +90,8 @@ class ExchangesController < ApplicationController
     end
   end
 
+
+  # 본인인증확인
   def certifications
     url = "https://api.iamport.kr/certifications/#{params[:imp_uid]}"
     result = HTTParty.get(url, headers: { "Authorization" => Iamport.token })

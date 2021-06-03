@@ -20,7 +20,6 @@ class ViewersController < ApplicationController
 
         viewer_history = ViewerHistory.create(viewer_count: 1, memo: "사용", user_id: current_user.id, review_id: params[:id], date_of_use: Time.now, viewer: viewer)
         viewer.update_columns(count: viewer.count - 1)
-        # viewer.viewer_histories << viewer_history
 
         review = Review.find(params[:id])
         review_user = review.user
@@ -28,8 +27,6 @@ class ViewersController < ApplicationController
           point = 
             review_user.points.find_by(exp_date: ((Date.current + 1.year).end_of_month)) || 
             Point.new(exp_date: ((Date.current + 1.year).end_of_month), user: review_user)
-            # review_user.points.find_by(exp_date: Date.new(Date.current.year + 4, 12, 31)) || 
-            # Point.new(exp_date: Date.new(Date.current.year + 4, 12, 31), user: review_user)
           
           if viewer.free == "t"
             point.pt = point.pt || 0
@@ -145,15 +142,6 @@ class ViewersController < ApplicationController
   end
 
   def payment_mobile 
-    # {"item_type"=>"10",
-    #   "item_count"=>"1",
-    #   "item_price"=>"15000",
-    #   "paid_amount"=>"15000",
-    #   "item_kind"=>"first",
-    #   "referer"=>"undefinedimp_uid=imp_406379783568",
-    #   "merchant_uid"=>"merchant_first_10_1590755379615",
-    #   "imp_success"=>"false",
-    #   "error_msg"=>"사용자가 결제를 취소하셨습니다"}
     if params["imp_success"] == "true"
       imp_uid = params[:imp_uid] # post ajax request로부터 imp_uid확인
       merchant_uid = params[:merchant_uid]

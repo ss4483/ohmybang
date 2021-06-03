@@ -29,6 +29,7 @@
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
+
 function includes(container, value) {
   var returnValue = false;
   var pos = container.indexOf(value);
@@ -37,6 +38,7 @@ function includes(container, value) {
   }
   return returnValue;
 }
+
 /** 검색 **/
 function selectSerchItem(e) {
   $("#search_bar").val($(e).children(".roadAddrPart1Title").children(".roadAddrPart1").text()); 
@@ -44,7 +46,6 @@ function selectSerchItem(e) {
   $("#search_box").addClass("d-none");
 }
 function openSearchBox() { $("#search_box").removeClass("d-none"); };
-
 
 
 $(document).ready(function(){  
@@ -56,16 +57,26 @@ $(document).ready(function(){
       $('label[for="' + id + '"]').removeClass('checked');
     }
   });
+
   let search_bar = $("#search_bar");
 
   search_bar.data('oldVal', search_bar.val());
+  
+  // search_bar의 입력이 변경 될 때마다, 실행
   search_bar.on("propertychange change keyup paste input", function() {
-    // If value has changed...
     if (search_bar.data('oldVal') != search_bar.val()) {
-      // Updated stored value
       search_bar.data('oldVal', search_bar.val());
-      // Do action
-      let error_codes = ["E0005", "E0006", "E0008", "E0009", "E0010", "E0011", "E0012", "E0015"];
+      
+      let error_codes = [
+          "E0005", // 검색어가 입력되지 않았습니다.	검색어를 입력해주세요.
+          "E0006", // 주소를 상세히 입력해 주시기 바랍니다.	시도명으로는 검색이 불가합니다.
+          "E0008", // 검색어는 두글자 이상 입력되어야 합니다.	한 글자만으로는 검색이 불가합니다.
+          "E0009", // 검색어는 문자와 숫자 같이 입력되어야 합니다.	숫자만으로는 검색이 불가합니다.
+          "E0010", // 검색어가 너무 깁니다. (한글40자, 영문,숫자 80자 이하)	80글자를 초과한 검색어는 검색이 불가합니다.
+          "E0011", // 검색어에 너무 긴 숫자가 포함되어 있습니다. (숫자10자 이하)	10자리를 초과하는 숫자가 포함된 검색어는 검색이 불가합니다.
+          "E0012", // 특수문자+숫자만으로는 검색이 불가능 합니다.	특수문자와 숫자만으로 이루어진 검색어는 검색이 불가합니다.
+          "E0015" // 검색 범위를 초과하였습니다.	검색결과가 9천건이 초과하는 검색은 불가합니다.
+        ];
 
       if (chkStr(search_bar.val())) {
         $.ajax({
@@ -198,6 +209,7 @@ $(document).on('click','.search_item',function(){
 
 /** 검색 END **/
 
+
  $(document).ready(function(){  
  
   $(".toggle_radio").change(function(){
@@ -302,8 +314,8 @@ $(document).ready(function(){
   });
 });
 
-function chkStr(str){
 
+function chkStr(str){
 	var val = str;
 
 	for(var i = 0; i < val.length; i++){
